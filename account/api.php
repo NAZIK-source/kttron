@@ -12,6 +12,12 @@ function reply(array $data, int $code = 200): void
     exit;
 }
 
+// Без настроенной базы отвечаем ошибкой: скрипт сайта тогда спрячет кнопки кабинета
+try {
+    db();
+} catch (Throwable $e) {
+    reply(['ok' => false], 503);
+}
 $user = current_user();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

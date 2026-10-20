@@ -13,7 +13,7 @@
     <link rel="icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/assets/main-BRCBiG-u.css" />
     <link rel="stylesheet" href="/assets/material.css" />
-    <style>.calc label[hidden]{display:none}</style>
+    <style>.calc label[hidden]{display:none}.calc-cost{font-weight:700;color:var(--brand-deep);margin:.2rem 0 0}</style>
       <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
       (function(m,e,t,r,i,k,a){
@@ -44,7 +44,7 @@
       })();
     </script>
     <!-- /Yandex.Metrika counter -->
-      <style>@media (min-width:981px){.nav .nav-account{display:none}}</style>
+      <style>html:not(.kt-acc) .account-link{display:none!important}@media (min-width:981px){.nav .nav-account{display:none}}</style>
   </head>
   <body>
 <noscript><div><img src="https://mc.yandex.ru/watch/113689719" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -97,7 +97,7 @@
           <nav class="crumbs" aria-label="Хлебные крошки"><a href="/">Главная</a> / Калькулятор</nav>
           <p class="eyebrow">Нормы завода kttron.ru</p>
           <h1>Калькулятор расхода</h1>
-          <p class="muted">Площадь и толщина дают килограммы и число мешков. Цену в тенге не считаем: её называют в WhatsApp.</p>
+          <p class="muted">Площадь и толщина дают килограммы и число мешков. Если для материала указана цена «от», покажем ориентировочную сумму; точную цену назовут в WhatsApp.</p>
           <form class="calc" id="estimator">
             <div class="calc-fields">
               <label>Материал
@@ -112,6 +112,7 @@
             </div>
             <p class="muted" id="norm"></p>
             <p class="calc-result" id="result" aria-live="polite"></p>
+            <p class="calc-cost" id="cost" hidden></p>
             <div class="hero-cta">
               <a class="btn btn-solid btn-lg" id="send" href="https://wa.me/77751810595">Отправить расчёт в WhatsApp</a>
               <a class="btn btn-ghost-dark btn-lg" id="card" href="/materials/">Карточка материала</a>
@@ -183,6 +184,7 @@
       const result = document.getElementById("result");
       const send = document.getElementById("send");
       const card = document.getElementById("card");
+      const cost = document.getElementById("cost");
       const groups = {};
       materials.forEach((item) => {
         if (!groups[item.group]) {
@@ -215,7 +217,10 @@
         if (item.thick) thickInput.value = thickInput.value || item.thick;
         thickInput.min = item.minThick || 0.5;
         if (item.maxThick) thickInput.max = item.maxThick; else thickInput.removeAttribute("max");
-        norm.textContent = item.note + " Цена по запросу.";
+        const price = window.ktPrice ? window.ktPrice(item.name) : null;
+        const perKg = price && price.unit === "кг" ? price.price : 0;
+        norm.textContent = item.note + (perKg ? " Цена от " + fmt(perKg) + " ₸ за 1 кг." : " Цена по запросу.");
+        cost.hidden = true;
         card.href = item.url || "/materials/" + item.id + "/";
         card.textContent = item.url ? "ТО на kttron.ru" : "Карточка материала";
         if (item.url) { card.target = "_blank"; card.rel = "noopener"; } else { card.removeAttribute("target"); }
@@ -233,10 +238,19 @@
           ? ", " + bagsMin + " меш. по " + item.pack + " кг"
           : ", " + bagsMin + "–" + bagsMax + " меш. по " + item.pack + " кг";
         result.textContent = text;
+        let costText = "";
+        if (perKg) {
+          // Считаем по целым мешкам: покупают их, а не килограммы
+          const sumMin = bagsMin * item.pack * perKg;
+          const sumMax = bagsMax * item.pack * perKg;
+          costText = "от " + fmt(sumMin) + (sumMax > sumMin ? "–" + fmt(sumMax) : "") + " ₸";
+          cost.textContent = "Ориентировочно " + costText + " за " + (bagsMin === bagsMax ? bagsMin : bagsMin + "–" + bagsMax) + " меш. Точную цену назовёт менеджер.";
+          cost.hidden = false;
+        }
         const detail = item.mode === "area" ? area + " м²"
           : seam ? "шов " + area + " м, сечение " + thick + "×" + thick + " мм"
           : area + " м², толщина " + thick + " мм";
-        const msg = "Здравствуйте! Нужен " + item.name + ". " + detail + ". Ориентир: " + text + ". Цена по запросу.";
+        const msg = "Здравствуйте! Нужен " + item.name + ". " + detail + ". Ориентир: " + text + (costText ? ". Цена ориентировочно " + costText + "." : ". Цена по запросу.");
         send.href = "https://wa.me/77751810595?text=" + encodeURIComponent(msg);
       };
       form.addEventListener("input", run);
@@ -245,8 +259,10 @@
         if (item.thick) form.thick.value = item.thick;
         run();
       });
+      document.addEventListener("kt-prices", run);
       run();
     </script>
-    <script src="/assets/account.js?v=1" defer></script>
+    <script src="/assets/kt-prices.js?v=1" defer></script>
+    <script src="/assets/account.js?v=2" defer></script>
   </body>
 </html>

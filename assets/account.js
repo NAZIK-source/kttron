@@ -12,8 +12,14 @@
   }
 
   fetch('/account/api.php', { credentials: 'same-origin', cache: 'no-store' })
-    .then(function (r) { return r.ok ? r.json() : { logged: false }; })
-    .then(function (data) { logged = !!data.logged; updateLinks(data); })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      // Кнопки кабинета показываем, только когда кабинет на сервере настроен и отвечает
+      if (!data || typeof data.logged !== 'boolean') return;
+      document.documentElement.classList.add('kt-acc');
+      logged = data.logged;
+      updateLinks(data);
+    })
     .catch(function () {});
 
   function save(text, source) {
