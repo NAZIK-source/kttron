@@ -1,0 +1,13 @@
+{
+  "name": "КТ ТРОН Казахстан",
+  "short_name": "КТ ТРОН",
+  "start_url": "/",
+  "display": "browser",
+  "theme_color": "#0093DD",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/images/kt-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/images/kt-icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/images/kt-icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
