@@ -1,0 +1,92 @@
+.catalog-more { margin: 0.35rem 0 0; }
+.catalog-more a { color: var(--brand); font-weight: 700; }
+
+.material-page { padding: 28px 0 64px; }
+.crumbs { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+.crumbs a { color: var(--brand); }
+.material-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.material-layout img {
+  width: 100%;
+  height: auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+.fact {
+  background: var(--paper);
+  padding: 10px 12px;
+}
+.fact span { display: block; color: var(--muted); font-size: 13px; }
+.fact b { display: block; font-size: 16px; line-height: 1.3; }
+.calc {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.calc-fields { display: flex; flex-wrap: wrap; gap: 12px; }
+.calc label { display: grid; gap: 4px; font-size: 14px; }
+.calc input,
+.calc select {
+  width: 140px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+.calc select { width: min(100%, 420px); }
+.calc-result { font-size: 1.35rem; font-weight: 700; min-height: 1.4em; }
+.calc-out { font-size: 1.15rem; font-weight: 700; min-height: 1.4em; }
+.uses { max-width: 70ch; }
+.spec-wrap { overflow-x: auto; }
+.spec { width: 100%; border-collapse: collapse; }
+.spec th {
+  text-align: left;
+  background: var(--paper);
+  padding: 10px 12px;
+}
+.spec td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.spec td:first-child { width: 62%; }
+.related { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.related a { color: var(--brand); font-weight: 700; }
+.hub {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.hub-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+.hub-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background: var(--paper);
+}
+.hub-card h2 { font-size: 1.15rem; margin: 0; }
+.hub-card p { margin: 0; color: var(--muted); }
+.hub-card span { font-size: 14px; }
+
+@media (max-width: 720px) {
+  .material-layout { grid-template-columns: 1fr; }
+}
