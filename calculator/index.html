@@ -13,7 +13,7 @@
     <link rel="icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/assets/main-BRCBiG-u.css" />
     <link rel="stylesheet" href="/assets/material.css" />
-    <style>.calc label[hidden]{display:none}</style>
+    <style>.calc label[hidden]{display:none}.calc-cost{font-weight:700;color:var(--brand-deep);margin:.2rem 0 0}</style>
       <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
       (function(m,e,t,r,i,k,a){
@@ -44,7 +44,7 @@
       })();
     </script>
     <!-- /Yandex.Metrika counter -->
-      <style>@media (min-width:981px){.nav .nav-account{display:none}}</style>
+      <style>html:not(.kt-acc) .account-link{display:none!important}@media (min-width:981px){.nav .nav-account{display:none}}</style>
   </head>
   <body>
 <noscript><div><img src="https://mc.yandex.ru/watch/113689719" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -97,7 +97,7 @@
           <nav class="crumbs" aria-label="Хлебные крошки"><a href="/">Главная</a> / Калькулятор</nav>
           <p class="eyebrow">Нормы завода kttron.ru</p>
           <h1>Калькулятор расхода</h1>
-          <p class="muted">Площадь и толщина дают килограммы и число мешков. Цену в тенге не считаем: её называют в WhatsApp.</p>
+          <p class="muted">Площадь и толщина дают килограммы и число мешков. Если для материала указана цена «от», покажем ориентировочную сумму; точную цену назовут в WhatsApp.</p>
           <form class="calc" id="estimator">
             <div class="calc-fields">
               <label>Материал
@@ -112,6 +112,7 @@
             </div>
             <p class="muted" id="norm"></p>
             <p class="calc-result" id="result" aria-live="polite"></p>
+            <p class="calc-cost" id="cost" hidden></p>
             <div class="hero-cta">
               <a class="btn btn-solid btn-lg" id="send" href="https://wa.me/77751810595">Отправить расчёт в WhatsApp</a>
               <a class="btn btn-ghost-dark btn-lg" id="card" href="/materials/">Карточка материала</a>
@@ -144,8 +145,8 @@
         { id: "kt-tron-7", name: "КТ ТРОН-7", group: "Гидроизоляция", pack: 25, mode: "mm", min: 1.55, max: 1.55, thick: 2, minThick: 0.8, maxThick: 4, note: "Обмазочная гидроизоляция: 1,55 кг/м² на каждый 1 мм. Рабочий слой 2–4 мм." },
         { id: "kt-tron-71", name: "КТ ТРОН-71", group: "Гидроизоляция", pack: 25, mode: "mm", min: 1.55, max: 1.55, thick: 4, minThick: 0.8, maxThick: 4, url: "https://www.kttron.ru/goods/obmazochnaya_gidroizolyatsiya/kttron_71/", note: "Обмазочная гидроизоляция с проникающим эффектом: 1,55 кг/м² на 1 мм. Рекомендуемая толщина 4 мм, за проход 0,8–1,5 мм." },
         { id: "kt-tron-10-1k", name: "КТ ТРОН-10 1К", group: "Гидроизоляция", pack: 20, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, note: "Эластичная гидроизоляция: 1,5 кг/м² на 1 мм. Слой 2–4 мм. Мешок 20 кг." },
-        { id: "kt-tron-10-2k", name: "КТ ТРОН-10 2К", group: "Гидроизоляция", pack: 25, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, note: "Двухкомпонентная эластичная гидроизоляция: 1,5 кг/м² на 1 мм. Слой 2–4 мм." },
-        { id: "kt-tron-122", name: "КТ ТРОН-122 флекс", group: "Гидроизоляция", pack: 25, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, url: "https://www.kttron.ru/goods/elastichnaya_gidroizolyatsiya/kttron_122_fleks/", note: "Двухкомпонентная эластичная гидроизоляция: 1,5 кг/м² сухой смеси на 1 мм, плюс 0,5 кг/м² эластификатора на 1 мм." },
+        { id: "kt-tron-10-2k", name: "КТ ТРОН-10 2К", group: "Гидроизоляция", pack: 25, kit: 33.5, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, note: "Двухкомпонентная эластичная гидроизоляция: 1,5 кг/м² на 1 мм. Слой 2–4 мм." },
+        { id: "kt-tron-122", name: "КТ ТРОН-122 флекс", group: "Гидроизоляция", pack: 25, kit: 33.5, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, url: "https://www.kttron.ru/goods/elastichnaya_gidroizolyatsiya/kttron_122_fleks/", note: "Двухкомпонентная эластичная гидроизоляция: 1,5 кг/м² сухой смеси на 1 мм, плюс 0,5 кг/м² эластификатора на 1 мм." },
         { id: "kt-tron-3", name: "КТ ТРОН-3", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1800, max: 1800, thick: 10, minThick: 5, maxThick: 30, note: "Ремонт бетона: 1800 кг сухой смеси на 1 м³ раствора. Слой за проход 5–30 мм." },
         { id: "kt-tron-3-t400", name: "КТ ТРОН-3 Т400", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1850, max: 1850, thick: 10, minThick: 3, maxThick: 30, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_t400/", note: "Безусадочный быстротвердеющий тиксотропный состав: 1850 кг на 1 м³ раствора. Слой за проход 3–30 мм." },
         { id: "kt-tron-3-t500", name: "КТ ТРОН-3 Т500", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_t500/", note: "Тиксотропный ремонтный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–50 мм." },
@@ -183,6 +184,7 @@
       const result = document.getElementById("result");
       const send = document.getElementById("send");
       const card = document.getElementById("card");
+      const cost = document.getElementById("cost");
       const groups = {};
       materials.forEach((item) => {
         if (!groups[item.group]) {
@@ -215,7 +217,10 @@
         if (item.thick) thickInput.value = thickInput.value || item.thick;
         thickInput.min = item.minThick || 0.5;
         if (item.maxThick) thickInput.max = item.maxThick; else thickInput.removeAttribute("max");
-        norm.textContent = item.note + " Цена по запросу.";
+        const price = window.ktPrice ? window.ktPrice(item.name) : null;
+        const perKg = price && price.unit === "кг" ? price.price : 0;
+        norm.textContent = item.note + (perKg ? " Цена от " + fmt(perKg) + " ₸ за 1 кг." : " Цена по запросу.");
+        cost.hidden = true;
         card.href = item.url || "/materials/" + item.id + "/";
         card.textContent = item.url ? "ТО на kttron.ru" : "Карточка материала";
         if (item.url) { card.target = "_blank"; card.rel = "noopener"; } else { card.removeAttribute("target"); }
@@ -233,10 +238,21 @@
           ? ", " + bagsMin + " меш. по " + item.pack + " кг"
           : ", " + bagsMin + "–" + bagsMax + " меш. по " + item.pack + " кг";
         result.textContent = text;
+        let costText = "";
+        if (perKg) {
+          // Считаем по целым мешкам: покупают их, а не килограммы
+          // Двухкомпонентные продаются комплектом: мешок 25 кг + канистра, цена за кг комплекта
+          const unitKg = item.kit || item.pack;
+          const sumMin = Math.round(bagsMin * unitKg * perKg);
+          const sumMax = Math.round(bagsMax * unitKg * perKg);
+          costText = "от " + fmt(sumMin) + (sumMax > sumMin ? "–" + fmt(sumMax) : "") + " ₸";
+          cost.textContent = "Ориентировочно " + costText + " за " + (bagsMin === bagsMax ? bagsMin : bagsMin + "–" + bagsMax) + (item.kit ? " компл. по " + fmt(item.kit) + " кг" : " меш.") + " без учёта доставки. Точную цену назовёт менеджер.";
+          cost.hidden = false;
+        }
         const detail = item.mode === "area" ? area + " м²"
           : seam ? "шов " + area + " м, сечение " + thick + "×" + thick + " мм"
           : area + " м², толщина " + thick + " мм";
-        const msg = "Здравствуйте! Нужен " + item.name + ". " + detail + ". Ориентир: " + text + ". Цена по запросу.";
+        const msg = "Здравствуйте! Нужен " + item.name + ". " + detail + ". Ориентир: " + text + (costText ? ". Цена ориентировочно " + costText + " без доставки." : ". Цена по запросу.");
         send.href = "https://wa.me/77751810595?text=" + encodeURIComponent(msg);
       };
       form.addEventListener("input", run);
@@ -245,8 +261,10 @@
         if (item.thick) form.thick.value = item.thick;
         run();
       });
+      document.addEventListener("kt-prices", run);
       run();
     </script>
-    <script src="/assets/account.js?v=1" defer></script>
+    <script src="/assets/kt-prices.js?v=1" defer></script>
+    <script src="/assets/account.js?v=2" defer></script>
   </body>
 </html>
