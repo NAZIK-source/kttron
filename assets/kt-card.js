@@ -31,6 +31,7 @@
 
   var lastCard = null;
   var lang = (document.documentElement.lang || 'ru').slice(0, 2);
+  var pageLabel = { ru: 'Страница материала', kk: 'Материал беті', tg: 'Саҳифаи мавод', uz: 'Material sahifasi' }[lang] || 'Страница материала';
   var specsTitle = { ru: 'Характеристики', kk: 'Сипаттамалары', tg: 'Хусусиятҳо', uz: 'Xususiyatlar' }[lang] || 'Характеристики';
 
   // Таблицы характеристик грузим один раз, при первом открытии карточки
@@ -42,6 +43,17 @@
         .catch(function () { return {}; });
     }
     return specs;
+  }
+
+  // Адреса страниц товаров: у каждого из 50 теперь своя страница
+  var pages = null;
+  function loadPages() {
+    if (!pages) {
+      pages = fetch('/pages.json', { cache: 'no-cache' })
+        .then(function (r) { return r.ok ? r.json() : {}; })
+        .catch(function () { return {}; });
+    }
+    return pages;
   }
 
   function renderSpecs(name) {
@@ -108,6 +120,13 @@
       var a = page.cloneNode(true);
       a.id = 'lightboxPage';
       actions.insertBefore(a, document.getElementById('lightboxLink'));
+    } else if (actions) {
+      var name = title.textContent.trim();
+      loadPages().then(function (all) {
+        if (!all[name] || document.getElementById('lightboxPage') || title.textContent.trim() !== name) return;
+        var link = Object.assign(document.createElement('a'), { id: 'lightboxPage', className: 'btn btn-ghost-dark', href: all[name], textContent: pageLabel });
+        actions.insertBefore(link, document.getElementById('lightboxLink'));
+      });
     }
     renderSpecs(title.textContent.trim());
   }
