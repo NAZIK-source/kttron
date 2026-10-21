@@ -280,6 +280,100 @@ def build(page, head, tail, products, prices):
     return h + main + tail
 
 
+# Таблица «Цены на гидроизоляцию за 1 м²» на /gidroizolyaciya/: материал, тип, кг на 1 м² (мин.–макс.),
+# слой, мм (для составов, расход которых указан на 1 мм). Нормы — из технических описаний завода (specs.json).
+GIDRO_TABLE = [
+    ('КТ ТРОН-1', 'проникающая', (0.8, 1.2), None),
+    ('КТ ТРОН-11', 'проникающая, для старого бетона', (0.8, 1.2), None),
+    ('КТ ТРОН-7', 'жёсткая обмазочная', (1.55, 1.55), 2),
+    ('КТ ТРОН-71', 'жёсткая обмазочная', (1.55, 1.55), 2),
+    ('КТ ТРОН-10 1К', 'эластичная', (1.5, 1.5), 2),
+    ('КТ ТРОН-10 2К', 'эластичная двухкомпонентная', (2.0, 2.0), 2),
+    ('КТ ТРОН-122 флекс', 'эластичная двухкомпонентная', (2.0, 2.0), 2),
+]
+GIDRO_START, GIDRO_END = '      <!-- gidro-prices -->\n', '      <!-- /gidro-prices -->\n'
+GIDRO_COST_Q = 'Сколько стоит гидроизоляция в Алматы?'
+
+
+def gidro_section(prices):
+    rows, costs = [], []
+    pages = json.loads((ROOT / 'pages.json').read_text(encoding='utf-8'))
+    for name, kind, (lo, hi), thick in GIDRO_TABLE:
+        price, unit = price_info(prices, name)
+        k = thick or 1
+        kg = f'{fmt_num(lo * k)}–{fmt_num(hi * k)}' if lo != hi else fmt_num(lo * k)
+        layer = f' (слой {thick} мм)' if thick else ''
+        cost = round_half_up(lo * k * price) if price and unit == 'кг' else None
+        if cost:
+            costs.append(cost)
+        rows.append(f'              <tr><td><a href="{pages[name]}">{e(name)}</a></td><td data-label="Вид">{kind}</td>'
+                    f'<td data-label="Расход на 1 м²">{kg} кг{layer}</td><td data-label="Цена от, ₸/кг">{fmt_price(price) if price else "по запросу"}</td>'
+                    f'<td data-label="Материал на 1 м²">{"от " + fmt_price(cost) + " ₸" if cost else "по запросу"}</td></tr>')
+    html = f'''{GIDRO_START}      <section class="section" id="ceny">
+        <div class="shell">
+          <div class="section-head">
+            <p class="eyebrow">Цены</p>
+            <h2>Цены на гидроизоляцию в Алматы за 1 м²</h2>
+          </div>
+          <p class="muted gidro-text">Сколько стоит материал на 1 м²: расход по техническим описаниям завода КТ ТРОН, цены «от» по прайсу завода для Казахстана, без учёта доставки и работ. Точное количество зависит от состояния основания — посчитаем по вашему объекту.</p>
+          <div class="gidro-table-wrap">
+            <table class="gidro-table">
+              <thead><tr><th>Материал</th><th>Вид гидроизоляции</th><th>Расход на 1 м²</th><th>Цена от, ₸/кг</th><th>Материал на 1 м²</th></tr></thead>
+              <tbody>
+{chr(10).join(rows)}
+              </tbody>
+            </table>
+          </div>
+          <p class="gidro-links"><a href="/calculator/">Рассчитать расход на вашу площадь</a> · <a href="https://wa.me/77751810595" target="_blank" rel="noopener">Узнать цену с доставкой в WhatsApp</a></p>
+
+          <div class="gidro-types">
+            <h3>Какая бывает гидроизоляция бетона</h3>
+            <p><strong>Проникающая</strong> (<a href="{pages['КТ ТРОН-1']}">КТ ТРОН-1</a>, <a href="{pages['КТ ТРОН-11']}">КТ ТРОН-11</a>) наносится на влажный бетон и, по данным завода, повышает его марку по водонепроницаемости на 2–3 ступени и морозостойкость. Применяется для фундаментов, подвалов и подземных частей зданий, резервуаров (в том числе с питьевой водой), бассейнов и очистных сооружений. Паропроницаема. Расход — 0,8–1,2 кг на 1 м².</p>
+            <p><strong>Жёсткая обмазочная</strong> (<a href="{pages['КТ ТРОН-7']}">КТ ТРОН-7</a>, <a href="{pages['КТ ТРОН-71']}">КТ ТРОН-71</a>) — слой 2–4 мм. Держит воду и на прижим (W10), и на отрыв (W8). Защищает конструкции от грунтовых вод, применяется для бассейнов, резервуаров и ёмкостей, в том числе с питьевой водой. Расход — 1,55 кг на 1 м² на каждый миллиметр.</p>
+            <p><strong>Эластичная</strong> (<a href="{pages['КТ ТРОН-10 1К']}">КТ ТРОН-10 1К</a>, <a href="{pages['КТ ТРОН-10 2К']}">КТ ТРОН-10 2К</a>, <a href="{pages['КТ ТРОН-122 флекс']}">КТ ТРОН-122 флекс</a>) — для конструкций, где возможны микротрещины и небольшие деформации: бассейны, резервуары, внешняя и внутренняя гидроизоляция подземных частей зданий, надземные конструкции под атмосферным воздействием. КТ ТРОН-10 1К перекрывает трещины до 1 мм, двухкомпонентные составы дают водонепроницаемость до W16.</p>
+            <p><strong>Швы и протечки.</strong> Активную воду останавливают быстротвердеющим <a href="{pages['КТ ТРОН-8']}">КТ ТРОН-8</a>, швы и вводы коммуникаций герметизируют <a href="{pages['КТ ТРОН-2']}">КТ ТРОН-2</a> и <a href="{pages['Гидрошнур НП']}">гидрошнуром НП</a> — до нанесения основной гидроизоляции.</p>
+            <h3>Где купить гидроизоляцию в Алматы</h3>
+            <p>Все материалы — на складе официального дистрибьютора завода КТ ТРОН в Алматы, ул. Шевченко, 118. Пришлите фото объекта или размеры в WhatsApp <a href="https://wa.me/77751810595" target="_blank" rel="noopener">+7 775 181-05-95</a> — подберём систему материалов, посчитаем количество и назовём цену с доставкой по Алматы или в другой город Казахстана.</p>
+          </div>
+        </div>
+      </section>
+{GIDRO_END}'''
+    answer = (f'Материал для гидроизоляции 1 м² стоит от {fmt_price(min(costs))} ₸ (проникающая КТ ТРОН-1) '
+              f'до {fmt_price(max(costs))} ₸ (эластичная двухкомпонентная, слой 2 мм) — без учёта доставки и работ. '
+              'Точная цена зависит от площади, состояния основания и выбранной системы. Пришлите фото объекта в WhatsApp — подберём материал и рассчитаем расход.')
+    return html, answer
+
+
+def patch_gidro(prices):
+    path = ROOT / 'gidroizolyaciya/index.html'
+    s = path.read_text(encoding='utf-8')
+    html, answer = gidro_section(prices)
+    if GIDRO_START in s:
+        s = s[:s.index(GIDRO_START)] + html + s[s.index(GIDRO_END) + len(GIDRO_END):]
+    else:
+        anchor = '      <section class="section why">'
+        s = s.replace(anchor, html + '\n' + anchor, 1)
+    css = ('      .gidro-table-wrap{overflow-x:auto;margin:1rem 0}\n'
+           '      .gidro-table{width:100%;min-width:640px;border-collapse:collapse;font-size:.92rem;background:#fff}\n'
+           '      .gidro-table th,.gidro-table td{padding:.6rem .7rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}\n'
+           '      .gidro-table th{background:var(--paper);font-size:.85rem}\n'
+           '      .gidro-table td:last-child{font-weight:700;color:var(--brand-deep);white-space:nowrap}\n'
+           '      .gidro-text,.gidro-types p{max-width:860px}.gidro-types{margin-top:2rem}.gidro-types h3{margin:1.4rem 0 .5rem}\n'
+           '      #ceny a{color:var(--brand-deep);text-decoration:underline;text-underline-offset:2px}.gidro-table td:first-child a{font-weight:700}\n'
+           '      @media (max-width:640px){.gidro-table{min-width:0}.gidro-table thead{display:none}.gidro-table tr{display:block;padding:.6rem 0;border-bottom:1px solid var(--line)}'
+           '.gidro-table td{display:flex;justify-content:space-between;gap:12px;padding:.2rem .2rem;border:0}.gidro-table td[data-label]::before{content:attr(data-label);color:var(--muted);font-weight:400}'
+           '.gidro-table td:last-child{white-space:normal}}\n')
+    # Стили таблицы: убираем прежние и вставляем текущие
+    s = re.sub(r'      \.gidro-table-wrap\{.*?(?=      /\* КТ ТРОН-8)', '', s, count=1, flags=re.S)
+    s = s.replace('      a.sol{text-decoration:none;display:block}\n', '      a.sol{text-decoration:none;display:block}\n' + css, 1)
+    # Ответ «Сколько стоит гидроизоляция в Алматы?» — с цифрами, и в разметке FAQPage, и на странице
+    s = re.sub(r'("name": "' + re.escape(GIDRO_COST_Q) + r'",\s*"acceptedAnswer": \{\s*"@type": "Answer",\s*"text": ")[^"]*(")',
+               lambda m: m.group(1) + answer + m.group(2), s, count=1)
+    s = re.sub(r'(<h3[^>]*>' + re.escape(GIDRO_COST_Q) + r'</h3>\s*<p class="muted">)[^<]*(</p>)',
+               lambda m: m.group(1) + answer + m.group(2), s, count=1)
+    path.write_text(s, encoding='utf-8')
+
+
 def main():
     template = (ROOT / 'materials/kt-tron-3/index.html').read_text(encoding='utf-8')
     head = template[:template.index('    <main id="top">')]
@@ -304,7 +398,8 @@ def main():
         if f'<loc>{loc}</loc>' not in sitemap:
             sitemap = sitemap.replace('</urlset>', f'  <url><loc>{loc}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>\n</urlset>')
     (ROOT / 'sitemap.xml').write_text(sitemap, encoding='utf-8')
-    print(f'страниц собрано: {len(PAGES)}')
+    patch_gidro(prices)
+    print(f'страниц собрано: {len(PAGES)}, таблица цен на /gidroizolyaciya/ обновлена')
 
 
 if __name__ == '__main__':
