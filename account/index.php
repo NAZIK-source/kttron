@@ -52,7 +52,7 @@ page_start('Личный кабинет');
   <div class="acc-balance">
     <span>Баланс</span>
     <b><?= number_format($balance, 0, ',', ' ') ?> <?= points_word($balance) ?></b>
-    <small>1 балл = 1 ₸ скидки. Кэшбэк <?= (int) config()['cashback_percent'] ?>% с оплаченных заявок.</small>
+    <small>1 балл = 1 ₸ скидки. Кэшбэк <?= percent_label('cashback_percent') ?>% с оплаченных заявок.</small>
   </div>
 </section>
 

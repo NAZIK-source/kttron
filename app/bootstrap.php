@@ -169,6 +169,25 @@ function money(int $n): string
     return number_format($n, 0, ',', ' ') . ' ₸';
 }
 
+// Проценты из настроек могут быть дробными (0.1). Считаем в сотых долях процента,
+// чтобы не ловить ошибки округления дробных чисел.
+function percent_bp(string $key): int
+{
+    return (int) round((float) config()[$key] * 100);
+}
+
+// Сколько баллов составляет процент от суммы; дробная часть отбрасывается
+function percent_of(int $amount, string $key): int
+{
+    return intdiv($amount * percent_bp($key), 10000);
+}
+
+// 0.1 → «0,1», 1 → «1»
+function percent_label(string $key): string
+{
+    return rtrim(rtrim(number_format(percent_bp($key) / 100, 2, ',', ''), '0'), ',');
+}
+
 function points_word(int $n): string
 {
     $n = abs($n) % 100;

@@ -1,8 +1,8 @@
 <?php
 require __DIR__ . '/../app/bootstrap.php';
 $c = config();
-$pct = (int) $c['cashback_percent'];
-$max = (int) $c['max_redeem_percent'];
+$pct = percent_label('cashback_percent');
+$max = percent_label('max_redeem_percent');
 page_start('Правила кэшбэка');
 ?>
 <section class="acc-card acc-text">

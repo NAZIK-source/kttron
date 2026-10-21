@@ -49,10 +49,10 @@ $c = config();
   <?php if ($o['status'] === 'new'): ?>
     <h2>Отметить оплату</h2>
     <?php if ($o['want_redeem']): ?><p class="acc-badge acc-warn">Клиент просит списать баллы</p><?php endif ?>
-    <form method="post" class="acc-form" id="payForm" data-balance="<?= $balance ?>" data-max="<?= (int) $c['max_redeem_percent'] ?>" data-pct="<?= (int) $c['cashback_percent'] ?>">
+    <form method="post" class="acc-form" id="payForm" data-balance="<?= $balance ?>" data-max="<?= percent_bp('max_redeem_percent') ?>" data-pct="<?= percent_bp('cashback_percent') ?>">
       <?= csrf_field() ?><input type="hidden" name="action" value="paid">
       <label>Сумма заказа, ₸<input name="amount" type="number" min="1" step="1" required></label>
-      <label>Списать баллов (до <?= (int) $c['max_redeem_percent'] ?>% суммы, на балансе <?= $balance ?>)<input name="points" type="number" min="0" step="1" value="0"></label>
+      <label>Списать баллов (до <?= percent_label('max_redeem_percent') ?>% суммы, на балансе <?= $balance ?>)<input name="points" type="number" min="0" step="1" value="0"></label>
       <p class="muted" id="payHint"></p>
       <button class="btn btn-solid btn-lg" type="submit">Оплачено — начислить кэшбэк</button>
     </form>
@@ -63,10 +63,10 @@ $c = config();
         var f = document.getElementById('payForm'), hint = document.getElementById('payHint');
         var bal = +f.dataset.balance, max = +f.dataset.max, pct = +f.dataset.pct;
         function upd() {
-          var a = Math.floor(+f.amount.value || 0), lim = Math.max(0, Math.min(bal, Math.floor(a * max / 100)));
+          var a = Math.floor(+f.amount.value || 0), lim = Math.max(0, Math.min(bal, Math.floor(a * max / 10000)));
           f.points.max = lim;
           var p = Math.min(+f.points.value || 0, lim);
-          hint.textContent = a ? 'Можно списать до ' + lim + '. К оплате деньгами: ' + (a - p).toLocaleString('ru-RU') + ' ₸. Кэшбэк: +' + Math.floor((a - p) * pct / 100) + '.' : '';
+          hint.textContent = a ? 'Можно списать до ' + lim + '. К оплате деньгами: ' + (a - p).toLocaleString('ru-RU') + ' ₸. Кэшбэк: +' + Math.floor((a - p) * pct / 10000) + '.' : '';
         }
         f.addEventListener('input', upd);
       })();

@@ -22,7 +22,7 @@ function order_status_label(string $s): string
 
 function max_redeem(int $amount, int $balance): int
 {
-    return max(0, min($balance, intdiv($amount * (int) config()['max_redeem_percent'], 100)));
+    return max(0, min($balance, percent_of($amount, 'max_redeem_percent')));
 }
 
 // Отметить заявку оплаченной: списать баллы и начислить кэшбэк. Возвращает текст ошибки или null.
@@ -51,7 +51,7 @@ function mark_paid(int $orderId, int $amount, int $pointsUsed, int $adminId): ?s
             $pdo->rollBack();
             return 'Можно списать не больше ' . $limit . ' ' . points_word($limit) . '.';
         }
-        $cashback = intdiv(($amount - $pointsUsed) * (int) config()['cashback_percent'], 100);
+        $cashback = percent_of($amount - $pointsUsed, 'cashback_percent');
         $pdo->prepare("UPDATE orders SET status = 'paid', amount = ?, points_used = ?, cashback = ?, paid_at = ?, paid_by = ? WHERE id = ?")
             ->execute([$amount, $pointsUsed, $cashback, now(), $adminId, $orderId]);
         $ins = $pdo->prepare('INSERT INTO points (user_id, order_id, amount, kind, note, admin_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
