@@ -48,7 +48,7 @@ page_start('Регистрация');
 <section class="acc-card acc-narrow">
   <p class="eyebrow">Личный кабинет</p>
   <h1>Регистрация</h1>
-  <p class="muted">Кэшбэк <?= (int) config()['cashback_percent'] ?>% баллами за каждую оплаченную заявку с сайта. 1 балл = 1 ₸ скидки.</p>
+  <p class="muted">Кэшбэк <?= percent_label('cashback_percent') ?>% баллами за каждую оплаченную заявку с сайта. 1 балл = 1 ₸ скидки.</p>
   <?php foreach ($errors as $e): ?><p class="acc-error"><?= h($e) ?></p><?php endforeach ?>
   <form method="post" class="acc-form" autocomplete="on">
     <?= csrf_field() ?>
