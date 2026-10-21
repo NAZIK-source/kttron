@@ -7,10 +7,17 @@ require_post_csrf();
 
 $key = (string) (config()['setup_key'] ?? '');
 $hasAdmin = false;
+$dbError = '';
 try {
-    $hasAdmin = (int) db()->query('SELECT COUNT(*) FROM admins')->fetchColumn() > 0;
+    db();
+    try {
+        $hasAdmin = (int) db()->query('SELECT COUNT(*) FROM admins')->fetchColumn() > 0;
+    } catch (PDOException $e) {
+        // таблиц ещё нет
+    }
 } catch (PDOException $e) {
-    // таблиц ещё нет
+    // Причину показываем только после правильного ключа настройки
+    $dbError = $e->getMessage();
 }
 if ($hasAdmin || strlen($key) < 16) {
     http_response_code(404);
@@ -23,6 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = (string) ($_POST['password'] ?? '');
     if (!hash_equals($key, (string) ($_POST['key'] ?? ''))) {
         $error = 'Неверный ключ настройки.';
+    } elseif ($dbError !== '') {
+        $error = 'Нет подключения к базе. Проверьте db_name, db_user и db_pass в app/config.php. Ответ сервера: ' . $dbError;
     } elseif (!preg_match('/^[a-zA-Z0-9_.-]{3,50}$/', $login)) {
         $error = 'Логин: 3–50 латинских букв, цифр, «.», «-», «_».';
     } elseif (strlen($password) < 10) {
