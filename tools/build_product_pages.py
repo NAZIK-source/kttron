@@ -322,6 +322,7 @@ def materials_index(template_head, template_tail, products, prices):
           <p class="eyebrow">Официальный дистрибьютор в Казахстане</p>
           <h1>Материалы КТ ТРОН в Алматы</h1>
           <p class="muted">{len(products)} материалов завода КТ ТРОН (КТтрон): у каждого своя страница с ценой «от», характеристиками и расходом. Склад и консультации — Алматы, ул. Шевченко 118.</p>
+          <p class="related">Популярные задачи: <a href="/gidroizolyaciya/fundamenta/">Гидроизоляция фундамента</a><a href="/gidroizolyaciya/podvala/">Гидроизоляция подвала</a><a href="/gidroizolyaciya/basseyna/">Гидроизоляция бассейна</a><a href="/remont-betona/">Ремонт бетона</a></p>
 {"".join(blocks)}        </div>
       </section>
     </main>
