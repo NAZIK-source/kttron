@@ -1,2 +1,5 @@
 app/config.php
 tools/__pycache__/
+
+# APK приложения загружается на хостинг вручную (60 МБ — не для git)
+download/
