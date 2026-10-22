@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<!-- Тестовая версия игры: не индексировать, на сайте ссылок нет -->
+<meta name="robots" content="noindex, nofollow" />
+<title>Школа мастера КТ ТРОН</title>
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+<link rel="alternate icon" href="/favicon.ico" />
+<style>
+/* Layout: фирменный стиль kttron.kz — белые карточки на светло-сером, синяя «плотина»-шапка, пилюли-кнопки */
+:root{
+  --brand:#0093dd; --brand-deep:#0077b3; --brand-dark:#00466e; --brand-soft:#e5f5fc; --brand-sky:#9ad6f5;
+  --ink:#2c2c2c; --muted:#6e6e6e; --line:#dcdcdc; --paper:#f5f5f5; --white:#fff;
+  --good:#1f8a4c; --good-bg:#e6f5ec; --bad:#c62f24; --bad-bg:#fdecea; --water:#0093dd;
+  --radius:14px; --shadow:0 18px 50px #2c2c2c1f;
+  --f-display:Arial,Helvetica,sans-serif; --f-body:Arial,Helvetica,sans-serif; --f-mono:Arial,Helvetica,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1;letter-spacing:-.03em;font-weight:800}
+h1{font-size:clamp(28px,6.2vw,46px)}
+h2{font-size:clamp(22px,4.6vw,30px)}
+h3{font-size:18px}
+p{margin:0}
+.mono{font-variant-numeric:tabular-nums;font-weight:800}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--brand)}
+a{color:var(--brand-deep)}
+
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--white);border-radius:var(--radius);padding:12px 16px;box-shadow:0 4px 16px #2c2c2c0f}
+.brand-block{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+.brand-block svg{width:34px;height:38px;color:var(--brand);flex-shrink:0}
+.brand-text{display:grid;gap:2px;line-height:1.05}
+.brand-name{font-weight:800;font-size:20px;letter-spacing:-.03em;text-transform:uppercase}
+.brand-region{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.score-pill{font-size:13px;font-weight:800;background:var(--brand-soft);color:var(--brand-deep);padding:7px 14px;border-radius:999px;font-variant-numeric:tabular-nums}
+
+.sheet{background:var(--white);border-radius:var(--radius);padding:24px clamp(16px,4vw,32px);display:flex;flex-direction:column;gap:18px;box-shadow:var(--shadow)}
+
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{border:0;background:var(--brand);color:#fff;font-weight:800;padding:13px 22px;border-radius:999px;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;box-shadow:0 10px 24px #0093dd47;transition:transform .2s,background .2s;text-align:center}
+.btn:hover{background:var(--brand-deep);transform:translateY(-1px)}
+.btn.ghost{background:var(--white);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:var(--brand);color:var(--brand-deep)}
+.btn.wa{background:#25d366;box-shadow:0 10px 24px #25d36647}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--brand-sky);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:flex-end}
+
+/* Hero — как на главной kttron.kz */
+.hero{position:relative;overflow:hidden;color:#fff;margin:-24px clamp(-32px,-4vw,-16px) 0;padding:28px clamp(16px,4vw,32px) 30px;border-radius:var(--radius) var(--radius) 0 0;
+  background:linear-gradient(105deg,#00466ef0 0%,#005a8ce0 40%,#005078d0 70%,#082337 100%);display:grid;gap:12px}
+.hero::before{content:"";position:absolute;inset:0;opacity:.6;background-image:linear-gradient(#ffffff12 1px,transparent 1px),linear-gradient(90deg,#ffffff12 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.hero::after{content:"";position:absolute;top:-20%;right:-8%;width:48%;height:140%;background:linear-gradient(120deg,transparent,#ffffff26,transparent);transform:rotate(18deg);animation:beam 9s ease-in-out infinite alternate;pointer-events:none}
+@keyframes beam{from{transform:translateX(-30%) rotate(18deg)}to{transform:translateX(10%) rotate(18deg)}}
+.hero>*{position:relative;z-index:1}
+.hero .eyebrow{color:var(--brand-sky)}
+.hero h1 span{display:block;font-size:.5em;letter-spacing:.12em;text-transform:uppercase;color:#ffffffc7;margin-top:6px}
+.hero p.lead{font-size:17px;max-width:40rem;color:#ffffffd9}
+.hero p.lead b{color:#fff}
+.hero .btn{background:#fff;color:var(--brand-deep);box-shadow:0 12px 28px #00000047}
+.hero .btn:hover{background:#f3f9fc}
+.hero .btn.ghost{background:transparent;color:#fff;border:1px solid #ffffff59}
+
+/* Map: building section */
+.section{display:flex;flex-direction:column;border-left:3px solid var(--brand);margin-left:6px}
+.lvl{display:grid;grid-template-columns:92px 1fr auto;align-items:center;gap:12px;padding:14px 12px 14px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;width:100%;border-radius:0}
+.lvl:last-child{border-bottom:0}
+.lvl .mark{font-size:12px;font-weight:700;color:var(--muted);position:relative;padding-left:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.lvl .mark::before{content:"";position:absolute;left:-8px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--white);border:3px solid var(--brand)}
+.lvl .info{min-width:0;display:flex;flex-direction:column;gap:2px}
+.lvl .info b{font-weight:800;font-size:16px}
+.lvl .info span{font-size:14px;color:var(--muted)}
+.lvl .state{font-size:13px;font-weight:800;white-space:nowrap}
+.lvl:not(:disabled):hover{background:linear-gradient(90deg,var(--brand-soft),transparent)}
+.lvl:not(:disabled):hover .info b{color:var(--brand-deep)}
+.lvl:disabled{cursor:not-allowed;opacity:.5}
+.lvl:disabled .mark::before{border-color:var(--line)}
+.stars{color:var(--brand);letter-spacing:2px}
+.stars .off{color:var(--line)}
+.ground{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:6px 0 4px 14px;border-bottom:3px solid var(--ink)}
+
+/* Tech card */
+.techcard{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.techcard header{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--brand-soft);color:var(--brand-deep);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
+.techcard .body{padding:16px 14px;display:flex;flex-direction:column;gap:14px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));column-gap:20px}
+.facts div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.facts dt{color:var(--muted);font-size:14px}
+.facts dd{margin:0;font-size:14px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums;color:var(--brand-deep)}
+.steps-list{margin:0;padding-left:24px;display:flex;flex-direction:column;gap:6px}
+.steps-list li::marker{font-weight:800;color:var(--brand)}
+
+/* Task */
+.progress{display:flex;gap:4px}
+.progress span{flex:1;height:6px;background:var(--line);border-radius:3px}
+.progress span.done{background:var(--brand)}
+.progress span.now{background:var(--brand-sky)}
+.scene{font-size:15px;color:var(--ink);background:var(--brand-soft);border-radius:10px;padding:12px 14px}
+.q{font-size:clamp(19px,4vw,23px);font-weight:800;line-height:1.3;letter-spacing:-.02em;text-wrap:balance}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;background:var(--white);border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;display:flex;gap:12px;align-items:flex-start;min-height:50px}
+.opt:hover:not(:disabled){border-color:var(--brand);background:var(--brand-soft)}
+.opt .k{display:grid;place-items:center;min-width:26px;height:26px;border-radius:999px;background:var(--brand-soft);color:var(--brand-deep);font-size:13px;font-weight:800}
+.opt.ok{border-color:var(--good);background:var(--good-bg)}
+.opt.no{border-color:var(--bad);background:var(--bad-bg)}
+.opt:disabled{cursor:default}
+.feedback{border-radius:12px;padding:13px 15px;font-size:15px;display:flex;flex-direction:column;gap:4px}
+.feedback.ok{background:var(--good-bg);border:1px solid var(--good)}
+.feedback.no{background:var(--bad-bg);border:1px solid var(--bad)}
+.feedback b{font-weight:800}
+.feedback.ok b{color:var(--good)} .feedback.no b{color:var(--bad)}
+
+/* Order */
+.seq{display:flex;flex-direction:column;gap:6px}
+.seq .slot{border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px;min-height:46px;display:flex;gap:10px;align-items:center;color:var(--muted);font-size:15px}
+.seq .slot.filled{border-style:solid;border-color:var(--brand);background:var(--brand-soft);color:var(--ink)}
+.seq .slot .n{font-weight:800;color:var(--brand-deep);min-width:1.6em}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--white);border:1px solid var(--line);border-radius:999px;padding:10px 16px;font-size:14px;font-weight:700;text-align:left;max-width:100%}
+.chip:hover{background:var(--brand);border-color:var(--brand);color:#fff}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* Sort */
+.sortcard{border-radius:var(--radius);padding:26px 18px;font-size:20px;font-weight:800;text-align:center;background:linear-gradient(105deg,var(--brand-dark),var(--brand-deep));color:#fff;letter-spacing:-.02em}
+.sortcount{font-size:13px;font-weight:700;color:var(--muted);text-align:center}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Number */
+.numbox{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.numbox input{font-family:var(--f-body);font-size:26px;font-weight:800;width:6.5ch;padding:8px 10px;border:1.5px solid var(--line);border-radius:12px;background:var(--white);color:var(--brand-deep);text-align:center;font-variant-numeric:tabular-nums}
+.numbox input:focus{border-color:var(--brand)}
+.numbox .unit{font-size:16px;font-weight:700;color:var(--muted)}
+.numbox .step{width:48px;height:48px;border:1px solid var(--line);background:var(--white);border-radius:999px;font-size:22px;font-weight:800;color:var(--brand-deep)}
+.numbox .step:hover{background:var(--brand-soft)}
+
+/* Hold */
+.holdwrap{display:grid;gap:14px;justify-items:center}
+.wall{position:relative;width:100%;max-width:440px;height:160px;border-radius:var(--radius);overflow:hidden;
+  background:linear-gradient(#ffffff0d 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,#ffffff0d 1px,transparent 1px) 0 0/40px 40px,linear-gradient(180deg,#8a9196,#6f777c)}
+.wall::after{content:"";position:absolute;left:0;right:0;bottom:0;height:18px;background:#00466e66}
+.wall .hole{position:absolute;left:50%;top:34%;width:30px;height:30px;margin-left:-15px;border-radius:50%;background:#2c2c2c;transition:background .2s;box-shadow:inset 0 3px 6px #000}
+.wall .hole.plugged{background:#b9bfc2;box-shadow:inset 0 2px 4px #0005}
+.drop{position:absolute;left:50%;width:7px;height:11px;margin-left:-3.5px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--brand-sky);top:48%;animation:fall .9s linear infinite}
+@keyframes fall{from{transform:translateY(0);opacity:1}to{transform:translateY(80px);opacity:0}}
+.timer{font-size:48px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;color:var(--brand-deep);letter-spacing:-.03em}
+.timer small{font-size:16px;color:var(--muted);font-weight:700;letter-spacing:0}
+.gauge{position:relative;width:100%;max-width:440px;height:14px;background:var(--paper);border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+.gauge .fill{position:absolute;inset:0 auto 0 0;background:var(--brand);width:0}
+.gauge .zone{position:absolute;top:0;bottom:0;background:#1f8a4c40;border-left:2px solid var(--good);border-right:2px solid var(--good)}
+.gauge-labels{width:100%;max-width:440px;position:relative;height:16px;font-size:11px;font-weight:700;color:var(--muted)}
+.gauge-labels span{position:absolute;transform:translateX(-50%)}
+.holdbtn{width:136px;height:136px;border-radius:50%;border:6px solid var(--brand-soft);background:radial-gradient(circle at 35% 30%,var(--brand),var(--brand-deep));color:#fff;font-weight:800;font-size:15px;line-height:1.2;user-select:none;-webkit-user-select:none;touch-action:none;box-shadow:0 14px 30px #0093dd55;text-transform:uppercase;letter-spacing:.04em}
+.holdbtn.active{transform:scale(.95);box-shadow:0 6px 14px #0093dd55,inset 0 0 0 10px #00466e44}
+
+/* Result */
+.big{font-size:clamp(44px,10vw,68px);font-weight:800;line-height:1;letter-spacing:-.04em;color:var(--brand-deep)}
+.cert{border-radius:var(--radius);padding:26px 20px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(105deg,#00466e 0%,#005a8c 45%,#0077b3 100%)}
+.cert::before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff12 1px,transparent 1px),linear-gradient(90deg,#ffffff12 1px,transparent 1px);background-size:40px 40px}
+.cert>*{position:relative}
+.cert svg{width:44px;height:50px;color:#fff}
+.cert .eyebrow{color:var(--brand-sky)}
+.cert .rank{font-size:clamp(22px,5.4vw,32px);font-weight:800;letter-spacing:-.02em;background:#fff;color:var(--brand-deep);padding:6px 18px;border-radius:999px}
+.summary{display:flex;flex-direction:column}
+.summary div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.summary div span:first-child{min-width:0}
+.cta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.cta a{text-decoration:none}
+.note{font-size:13px;color:var(--muted)}
+.fade{animation:fade .25s ease-out}
+@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:460px){.lvl{grid-template-columns:78px 1fr}.lvl .state{grid-column:2}.brand-name{font-size:17px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><path id="kt-drop" fill="currentColor" d="M36.0 0.5 L35.6 4.1 L35.6 7.8 L35.6 11.6 L35.6 15.3 L35.6 19.0 L35.6 22.8 L35.6 26.5 L35.6 30.2 L36.1 33.7 L39.0 31.5 L41.7 28.8 L44.3 26.2 L47.5 26.7 L50.1 29.4 L52.8 32.0 L55.4 34.7 L57.6 37.7 L59.9 40.7 L61.9 43.8 L63.5 47.2 L64.6 50.7 L65.4 54.4 L65.4 58.1 L65.3 61.8 L64.2 65.4 L62.7 68.8 L60.7 71.9 L58.3 74.8 L55.5 77.3 L52.4 79.4 L49.2 81.2 L45.6 82.3 L41.9 83.0 L38.3 83.1 L34.6 82.7 L31.0 82.0 L27.5 80.6 L24.2 78.9 L21.3 76.6 L18.6 74.0 L16.2 71.1 L14.6 67.8 L12.9 64.4 L12.0 60.8 L11.4 57.1 L11.1 53.4 L11.2 49.8 L11.4 46.1 L11.9 42.4 L13.0 38.8 L13.9 35.2 L15.2 31.7 L16.8 28.3 L18.4 25.0 L20.3 21.7 L22.1 18.5 L24.2 15.4 L26.4 12.4 L28.8 9.5 L30.5 6.2 L27.8 7.2 L25.2 9.8 L22.6 12.5 L19.9 15.1 L17.5 18.0 L15.1 20.9 L12.9 23.8 L10.6 26.8 L8.6 29.9 L6.7 33.1 L5.0 36.4 L3.6 39.9 L2.1 43.3 L1.2 46.9 L0.8 50.6 L0.0 54.2 L0.0 58.0 L0.8 61.6 L1.2 65.3 L2.3 68.9 L3.5 72.4 L5.2 75.7 L7.1 78.9 L9.2 82.0 L11.5 85.0 L14.1 87.6 L16.9 90.1 L20.0 92.1 L23.2 94.2 L26.6 95.7 L30.1 96.9 L33.6 98.2 L37.2 98.9 L41.0 99.1 L44.6 99.9 L48.2 98.9 L51.9 98.9 L55.6 98.0 L59.1 97.0 L62.6 95.5 L65.9 93.8 L69.1 91.9 L72.1 89.7 L74.8 87.1 L77.4 84.4 L79.9 81.7 L82.0 78.6 L83.8 75.3 L85.3 71.9 L86.6 68.4 L87.5 64.8 L88.3 61.2 L88.3 57.4 L88.3 53.7 L88.3 50.0 L87.4 46.3 L86.4 42.7 L85.0 39.3 L83.7 35.8 L81.9 32.6 L80.0 29.3 L78.0 26.2 L75.7 23.2 L73.5 20.2 L70.9 17.5 L68.7 14.5 L66.1 11.8 L63.5 9.2 L64.5 6.0 L67.1 3.4 L69.4 0.5 L65.8 0.0 L62.1 0.0 L58.3 0.0 L54.6 0.0 L50.9 0.0 L47.1 0.0 L43.4 0.0 L39.7 0.0 Z"/></defs></svg>
+<div class="wrap">
+  <header class="top">
+    <a class="brand-block" href="https://kttron.kz" target="_blank" rel="noopener"><svg viewBox="0 0 89 100" aria-hidden="true"><use href="#kt-drop"/></svg><span class="brand-text"><span class="brand-name">КТ ТРОН</span><span class="brand-region">Школа мастера · Казахстан</span></span></a>
+    <div class="score-pill" id="scorePill">0 очков</div>
+  </header>
+  <main id="app" aria-live="polite"></main>
+  <p class="note">Обучающая игра составлена по техописаниям материалов КТ ТРОН. Перед работой сверяйтесь с технической картой материала и консультируйтесь с официальным дистрибьютором ТОО DARHAN.</p>
+</div>
+
+<script>
+const WA = 'https://wa.me/77751810595';
+const SITE = 'https://kttron.kz';
+
+const LEVELS = [
+{
+  id:'leak', mark:'▽ −6,600', place:'Подвал жилого дома', title:'Вода бьёт из стены', product:'КТ ТРОН-8',
+  kind:'Остановка активной протечки', url:SITE+'/materials/kt-tron-8/',
+  lesson:'Быстротвердеющий состав для остановки активных протечек. Замешивается до консистенции пластилина и схватывается за минуты, поэтому останавливает воду прямо под напором. Подходит для резервуаров с питьевой водой.',
+  facts:[['Вода на 1 кг','0,21–0,22 л'],['Начало схватывания','1 мин'],['Конец схватывания','4 мин'],['Перемешивание','не дольше 30 с'],['Толщина слоя','10–50 мм'],['Температура','+5…+35 °C']],
+  steps:['Вскрыть место протечки перфоратором или зубилом','Смочить полость водой','Замесить порцию, которую успеете использовать за минуту','Скатать конус и вдавить острым концом в полость','Прижать и держать 4–5 минут','Через час зачеканить остаток полости КТ ТРОН-2 или КТ ТРОН-3'],
+  tasks:[
+    {type:'choice', scene:'Подвал, утро. Из трещины в стене под напором бьёт струйка воды, на полу лужа.',
+     q:'Каким материалом остановить течь?',
+     options:[
+       {t:'КТ ТРОН-1, проникающая гидроизоляция', why:'КТ ТРОН-1 нельзя наносить на поверхность, через которую идёт вода. Сначала течь останавливают КТ ТРОН-8.'},
+       {t:'КТ ТРОН-8, быстротвердеющий состав', ok:true, why:'Верно. Он схватывается за 1–4 минуты и держит воду под напором.'},
+       {t:'КТ ТРОН-101, клей для плитки', why:'Это клей для облицовки, протечку он не остановит.'},
+       {t:'КТгиперфлекс, полиуретановый герметик', why:'Герметик нужен для деформационных швов, а не для мокрой трещины под напором.'}]},
+    {type:'order', q:'Расставьте шаги работы с КТ ТРОН-8 по порядку', from:'steps'},
+    {type:'hold', scene:'Конус из КТ ТРОН-8 вдавлен в полость. Теперь его нужно удержать, пока состав не схватится.',
+     q:'Нажмите и держите кнопку. Отпустите, когда пройдёт 4–5 минут (в игре 1 секунда = 1 минута).', lo:4, hi:5.5,
+     why:'По инструкции состав прижимают и держат 4–5 минут: конец схватывания наступает через 4 минуты.'},
+    {type:'choice', q:'Сколько времени перемешивать КТ ТРОН-8?',
+     options:[
+       {t:'2–4 минуты, потом пауза 5 минут', why:'Так замешивают ремонтные составы вроде КТ ТРОН-3. КТ ТРОН-8 за это время уже схватится.'},
+       {t:'Не дольше 30 секунд', ok:true, why:'Верно. Готовый раствор используют в течение 30 секунд, а застывшую смесь повторно не перемешивают.'},
+       {t:'Пока не станет жидким, как сметана', why:'Нужна густая масса, похожая на пластилин: воды всего 0,21–0,22 л на 1 кг.'}]},
+  ]
+},
+{
+  id:'column', mark:'▽ −3,300', place:'Подземный паркинг', title:'Колонна с ржавой арматурой', product:'КТ ТРОН-3 + праймер',
+  kind:'Конструкционный ремонт бетона', url:SITE+'/materials/kt-tron-3/',
+  lesson:'КТ ТРОН-3 восстанавливает несущие железобетонные элементы: колонны, балки, плиты. Безусадочный раствор с фиброй хорошо сцепляется с арматурой и старым бетоном. Оголённую арматуру сначала защищают КТ ТРОН-праймером.',
+  facts:[['Вода на 1 кг','0,11–0,12 л'],['Мешок','25 кг'],['Жизнеспособность','45 мин'],['Слой на вертикали','5–25 мм за раз'],['Прочность, 28 сут','≥ 30 МПа'],['Уход','7 суток влажности']],
+  steps:['Удалить слабый бетон до прочного, края срубить под прямым углом','Очистить арматуру от ржавчины','Нанести КТ ТРОН-праймер на арматуру кистью','Через 2 часа нанести КТ ТРОН-3 с уплотнением','Увлажнять отремонтированный участок 7 суток'],
+  tasks:[
+    {type:'choice', scene:'Паркинг на −1 этаже. У колонны отвалился защитный слой бетона, видна рыжая от ржавчины арматура.',
+     q:'Чем восстановить колонну?',
+     options:[
+       {t:'КТ ТРОН-6, выравнивающий состав', why:'КТ ТРОН-6 предназначен для неконструкционного ремонта: выравнивания и отделки. Несущую колонну им не восстанавливают.'},
+       {t:'КТ ТРОН-праймер на арматуру, затем КТ ТРОН-3', ok:true, why:'Верно. Праймер защищает сталь от коррозии, КТ ТРОН-3 возвращает колонне прочность.'},
+       {t:'КТ ТРОН-8, чтобы быстрее', why:'КТ ТРОН-8 нужен для остановки протечек и мелкой заделки, а не для конструкционного ремонта.'}]},
+    {type:'order', q:'Расставьте этапы ремонта колонны', from:'steps'},
+    {type:'number', q:'Сколько литров воды нужно на мешок КТ ТРОН-3 весом 25 кг?', unit:'л', min:0.5, max:8, step:0.25, start:5, lo:2.75, hi:3.0,
+     show:v=>v.toFixed(2).replace('.',','),
+     why:'0,11–0,12 л на 1 кг × 25 кг = 2,75–3,0 л. Точное количество подбирают пробным замесом.'},
+    {type:'choice', q:'Раствор замешан. Сколько у вас времени на нанесение?',
+     options:[
+       {t:'5 минут', why:'5 минут длится пауза между двумя перемешиваниями. Использовать раствор можно дольше.'},
+       {t:'45 минут', ok:true, why:'Верно. После этого добавлять воду или сухую смесь, чтобы оживить раствор, нельзя.'},
+       {t:'Сколько угодно, если подливать воду', why:'Через 5 минут после второго перемешивания добавлять воду нельзя: раствор потеряет прочность.'}]},
+    {type:'choice', q:'На колонне нужно восстановить слой 40 мм. Как наносить?',
+     options:[
+       {t:'Одним слоем 40 мм', why:'На вертикали за раз наносят не больше 25 мм, иначе раствор поплывёт.'},
+       {t:'Двумя слоями по 20 мм, второй через 1,5–2 часа', ok:true, why:'Верно. Поверхность первого слоя перед этим делают шероховатой.'},
+       {t:'Восемью слоями по 5 мм раз в сутки', why:'Это долго, а при перерыве больше 2 суток поверхность придётся зачищать металлической щёткой.'}]},
+  ]
+},
+{
+  id:'tank', mark:'▽ −9,000', place:'Насосная станция', title:'Резервуар с питьевой водой', product:'КТ ТРОН-1',
+  kind:'Проникающая гидроизоляция', url:SITE+'/materials/kt-tron-1/',
+  lesson:'КТ ТРОН-1 работает изнутри бетона: в порах и капиллярах растут кристаллы и закрывают путь воде. Держит давление воды с обеих сторон, бетон при этом продолжает «дышать». Контакт с питьевой водой разрешён.',
+  facts:[['Вода на 1 кг','0,33–0,34 л'],['Расход','≈ 1,0 кг/м²'],['Слои','минимум 2 × 0,5 мм'],['Между слоями','2–4 часа'],['Уход','7 суток влажности'],['Температура','+5…+35 °C']],
+  steps:['Остановить активные протечки КТ ТРОН-8','Очистить бетон от цементного молочка, грязи и старых покрытий','Обильно увлажнять основание сутки','Нанести первый слой щёткой на влажный бетон','Через 2–4 часа нанести второй слой поперёк первого','Держать покрытие влажным 7 суток'],
+  tasks:[
+    {type:'sort', q:'Где подойдёт проникающая гидроизоляция КТ ТРОН-1?', yes:'Подходит', no:'Не подходит',
+     items:[
+       {t:'Резервуар с питьевой водой', ok:true, why:'Контакт с питьевой водой разрешён.'},
+       {t:'Стена из гипсокартона в ванной', ok:false, why:'Проникающая гидроизоляция работает только в бетоне: кристаллы растут в его порах.'},
+       {t:'Фундамент и подвал', ok:true, why:'Защищает подземные части зданий от воды снаружи.'},
+       {t:'Деревянный пол на даче', ok:false, why:'В дереве нет цементного камня, кристаллам негде расти.'},
+       {t:'Бетонная чаша бассейна', ok:true, why:'Бассейны есть в перечне областей применения.'},
+       {t:'Канализационный коллектор', ok:true, why:'Подходит для коллекторов и очистных сооружений.'}]},
+    {type:'order', q:'Расставьте этапы гидроизоляции резервуара', from:'steps'},
+    {type:'choice', scene:'Июль, Алматы, +33 °C. Бетон резервуара сухой и горячий.',
+     q:'Можно сразу наносить КТ ТРОН-1?',
+     options:[
+       {t:'Да, температура в допустимом диапазоне', why:'Температура подходит, но на сухое основание наносить нельзя: кристаллам нужна влага.'},
+       {t:'Нет: сначала обильно увлажнять бетон сутки, потом убрать лишнюю воду', ok:true, why:'Верно. Наносят на влажный бетон без луж на поверхности.'},
+       {t:'Нет, нужно ждать осени', why:'Работать можно от +5 до +35 °C, главное правильно увлажнить основание.'}]},
+    {type:'choice', q:'Сколько суток держать покрытие влажным после последнего слоя?',
+     options:[{t:'1 сутки', why:'Мало: кристаллы не успеют прорасти.'},{t:'7 суток', ok:true, why:'Верно. И беречь от прямого солнца, дождя и мороза.'},{t:'Не нужно, пусть сохнет', why:'Пересохшее покрытие не наберёт свойства. Уход минимум 7 суток.'}]},
+  ]
+},
+{
+  id:'pool', mark:'▽ ±0,000', place:'Частный дом', title:'Бассейн под плитку', product:'КТ ТРОН-10 + КТ ТРОН-101',
+  kind:'Эластичная гидроизоляция и облицовка', url:SITE+'/materials/kt-tron-10-1k/',
+  lesson:'КТ ТРОН-10 — эластичная гидроизоляция: перекрывает микротрещины до 0,5 мм, с армированием до 1 мм. Подходит для бассейнов и резервуаров, в том числе с питьевой водой. Плитку поверх кладут на эластичный клей КТ ТРОН-101: он водонепроницаемый и рассчитан на бассейны.',
+  facts:[['КТ ТРОН-10, общий слой','2–4 мм'],['За один проход','0,8–1,5 мм'],['Трещины','до 0,5 мм (с сеткой до 1 мм)'],['Наполнять водой','через 7 суток'],['КТ ТРОН-101, открытое время','15 мин'],['Затирка швов','через 2 суток']],
+  steps:[],
+  tasks:[
+    {type:'choice', scene:'Бетонная чаша бассейна. Дом новый, возможны усадочные микротрещины.',
+     q:'Какую гидроизоляцию выбрать?',
+     options:[
+       {t:'КТ ТРОН-7, жёсткая обмазочная', why:'КТ ТРОН-7 хороша для бассейнов, но не растягивается. Если возможны микротрещины, нужна эластичная.'},
+       {t:'КТ ТРОН-10, эластичная', ok:true, why:'Верно. Она перекрывает трещины до 0,5 мм, с армированием до 1 мм.'},
+       {t:'КТ ТРОН-8', why:'Это состав для остановки протечек, а не для сплошной гидроизоляции.'}]},
+    {type:'choice', q:'Нужна гидроизоляция толщиной 3 мм. Как наносить?',
+     options:[
+       {t:'Одним проходом 3 мм', why:'За один проход наносят 0,8–1,5 мм.'},
+       {t:'В 2–3 прохода по 0,8–1,5 мм', ok:true, why:'Верно. Общая толщина слоя 2–4 мм.'},
+       {t:'Десять тонких слоёв по 0,3 мм', why:'Слишком тонко: минимум за проход 0,8 мм.'}]},
+    {type:'choice', q:'Вы нанесли клей КТ ТРОН-101 сразу на 8 м² и кладёте плитку уже 25 минут. Что не так?',
+     options:[
+       {t:'Всё нормально', why:'Открытое время клея 15 минут. Позже плитка схватится хуже.'},
+       {t:'Клей «заветрился»: открытое время 15 минут', ok:true, why:'Верно. Наносите клей на такую площадь, которую успеете облицевать за 15 минут.'},
+       {t:'Нужно было взять шпатель побольше', why:'Шпатель тут ни при чём: клей наносят зубчатым шпателем 6×6 мм.'}]},
+    {type:'choice', q:'Когда можно затирать швы плитки на КТ ТРОН-101?',
+     options:[{t:'Через 2 часа', why:'Рано: клей ещё не набрал прочность.'},{t:'Через 2 суток', ok:true, why:'Верно, так указано в техописании клея.'},{t:'Через 28 суток', why:'Так долго ждать не нужно, хватит 2 суток.'}]},
+  ]
+},
+{
+  id:'estimate', mark:'▽ +3,000', place:'Офис прораба', title:'Смета и сроки', product:'Расход материалов',
+  kind:'Сколько брать и когда работать', url:SITE+'/calculator/',
+  lesson:'Объект готов к работам. Осталось посчитать материалы и составить график. Расход берите из техкарт: он указан на 1 м² или на 1 мм толщины слоя.',
+  facts:[['КТ ТРОН-1','≈ 1,0 кг/м²'],['КТ ТРОН-7','1,55 кг/м² на 1 мм'],['КТ ТРОН-101','4,5 кг/м² (шпатель 6×6)'],['Мешок','25 кг'],['Отделка по КТ ТРОН-1','через 14 суток']],
+  steps:[],
+  tasks:[
+    {type:'number', q:'Подвал 120 м² обрабатываем КТ ТРОН-1. Сколько мешков по 25 кг нужно купить?', unit:'мешков', min:1, max:20, step:1, start:3, lo:5, hi:5,
+     show:v=>String(v), why:'120 м² × 1,0 кг/м² = 120 кг. 120 ÷ 25 = 4,8, округляем вверх: 5 мешков.'},
+    {type:'number', q:'Резервуар 50 м² покрываем КТ ТРОН-7 слоем 2 мм. Сколько килограммов смеси нужно?', unit:'кг', min:0, max:400, step:5, start:100, lo:150, hi:160,
+     show:v=>String(v), why:'1,55 кг/м² на 1 мм × 2 мм × 50 м² = 155 кг.'},
+    {type:'number', q:'Чашу бассейна 40 м² облицовываем плиткой на КТ ТРОН-101. Сколько килограммов клея нужно?', unit:'кг', min:0, max:400, step:5, start:100, lo:175, hi:185,
+     show:v=>String(v), why:'4,5 кг/м² × 40 м² = 180 кг.'},
+    {type:'choice', q:'Стены подвала обработаны КТ ТРОН-1. Когда можно класть плитку?',
+     options:[{t:'На следующий день', why:'Рано. Сначала 7 суток ухода, и раньше 14 суток минеральную отделку не наносят.'},{t:'Не раньше чем через 14 суток', ok:true, why:'Верно. Органические составы, например краски, наносят не раньше чем через 21 сутки.'},{t:'Через 3 месяца', why:'Так долго ждать не нужно: минеральную отделку можно наносить через 14 суток.'}]},
+  ]
+}];
+
+const RANKS = [[90,'Технолог КТ ТРОН'],[70,'Мастер-гидроизолировщик'],[40,'Подмастерье'],[0,'Стажёр']];
+
+/* ---------- state ---------- */
+const KEY='kttron-school-v1';
+let best = {};
+try{ best = JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ best={}; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(best)); }catch(e){} }
+
+let cur = null; // {li, ti, scores:[]}
+const app = document.getElementById('app');
+const $ = (h)=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstElementChild;};
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+function totalScore(){ return Object.values(best).reduce((s,v)=>s+v,0); }
+function updatePill(){ document.getElementById('scorePill').textContent = totalScore()+' / '+LEVELS.length*100+' очков'; }
+function starsFor(p){ return p>=90?3:p>=70?2:p>=40?1:0; }
+function starsHtml(n){ return '<span class="stars" aria-label="'+n+' из 3 звёзд">'+'★'.repeat(n)+'<span class="off">'+'★'.repeat(3-n)+'</span></span>'; }
+function unlocked(i){ return i===0 || best[LEVELS[i-1].id]!==undefined; }
+function rankFor(p){ return RANKS.find(r=>p>=r[0])[1]; }
+
+/* ---------- screens ---------- */
+function home(){
+  cur=null; updatePill();
+  const done = LEVELS.every(l=>best[l.id]!==undefined);
+  const s = $(`<div class="sheet fade">
+    <div class="hero">
+      <div class="eyebrow">Обучающий квест · 5 объектов</div>
+      <h1>КТ&nbsp;ТРОН<span>Школа мастера</span></h1>
+      <p class="lead">Вы прораб на объекте. Остановите течь в подвале, восстановите колонну, загидроизолируйте резервуар и бассейн. На каждом уровне сначала <b>техкарта</b>, потом <b>задания</b>: выбрать материал, расставить шаги, рассчитать воду и время.</p>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Разрез объекта · выберите уровень</div>
+      <div class="section" id="map"></div>
+    </div>
+    <div class="row">${done?'<button class="btn" id="cert">Получить удостоверение</button>':''}
+      <button class="btn ${done?'ghost':''}" id="go">${Object.keys(best).length? (done?'Пройти заново':'Продолжить') : 'Начать с подвала'}</button></div>
+  </div>`);
+  const map = s.querySelector('#map');
+  // draw in elevation order (top to bottom) but keep play order in numbers
+  const order = LEVELS.map((l,i)=>i).sort((a,b)=>elev(LEVELS[b].mark)-elev(LEVELS[a].mark));
+  let groundDrawn=false;
+  order.forEach(i=>{
+    const l=LEVELS[i];
+    if(!groundDrawn && elev(l.mark)<0){ map.appendChild($('<div class="ground">уровень земли</div>')); groundDrawn=true; }
+    const b=best[l.id]; const open=unlocked(i);
+    const st = b!==undefined ? starsHtml(starsFor(b)) : open ? '<span style="color:var(--brand-deep)">Играть →</span>' : 'закрыто';
+    const btn=$(`<button class="lvl" ${open?'':'disabled'}><span class="mark">${l.mark}</span>
+      <span class="info"><b>${i+1}. ${esc(l.title)}</b><span>${esc(l.place)} · ${esc(l.product)}</span></span>
+      <span class="state">${st}</span></button>`);
+    btn.onclick=()=>startLevel(i);
+    map.appendChild(btn);
+  });
+  s.querySelector('#go').onclick=()=>{
+    if(done){ startLevel(0); return; }
+    const i = LEVELS.findIndex(l=>best[l.id]===undefined); startLevel(i<0?0:i);
+  };
+  const c=s.querySelector('#cert'); if(c) c.onclick=certificate;
+  mount(s);
+}
+function elev(m){ return parseFloat(m.replace(/[^\d,−+-]/g,'').replace('−','-').replace(',','.'))||0; }
+function mount(el){ app.replaceChildren(el); window.scrollTo({top:0,behavior:'instant'}); }
+
+function techcard(l){
+  return `<div class="techcard">
+    <header><span>Техкарта · ${esc(l.product)}</span><span>${esc(l.kind)}</span></header>
+    <div class="body">
+      <p>${esc(l.lesson)}</p>
+      <dl class="facts" style="margin:0">${l.facts.map(f=>`<div><dt>${esc(f[0])}</dt><dd>${esc(f[1])}</dd></div>`).join('')}</dl>
+      ${l.steps.length?`<div><div class="eyebrow" style="margin-bottom:6px">Порядок работ</div><ol class="steps-list">${l.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></div>`:''}
+      <a href="${l.url}" target="_blank" rel="noopener">Полное описание на kttron.kz ↗</a>
+    </div></div>`;
+}
+
+function startLevel(i){
+  const l=LEVELS[i];
+  cur={li:i, ti:0, scores:[]};
+  const s=$(`<div class="sheet fade">
+    <div class="eyebrow">Уровень ${i+1} из ${LEVELS.length} · ${esc(l.place)} · ${l.mark}</div>
+    <h2>${esc(l.title)}</h2>
+    ${techcard(l)}
+    <p class="note">Запомните главное: в заданиях понадобятся эти цифры. Техкарту можно открыть снова кнопкой «Техкарта».</p>
+    <div class="row end"><button class="btn ghost" id="back">К разрезу</button><button class="btn" id="go">К заданиям →</button></div>
+  </div>`);
+  s.querySelector('#back').onclick=home;
+  s.querySelector('#go').onclick=task;
+  mount(s);
+}
+
+function task(){
+  const l=LEVELS[cur.li], t=l.tasks[cur.ti];
+  const s=$(`<div class="sheet fade">
+    <div class="progress">${l.tasks.map((_,k)=>`<span class="${k<cur.ti?'done':k===cur.ti?'now':''}"></span>`).join('')}</div>
+    <div class="row" style="justify-content:space-between"><span class="eyebrow">${esc(l.title)} · задание ${cur.ti+1}/${l.tasks.length}</span>
+      <button class="btn ghost" id="tc" style="min-height:36px;padding:6px 12px;font-size:14px" aria-expanded="false">Техкарта</button></div>
+    <div id="tcbox" hidden>${techcard(l)}</div>
+    ${t.scene?`<p class="scene">${esc(t.scene)}</p>`:''}
+    <p class="q">${esc(t.q)}</p>
+    <div id="body"></div>
+    <div id="fb"></div>
+    <div class="row end" id="nav"></div>
+  </div>`);
+  const tc=s.querySelector('#tc'), box=s.querySelector('#tcbox');
+  tc.onclick=()=>{box.hidden=!box.hidden; tc.setAttribute('aria-expanded',String(!box.hidden));};
+  mount(s);
+  const ctx={l,t,body:s.querySelector('#body'),fb:s.querySelector('#fb'),nav:s.querySelector('#nav')};
+  ({choice:tChoice,order:tOrder,sort:tSort,number:tNumber,hold:tHold})[t.type](ctx);
+}
+
+function feedback(ctx, ok, title, text){
+  ctx.fb.replaceChildren($(`<div class="feedback ${ok?'ok':'no'} fade"><b>${esc(title)}</b><span>${esc(text)}</span></div>`));
+}
+function finishTask(ctx, score){
+  cur.scores.push(Math.max(0,Math.round(score)));
+  const last = cur.ti===ctx.l.tasks.length-1;
+  const b=$(`<button class="btn">${last?'Итоги уровня':'Дальше →'}</button>`);
+  b.onclick=()=>{ if(last) levelResult(); else { cur.ti++; task(); } };
+  ctx.nav.replaceChildren(b); b.focus({preventScroll:true});
+}
+
+/* choice */
+function tChoice(ctx){
+  const box=$('<div class="opts"></div>');
+  const opts=shuffle(ctx.t.options);
+  opts.forEach((o,k)=>{
+    const b=$(`<button class="opt"><span class="k">${'АБВГД'[k]}</span><span>${esc(o.t)}</span></button>`);
+    b.onclick=()=>{
+      box.querySelectorAll('button').forEach((x,j)=>{x.disabled=true; if(opts[j].ok) x.classList.add('ok');});
+      if(!o.ok) b.classList.add('no');
+      feedback(ctx, !!o.ok, o.ok?'Правильно':'Не совсем', o.why);
+      finishTask(ctx, o.ok?100:0);
+    };
+    box.appendChild(b);
+  });
+  ctx.body.appendChild(box);
+}
+
+/* order */
+function tOrder(ctx){
+  const steps = ctx.l[ctx.t.from];
+  let next=0, mistakes=0;
+  const seq=$('<div class="seq"></div>');
+  steps.forEach(()=>seq.appendChild($('<div class="slot"><span class="n"></span><span>…</span></div>')));
+  const pool=$('<div class="pool" aria-label="Шаги"></div>');
+  const hint=$('<p class="note">Нажимайте на шаги в том порядке, в каком их выполняют.</p>');
+  shuffle(steps.map((t,i)=>({t,i}))).forEach(st=>{
+    const c=$(`<button class="chip">${esc(st.t)}</button>`);
+    c.onclick=()=>{
+      if(st.i===next){
+        const slot=seq.children[next]; slot.classList.add('filled');
+        slot.children[0].textContent=(next+1)+'.'; slot.children[1].textContent=st.t;
+        c.remove(); next++;
+        if(next===steps.length){
+          hint.remove();
+          const sc=100-mistakes*20;
+          feedback(ctx, sc>=60, mistakes?`Готово, ошибок: ${mistakes}`:'Без единой ошибки', mistakes?'Порядок важен: пропущенный шаг на объекте обходится переделкой.':'Вы знаете технологию.');
+          finishTask(ctx, sc);
+        }
+      } else {
+        mistakes++;
+        c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+        hint.textContent=`Не этот шаг. Подсказка: следующий начинается со слов «${steps[next].split(' ').slice(0,2).join(' ')}…»`;
+      }
+    };
+    pool.appendChild(c);
+  });
+  ctx.body.append(seq, $('<div style="height:12px"></div>'), pool, hint);
+}
+
+/* sort */
+function tSort(ctx){
+  const items=shuffle(ctx.t.items); let k=0, right=0;
+  const wrap=$('<div style="display:flex;flex-direction:column;gap:10px"></div>');
+  function show(){
+    wrap.replaceChildren();
+    if(k>=items.length){
+      ctx.fb.replaceChildren();
+      const sc=right/items.length*100;
+      feedback(ctx, sc>=60, `Верно ${right} из ${items.length}`, 'КТ ТРОН-1 работает в бетоне: в бассейнах, резервуарах, подвалах, коллекторах.');
+      finishTask(ctx, sc); return;
+    }
+    const it=items[k];
+    wrap.append($(`<div class="sortcount">${k+1} / ${items.length}</div>`), $(`<div class="sortcard fade">${esc(it.t)}</div>`));
+    const two=$(`<div class="two"><button class="btn ghost">${esc(ctx.t.no)}</button><button class="btn">${esc(ctx.t.yes)}</button></div>`);
+    const [bn,by]=two.children;
+    const pick=(ans)=>{
+      const ok = ans===it.ok; if(ok) right++;
+      bn.disabled=by.disabled=true;
+      feedback(ctx, ok, ok?'Правильно':'Ошибка', it.why);
+      const nx=$('<button class="btn">Следующий →</button>'); nx.onclick=()=>{k++; ctx.fb.replaceChildren(); ctx.nav.replaceChildren(); show();};
+      ctx.nav.replaceChildren(nx); nx.focus({preventScroll:true});
+    };
+    bn.onclick=()=>pick(false); by.onclick=()=>pick(true);
+    wrap.append(two);
+  }
+  ctx.body.append(wrap); show();
+}
+
+/* number */
+function tNumber(ctx){
+  const t=ctx.t; let v=t.start;
+  const id='num-'+LEVELS[cur.li].id+'-'+cur.ti;
+  const box=$(`<div class="numbox"><button class="step" aria-label="Меньше">−</button>
+    <input id="${id}" inputmode="decimal" aria-label="Ответ" value="${t.show(v)}"><button class="step" aria-label="Больше">+</button>
+    <span class="unit">${esc(t.unit)}</span></div>`);
+  const [minus,inp,plus]=box.children;
+  const clamp=x=>Math.min(t.max,Math.max(t.min,Math.round(x/t.step)*t.step));
+  const set=x=>{v=clamp(x); inp.value=t.show(v);};
+  minus.onclick=()=>set(v-t.step); plus.onclick=()=>set(v+t.step);
+  inp.onchange=()=>{const x=parseFloat(inp.value.replace(',','.')); set(isNaN(x)?v:x);};
+  const check=$('<button class="btn">Проверить</button>');
+  check.onclick=()=>{
+    inp.onchange();
+    const ok = v>=t.lo-1e-9 && v<=t.hi+1e-9;
+    [minus,inp,plus,check].forEach(e=>e.disabled=true); check.remove();
+    const ans = t.lo===t.hi ? t.show(t.lo) : t.show(t.lo)+'–'+t.show(t.hi);
+    feedback(ctx, ok, ok?'Точно':'Правильный ответ: '+ans+' '+t.unit, t.why);
+    finishTask(ctx, ok?100:0);
+  };
+  ctx.body.append(box);
+  ctx.nav.append(check);
+}
+
+/* hold */
+function tHold(ctx){
+  const t=ctx.t, MAX=7;
+  const w=$(`<div class="holdwrap">
+    <div class="wall" aria-hidden="true"><div class="hole"></div><div class="drop"></div><div class="drop" style="animation-delay:.3s"></div><div class="drop" style="animation-delay:.6s"></div></div>
+    <div class="timer"><span id="tm">0,0</span> <small>мин</small></div>
+    <div class="gauge"><div class="zone" style="left:${t.lo/MAX*100}%;width:${(t.hi-t.lo)/MAX*100}%"></div><div class="fill"></div></div>
+    <div class="gauge-labels">${[0,1,2,3,4,5,6,7].map(m=>`<span style="left:${m/MAX*100}%">${m}</span>`).join('')}</div>
+    <button class="holdbtn" id="hold">Прижать<br>и держать</button>
+    <p class="note" style="text-align:center">Мышь, палец или клавиша «Пробел»</p>
+  </div>`);
+  const tm=w.querySelector('#tm'), fill=w.querySelector('.fill'), btn=w.querySelector('#hold'), hole=w.querySelector('.hole');
+  let t0=0, raf=0, holding=false, done=false;
+  const drops=()=>w.querySelectorAll('.drop');
+  function tick(){ const m=(performance.now()-t0)/1000; tm.textContent=m.toFixed(1).replace('.',','); fill.style.width=Math.min(100,m/MAX*100)+'%'; if(m>=MAX){release();return;} raf=requestAnimationFrame(tick); }
+  function press(e){ if(done||holding) return; e&&e.preventDefault(); holding=true; btn.classList.add('active'); hole.classList.add('plugged'); drops().forEach(d=>d.hidden=true); t0=performance.now(); raf=requestAnimationFrame(tick); }
+  function release(){
+    if(!holding||done) return; holding=false; cancelAnimationFrame(raf); btn.classList.remove('active');
+    const m=(performance.now()-t0)/1000;
+    if(m<t.lo){
+      hole.classList.remove('plugged'); drops().forEach(d=>d.hidden=false);
+      feedback(ctx,false,`Рано: ${m.toFixed(1).replace('.',',')} мин`, 'Состав не успел схватиться, и вода выдавила пробку. Попробуйте ещё раз. '+t.why);
+      cur._holdFails=(cur._holdFails||0)+1;
+      return;
+    }
+    done=true; btn.disabled=true;
+    const fails=cur._holdFails||0; cur._holdFails=0;
+    const late=m>t.hi;
+    const sc = (late?70:100) - fails*25;
+    feedback(ctx,true, late?`Течь остановлена, но ${m.toFixed(1).replace('.',',')} мин — дольше, чем нужно`:`Течь остановлена за ${m.toFixed(1).replace('.',',')} мин`, t.why + (fails?` Попыток до успеха: ${fails+1}.`:''));
+    finishTask(ctx, sc);
+  }
+  btn.addEventListener('pointerdown',press);
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,release));
+  btn.addEventListener('contextmenu',e=>e.preventDefault());
+  btn.addEventListener('keydown',e=>{ if((e.code==='Space'||e.key==='Enter') && !e.repeat) press(e); });
+  btn.addEventListener('keyup',e=>{ if(e.code==='Space'||e.key==='Enter') release(); });
+  ctx.body.append(w);
+}
+
+/* results */
+function levelResult(){
+  const l=LEVELS[cur.li];
+  const p=Math.round(cur.scores.reduce((a,b)=>a+b,0)/cur.scores.length);
+  const prev=best[l.id]; best[l.id]=Math.max(prev??0,p); save(); updatePill();
+  const nextI=cur.li+1, hasNext=nextI<LEVELS.length;
+  const s=$(`<div class="sheet fade">
+    <div class="eyebrow">Объект сдан · ${esc(l.place)}</div>
+    <h2>${esc(l.title)}</h2>
+    <div class="row" style="gap:18px"><span class="big mono">${p}%</span><span style="font-size:28px">${starsHtml(starsFor(p))}</span></div>
+    <div class="summary">${l.tasks.map((t,k)=>`<div><span>${k+1}. ${esc(t.q.length>70?t.q.slice(0,68)+'…':t.q)}</span><span class="mono">${cur.scores[k]}</span></div>`).join('')}</div>
+    <p>${p>=90?'Отличная работа: технология соблюдена.':p>=60?'Объект сдан, но есть что подтянуть. Перечитайте техкарту.':'Заказчик недоволен. Перечитайте техкарту и попробуйте снова.'}</p>
+    <div class="row end">
+      <button class="btn ghost" id="retry">Пройти заново</button>
+      <button class="btn ghost" id="map">К разрезу</button>
+      <button class="btn" id="next">${hasNext?'Следующий объект →':'Получить удостоверение'}</button>
+    </div>
+  </div>`);
+  s.querySelector('#retry').onclick=()=>startLevel(cur.li);
+  s.querySelector('#map').onclick=home;
+  s.querySelector('#next').onclick=()=> hasNext?startLevel(nextI):certificate();
+  mount(s);
+}
+
+function certificate(){
+  const pts=totalScore(), pct=Math.round(pts/LEVELS.length);
+  const s=$(`<div class="sheet fade">
+    <div class="cert">
+      <svg viewBox="0 0 89 100" aria-hidden="true"><use href="#kt-drop"/></svg>
+      <div class="eyebrow">Удостоверение № ${String(1000+pts).padStart(4,'0')}</div>
+      <h2>Школа мастера КТ ТРОН</h2>
+      <p>Присвоена квалификация</p>
+      <div class="rank">${esc(rankFor(pct))}</div>
+      <p class="mono">${pts} из ${LEVELS.length*100} очков · ${pct}%</p>
+    </div>
+    <div class="summary">${LEVELS.map(l=>`<div><span>${esc(l.title)} · ${esc(l.product)}</span><span>${best[l.id]!==undefined?starsHtml(starsFor(best[l.id])):'—'}</span></div>`).join('')}</div>
+    <h3>Готовы к настоящему объекту?</h3>
+    <p>Официальный дистрибьютор в Казахстане: ТОО DARHAN, Алматы, ул. Шевченко 118. Подберём материалы и посчитаем расход под ваш объект. В WhatsApp обычно отвечаем в течение часа.</p>
+    <div class="cta">
+      <a class="btn wa" href="${WA}" target="_blank" rel="noopener">Написать в WhatsApp</a>
+      <a class="btn ghost" href="${SITE}/calculator/" target="_blank" rel="noopener">Калькулятор расхода</a>
+      <a class="btn ghost" href="${SITE}/#catalog" target="_blank" rel="noopener">Каталог материалов</a>
+    </div>
+    <p class="mono" style="user-select:all">+7 775 181-05-95 · info@kttron.kz</p>
+    <div class="row end"><button class="btn ghost" id="map">К разрезу</button><button class="btn ghost" id="reset">Сбросить прогресс</button></div>
+  </div>`);
+  s.querySelector('#map').onclick=home;
+  const r=s.querySelector('#reset');
+  r.onclick=()=>{
+    if(r.dataset.sure){ best={}; save(); home(); return; }
+    r.dataset.sure='1'; r.textContent='Точно сбросить?';
+  };
+  mount(s);
+}
+
+home();
+</script>
+</body>
+</html>
