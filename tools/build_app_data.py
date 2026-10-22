@@ -11,7 +11,7 @@
   tools/build_landing_pages.py        — подбор материалов под задачу (PAGES)
 
 Запуск из корня репозитория:  python3 tools/build_app_data.py
-Пишет app-data.json в корень сайта и копию в mobile/assets/ (вшивается в приложение).
+Пишет app-data.json в корень сайта. Само приложение — в отдельном репозитории NAZIK-source/kttron-app.
 Перезапускайте после смены цен, товаров или калькулятора.
 """
 import json
@@ -94,9 +94,6 @@ def main():
     out = ROOT / 'app-data.json'
     text = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
     out.write_text(text, encoding='utf-8')
-    # Копия внутри приложения — на случай первого запуска без интернета
-    (ROOT / 'mobile/assets').mkdir(parents=True, exist_ok=True)
-    (ROOT / 'mobile/assets/app-data.json').write_text(text, encoding='utf-8')
     print(f'{out.name}: {len(items)} товаров, {len(calc)} в калькуляторе, {len(data["tasks"])} задач')
 
 
