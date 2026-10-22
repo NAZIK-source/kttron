@@ -3,5 +3,6 @@ Allow: /
 Disallow: /admin/
 Disallow: /account/
 Disallow: /app/
+Disallow: /test/
 
 Sitemap: https://kttron.kz/sitemap.xml
