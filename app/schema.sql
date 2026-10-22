@@ -59,3 +59,15 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   KEY idx_attempts_login (scope, login, created_at),
   KEY idx_attempts_ip (ip, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Входы из мобильного приложения: в базе хранится только хэш токена
+CREATE TABLE IF NOT EXISTS app_tokens (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  device VARCHAR(100) NOT NULL DEFAULT '',
+  created_at DATETIME NOT NULL,
+  last_used_at DATETIME NOT NULL,
+  KEY idx_tokens_user (user_id),
+  CONSTRAINT fk_tokens_user FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
