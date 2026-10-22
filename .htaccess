@@ -1,1 +1,6 @@
 ErrorDocument 404 /404.html
+
+# Служебные файлы репозитория (описание, настройки git) из браузера недоступны
+<FilesMatch "^(README\.md|\.gitignore|\.gitattributes)$">
+    Require all denied
+</FilesMatch>
