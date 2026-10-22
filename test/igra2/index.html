@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<!-- Тестовая версия игры (вариант 2): не индексировать, на сайте ссылок нет -->
+<meta name="robots" content="noindex, nofollow" />
+<title>Школа мастера КТ ТРОН</title>
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+<link rel="alternate icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rubik:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: игровой мир в фирменных цветах КТ ТРОН — ночная синяя «чертёжная» сцена, белые игровые панели, объёмные кнопки, HUD сверху */
+:root{
+  --night:#00253f; --night2:#00466e; --brand:#0093dd; --brand-deep:#0077b3; --brand-soft:#e5f5fc; --sky:#9ad6f5;
+  --ink:#1f2a33; --muted:#5f6b75; --panel:#ffffff; --line:#d5e3ec; --press:#c7d7e2;
+  --gold:#ffc83d; --gold-deep:#d99a00; --good:#22b35e; --good-deep:#168043; --good-bg:#e4f7ec;
+  --bad:#ef4b3f; --bad-deep:#b02c22; --bad-bg:#fdeceb;
+  --f-display:"Russo One","Arial Black",Arial,sans-serif;
+  --f-body:"Rubik",Arial,Helvetica,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--night)}
+body{min-height:100vh;color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;
+  background:
+    radial-gradient(1200px 500px at 50% -10%,#0093dd55,transparent 70%),
+    linear-gradient(#ffffff0d 1px,transparent 1px) 0 0/44px 44px,
+    linear-gradient(90deg,#ffffff0d 1px,transparent 1px) 0 0/44px 44px,
+    linear-gradient(180deg,var(--night2),var(--night) 70%);
+  background-attachment:fixed;
+  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:14px 40px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;line-height:1.1;text-wrap:balance}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+a{color:var(--brand-deep)}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff}
+.logo{display:inline-flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+.logo svg{width:30px;height:34px;color:var(--sky)}
+.logo b{font-family:var(--f-display);font-weight:400;font-size:18px;letter-spacing:.02em;display:block;line-height:1}
+.logo small{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sky)}
+.top-right{display:flex;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;background:#ffffff1a;border:1px solid #ffffff33;color:#fff;border-radius:999px;padding:6px 12px;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+.pill svg{width:18px;height:18px}
+.iconbtn{width:38px;height:38px;border-radius:12px;border:1px solid #ffffff33;background:#ffffff1a;color:#fff;display:grid;place-items:center}
+.iconbtn svg{width:20px;height:20px}
+
+.panel{background:var(--panel);border-radius:22px;box-shadow:0 8px 0 #00000033,0 24px 50px #0000004d;padding:20px clamp(14px,4vw,26px);display:flex;flex-direction:column;gap:16px;position:relative}
+.panel.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.pop{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.92);opacity:.3}to{transform:none;opacity:1}}
+
+.btn{border:0;border-radius:14px;background:var(--brand);color:#fff;font-family:var(--f-display);font-size:16px;letter-spacing:.03em;text-transform:uppercase;
+  padding:14px 22px;min-height:52px;box-shadow:0 5px 0 var(--brand-deep);transition:transform .08s,box-shadow .08s;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;text-align:center}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--brand-deep)}
+.btn.gold{background:var(--gold);color:#4a3200;box-shadow:0 5px 0 var(--gold-deep)}
+.btn.gold:active{box-shadow:0 1px 0 var(--gold-deep)}
+.btn.green{background:#25d366;box-shadow:0 5px 0 #149447}
+.btn.ghost{background:var(--brand-soft);color:var(--brand-deep);box-shadow:0 5px 0 var(--press)}
+.btn.ghost:active{box-shadow:0 1px 0 var(--press)}
+.btn.big{font-size:19px;min-height:60px;padding:16px 28px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.end{justify-content:flex-end}
+.row.center{justify-content:center}
+.grow{flex:1}
+
+.hero{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.hero h1{font-size:clamp(28px,7vw,44px);color:var(--brand-deep)}
+.hero h1 span{display:block;font-size:.42em;color:var(--muted);letter-spacing:.14em;margin-top:6px;font-family:var(--f-body);font-weight:800;text-transform:uppercase}
+.hero .mascot{width:clamp(90px,24vw,130px)}
+.tagline{font-size:16px;color:var(--muted);max-width:52ch}
+@media (max-width:440px){.hero{grid-template-columns:1fr;justify-items:center;text-align:center}}
+
+.mascot{display:block;overflow:visible}
+.mascot .eyes{animation:blink 4s infinite;transform-origin:50% 66%;transform-box:fill-box}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.mascot.bounce{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+.map{border-radius:18px;overflow:hidden;border:3px solid var(--line)}
+.floor{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:14px 14px;position:relative;width:100%;border:0;text-align:left;border-bottom:2px solid #00000012}
+.floor.above{background:linear-gradient(180deg,#eaf6fd,#d9eefa)}
+.floor.below{background:repeating-linear-gradient(135deg,#d9d2c5 0 6px,#d3cbbd 6px 12px)}
+.floor.below.deep{background:repeating-linear-gradient(135deg,#cbc2b2 0 6px,#c4bba9 6px 12px)}
+.ground-line{height:10px;background:linear-gradient(180deg,#6fbf4a,#4f9a33);border-top:2px solid #3f7d28}
+.node{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--brand);box-shadow:0 5px 0 var(--brand-deep),0 0 0 4px #fff;position:relative}
+.floor:disabled{cursor:not-allowed}
+.floor:disabled .node{background:#9aa6ae;box-shadow:0 5px 0 #6f7b83,0 0 0 4px #fff}
+.floor:disabled .t{opacity:.6}
+.floor.done .node{background:var(--good);box-shadow:0 5px 0 var(--good-deep),0 0 0 4px #fff}
+.floor.current .node{animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 5px 0 var(--brand-deep),0 0 0 4px #fff,0 0 0 4px #0093dd66}50%{box-shadow:0 5px 0 var(--brand-deep),0 0 0 4px #fff,0 0 0 14px #0093dd00}}
+.node svg{width:26px;height:26px}
+.floor .t{min-width:0}
+.floor .t b{display:block;font-family:var(--f-display);font-weight:400;font-size:16px;line-height:1.2}
+.floor .t span{font-size:13px;color:var(--muted)}
+.floor .mark{position:absolute;right:12px;top:5px;font-size:11px;font-weight:800;color:#0000005c;font-variant-numeric:tabular-nums}
+.stars{display:inline-flex;gap:2px}
+.stars svg{width:20px;height:20px}
+.floor:not(:disabled):hover .t b{color:var(--brand-deep)}
+@media (max-width:440px){.floor{grid-template-columns:58px 1fr}.floor .stars{grid-column:2}}
+
+.hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hearts{display:flex;gap:3px}
+.hearts svg{width:26px;height:26px;transition:transform .2s,opacity .2s}
+.hearts svg.lost{transform:scale(.85);opacity:.3}
+.hearts svg.hit{animation:hit .5s}
+@keyframes hit{30%{transform:scale(1.4) rotate(-10deg);opacity:1}100%{transform:scale(.85)}}
+.coins{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-display);font-size:18px;color:#7a5600;background:#fff4d1;border-radius:999px;padding:4px 12px 4px 6px;font-variant-numeric:tabular-nums}
+.coins svg{width:22px;height:22px}
+.combo{font-family:var(--f-display);font-size:14px;color:#fff;background:linear-gradient(90deg,#ff7a2f,#ff3d6e);border-radius:999px;padding:4px 10px}
+.bar{height:12px;background:var(--brand-soft);border-radius:999px;overflow:hidden;flex:1 1 100%}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--sky));border-radius:999px;transition:width .4s}
+.smallbtn{border:0;background:var(--brand-soft);color:var(--brand-deep);border-radius:10px;padding:7px 11px;font-weight:800;font-size:13px;box-shadow:0 3px 0 var(--press)}
+.smallbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--press)}
+
+.scene{border-radius:16px;overflow:hidden;background:#0b3654;position:relative}
+.scene svg{display:block;width:100%;height:auto}
+.scene .cap{position:absolute;left:10px;top:10px;background:#000000a0;color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase}
+.drip{animation:drip 1s linear infinite}
+@keyframes drip{from{transform:translate(0,0);opacity:1}to{transform:translate(28px,70px);opacity:0}}
+.wave{animation:wave 3s ease-in-out infinite alternate}
+@keyframes wave{to{transform:translateX(-30px)}}
+
+.talk{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:end}
+.talk .mascot{width:84px}
+.bubble{background:var(--brand-soft);border-radius:18px 18px 18px 4px;padding:14px 16px;font-size:17px;position:relative;min-height:64px;min-width:0}
+.bubble b{color:var(--brand-deep)}
+.bubble .who{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);margin-bottom:4px}
+.facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.fact{background:#fff;border-radius:10px;padding:6px 10px;font-size:13px;border:2px solid var(--line)}
+.fact b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px;color:var(--brand-deep);font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:6px;justify-content:center}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--brand)}
+@media (max-width:440px){.talk{grid-template-columns:60px 1fr}.talk .mascot{width:60px}}
+
+.q{font-family:var(--f-display);font-size:clamp(19px,4.4vw,24px);line-height:1.25;color:var(--ink)}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:#fff;border:3px solid var(--line);border-radius:16px;padding:12px 14px;min-height:58px;font-size:16px;font-weight:500;box-shadow:0 4px 0 var(--line);transition:transform .08s}
+.opt:hover:not(:disabled){border-color:var(--brand);box-shadow:0 4px 0 var(--brand)}
+.opt:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--brand)}
+.opt .k{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-family:var(--f-display);background:var(--brand);color:#fff}
+.opt.ok{border-color:var(--good);background:var(--good-bg);box-shadow:0 4px 0 var(--good)}
+.opt.ok .k{background:var(--good)}
+.opt.no{border-color:var(--bad);background:var(--bad-bg);box-shadow:0 4px 0 var(--bad)}
+.opt.no .k{background:var(--bad)}
+.opt:disabled{cursor:default}
+.fb{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;border-radius:16px;padding:12px 14px}
+.fb .mascot{width:54px}
+.fb.ok{background:var(--good-bg);border:2px solid var(--good)}
+.fb.no{background:var(--bad-bg);border:2px solid var(--bad)}
+.fb b{font-family:var(--f-display);font-weight:400;font-size:17px;display:block}
+.fb.ok b{color:var(--good-deep)} .fb.no b{color:var(--bad-deep)}
+
+.slots{display:grid;gap:8px}
+.slot{display:flex;gap:10px;align-items:center;border:3px dashed var(--line);border-radius:14px;padding:10px 12px;min-height:52px;color:var(--muted)}
+.slot .n{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--line);color:#fff;font-family:var(--f-display)}
+.slot.on{border-style:solid;border-color:var(--good);background:var(--good-bg);color:var(--ink);animation:pop .3s}
+.slot.on .n{background:var(--good)}
+.slot.next{border-color:var(--brand)}
+.slot.next .n{background:var(--brand)}
+.cards{display:flex;flex-wrap:wrap;gap:8px}
+.card{background:#fff;border:3px solid var(--brand);border-radius:14px;padding:10px 14px;font-weight:700;font-size:15px;text-align:left;box-shadow:0 4px 0 var(--brand-deep);max-width:100%}
+.card:active{transform:translateY(3px);box-shadow:0 1px 0 var(--brand-deep)}
+.card.wrong{animation:shake .35s;border-color:var(--bad);box-shadow:0 4px 0 var(--bad-deep)}
+.hint{font-size:14px;color:var(--muted)}
+
+.sortcard{border-radius:18px;padding:28px 18px;text-align:center;font-family:var(--f-display);font-size:clamp(20px,5vw,26px);color:#fff;background:linear-gradient(135deg,var(--brand-deep),var(--night2));box-shadow:0 6px 0 var(--night)}
+.sortcard.fly-yes{animation:flyR .35s forwards}.sortcard.fly-no{animation:flyL .35s forwards}
+@keyframes flyR{to{transform:translateX(60%) rotate(12deg);opacity:0}}@keyframes flyL{to{transform:translateX(-60%) rotate(-12deg);opacity:0}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn.no{background:var(--bad);box-shadow:0 5px 0 var(--bad-deep)}
+.btn.yes{background:var(--good);box-shadow:0 5px 0 var(--good-deep)}
+.counter{text-align:center;font-weight:800;color:var(--muted);font-size:13px;letter-spacing:.1em}
+
+.dial{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.dial input{width:5.5ch;font-family:var(--f-display);font-size:38px;text-align:center;border:3px solid var(--line);border-radius:16px;padding:6px 8px;color:var(--brand-deep);background:#fff;font-variant-numeric:tabular-nums}
+.dial .unit{font-family:var(--f-display);font-size:18px;color:var(--muted)}
+.round{width:58px;height:58px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-family:var(--f-display);font-size:28px;box-shadow:0 5px 0 var(--brand-deep);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.round:active{transform:translateY(4px);box-shadow:0 1px 0 var(--brand-deep)}
+.round:disabled{opacity:.4}
+
+.holdzone{display:grid;gap:14px;justify-items:center}
+.timer{font-family:var(--f-display);font-size:54px;color:var(--brand-deep);line-height:1;font-variant-numeric:tabular-nums}
+.timer small{font-size:18px;color:var(--muted)}
+.gauge{position:relative;width:100%;max-width:440px;height:20px;background:var(--brand-soft);border-radius:999px;overflow:hidden;border:3px solid var(--line)}
+.gauge .fill{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,var(--brand),var(--sky))}
+.gauge .zone{position:absolute;top:0;bottom:0;background:#22b35e55;border-left:3px solid var(--good);border-right:3px solid var(--good)}
+.ticks{position:relative;width:100%;max-width:440px;height:16px;font-size:12px;font-weight:800;color:var(--muted)}
+.ticks span{position:absolute;transform:translateX(-50%)}
+.holdbtn{width:150px;height:150px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#ffd76b,var(--gold) 55%,var(--gold-deep));color:#4a3200;font-family:var(--f-display);font-size:17px;line-height:1.15;box-shadow:0 8px 0 #a87400,0 0 0 8px #fff4d1;user-select:none;-webkit-user-select:none;touch-action:none}
+.holdbtn.on{transform:translateY(6px) scale(.97);box-shadow:0 2px 0 #a87400,0 0 0 14px #ffc83d55}
+
+.result{display:grid;justify-items:center;gap:12px;text-align:center}
+.result h2{font-size:clamp(26px,6vw,36px);color:var(--brand-deep)}
+.result .mascot{width:110px}
+.bigstars{display:flex;gap:6px}
+.bigstars svg{width:clamp(56px,14vw,76px);height:clamp(56px,14vw,76px);animation:starin .5s cubic-bezier(.3,1.6,.5,1) both}
+.bigstars svg:nth-child(2){animation-delay:.25s}
+.bigstars svg:nth-child(3){animation-delay:.5s}
+@keyframes starin{from{transform:scale(0) rotate(-40deg);opacity:0}to{transform:none;opacity:1}}
+.tally{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.tile{background:var(--brand-soft);border-radius:14px;padding:10px 16px;min-width:110px}
+.tile b{display:block;font-family:var(--f-display);font-weight:400;font-size:26px;color:var(--brand-deep);font-variant-numeric:tabular-nums}
+.tile span{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cert{width:100%;border-radius:20px;padding:24px 18px;color:#fff;text-align:center;display:grid;gap:10px;justify-items:center;
+  background:linear-gradient(#ffffff12 1px,transparent 1px) 0 0/36px 36px,linear-gradient(90deg,#ffffff12 1px,transparent 1px) 0 0/36px 36px,linear-gradient(135deg,var(--night2),var(--brand-deep))}
+.cert .rank{font-family:var(--f-display);font-size:clamp(20px,5.4vw,30px);background:var(--gold);color:#4a3200;border-radius:14px;padding:8px 18px;box-shadow:0 5px 0 var(--gold-deep)}
+.cert small{color:var(--sky);font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:11px}
+.cta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;width:100%}
+.note{font-size:12px;color:#ffffffa6;text-align:center}
+.muted{color:var(--muted);font-size:14px}
+
+.modal{position:fixed;inset:0;background:#00172acc;display:grid;place-items:center;z-index:30;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal .panel{max-width:560px;width:100%;max-height:90vh;overflow:auto}
+.book{display:grid}
+.book div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:2px solid var(--brand-soft);font-size:15px}
+.book div b{color:var(--brand-deep);text-align:right;font-variant-numeric:tabular-nums}
+.book-steps{margin:0;padding-left:22px;display:grid;gap:4px;font-size:15px}
+
+.float{position:fixed;z-index:40;pointer-events:none;font-family:var(--f-display);font-size:26px;color:var(--gold);text-shadow:0 2px 0 #7a5600,0 0 12px #0006;animation:floatUp 1s ease-out forwards}
+.float.bad{color:#fff;text-shadow:0 2px 0 var(--bad-deep),0 0 10px var(--bad)}
+@keyframes floatUp{from{transform:translate(-50%,0) scale(.8);opacity:0}20%{opacity:1;transform:translate(-50%,-10px) scale(1.15)}to{transform:translate(-50%,-70px) scale(1);opacity:0}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:35;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="kt-drop" fill="currentColor" d="M36.0 0.5 L35.6 4.1 L35.6 7.8 L35.6 11.6 L35.6 15.3 L35.6 19.0 L35.6 22.8 L35.6 26.5 L35.6 30.2 L36.1 33.7 L39.0 31.5 L41.7 28.8 L44.3 26.2 L47.5 26.7 L50.1 29.4 L52.8 32.0 L55.4 34.7 L57.6 37.7 L59.9 40.7 L61.9 43.8 L63.5 47.2 L64.6 50.7 L65.4 54.4 L65.4 58.1 L65.3 61.8 L64.2 65.4 L62.7 68.8 L60.7 71.9 L58.3 74.8 L55.5 77.3 L52.4 79.4 L49.2 81.2 L45.6 82.3 L41.9 83.0 L38.3 83.1 L34.6 82.7 L31.0 82.0 L27.5 80.6 L24.2 78.9 L21.3 76.6 L18.6 74.0 L16.2 71.1 L14.6 67.8 L12.9 64.4 L12.0 60.8 L11.4 57.1 L11.1 53.4 L11.2 49.8 L11.4 46.1 L11.9 42.4 L13.0 38.8 L13.9 35.2 L15.2 31.7 L16.8 28.3 L18.4 25.0 L20.3 21.7 L22.1 18.5 L24.2 15.4 L26.4 12.4 L28.8 9.5 L30.5 6.2 L27.8 7.2 L25.2 9.8 L22.6 12.5 L19.9 15.1 L17.5 18.0 L15.1 20.9 L12.9 23.8 L10.6 26.8 L8.6 29.9 L6.7 33.1 L5.0 36.4 L3.6 39.9 L2.1 43.3 L1.2 46.9 L0.8 50.6 L0.0 54.2 L0.0 58.0 L0.8 61.6 L1.2 65.3 L2.3 68.9 L3.5 72.4 L5.2 75.7 L7.1 78.9 L9.2 82.0 L11.5 85.0 L14.1 87.6 L16.9 90.1 L20.0 92.1 L23.2 94.2 L26.6 95.7 L30.1 96.9 L33.6 98.2 L37.2 98.9 L41.0 99.1 L44.6 99.9 L48.2 98.9 L51.9 98.9 L55.6 98.0 L59.1 97.0 L62.6 95.5 L65.9 93.8 L69.1 91.9 L72.1 89.7 L74.8 87.1 L77.4 84.4 L79.9 81.7 L82.0 78.6 L83.8 75.3 L85.3 71.9 L86.6 68.4 L87.5 64.8 L88.3 61.2 L88.3 57.4 L88.3 53.7 L88.3 50.0 L87.4 46.3 L86.4 42.7 L85.0 39.3 L83.7 35.8 L81.9 32.6 L80.0 29.3 L78.0 26.2 L75.7 23.2 L73.5 20.2 L70.9 17.5 L68.7 14.5 L66.1 11.8 L63.5 9.2 L64.5 6.0 L67.1 3.4 L69.4 0.5 L65.8 0.0 L62.1 0.0 L58.3 0.0 L54.6 0.0 L50.9 0.0 L47.1 0.0 L43.4 0.0 L39.7 0.0 Z"/>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path fill="#ef4b3f" stroke="#b02c22" stroke-width="1.5" d="M12 21s-7.5-4.6-9.5-9.2C1 8.4 3 5 6.4 5c2 0 3.5 1.1 4.3 2.5h2.6C14.1 6.1 15.6 5 17.6 5 21 5 23 8.4 21.5 11.8 19.5 16.4 12 21 12 21z"/><path fill="#fff" opacity=".55" d="M6 8.2c.6-1 1.6-1.4 2.6-1.2-.9.6-1.5 1.4-1.7 2.5z"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc83d" stroke="#d99a00" stroke-width="2"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="#d99a00" stroke-width="1.5"/><path d="M10 8.5h4M12 8.5v7" stroke="#a87400" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path fill="#ffc83d" stroke="#d99a00" stroke-width="1.5" stroke-linejoin="round" d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></symbol>
+    <symbol id="i-star-off" viewBox="0 0 24 24"><path fill="#dfe7ec" stroke="#b9c6cf" stroke-width="1.5" stroke-linejoin="round" d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5L2.5 9.3l6.6-.8z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2.5" fill="#fff"/><path d="M8 10V7.5a4 4 0 018 0V10" fill="none" stroke="#fff" stroke-width="2.4"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 010 7M18.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <radialGradient id="mg" cx=".35" cy=".35" r=".8"><stop offset="0" stop-color="#5cc3f5"/><stop offset=".6" stop-color="#0093dd"/><stop offset="1" stop-color="#0068a0"/></radialGradient>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="https://kttron.kz" target="_blank" rel="noopener"><svg viewBox="0 0 89 100" aria-hidden="true"><use href="#kt-drop"/></svg><span><b>КТ ТРОН</b><small>Школа мастера</small></span></a>
+    <div class="top-right">
+      <span class="pill" id="totalCoins" title="Всего монет"><svg><use href="#i-coin"/></svg><span>0</span></span>
+      <button class="iconbtn" id="soundBtn" aria-label="Звук"></button>
+    </div>
+  </header>
+  <main id="app"></main>
+  <p class="note">Игра составлена по техописаниям материалов КТ ТРОН. Перед работой сверяйтесь с технической картой и консультируйтесь с официальным дистрибьютором ТОО DARHAN.</p>
+</div>
+<canvas id="confetti" hidden></canvas>
+
+<script>
+const WA='https://wa.me/77751810595', SITE='https://kttron.kz';
+
+/* ================= DATA ================= */
+const LEVELS=[
+{ id:'leak', mark:'−6,600', zone:'below', place:'Подвал жилого дома', title:'Вода бьёт из стены', product:'КТ ТРОН-8', scene:'leak', url:SITE+'/materials/kt-tron-8/',
+  talk:[
+    'Тревога! В подвале из трещины бьёт вода. Обычная смесь тут не поможет: вода её просто вымоет.',
+    'Наше оружие — <b>КТ ТРОН-8</b>. Он схватывается за считанные минуты и держит воду прямо под напором.',
+    {t:'Запомни цифры, они пригодятся:', facts:[['0,21–0,22 л','воды на 1 кг'],['≤ 30 с','перемешивание'],['1 → 4 мин','схватывание'],['4–5 мин','держать рукой']]},
+    'Будь внимателен: за каждую ошибку теряешь <b>сердечко</b>. Потеряешь все три, и объект придётся начинать заново. Поехали!'],
+  book:[['Вода на 1 кг','0,21–0,22 л'],['Начало / конец схватывания','1 / 4 мин'],['Перемешивание','не дольше 30 с'],['Толщина слоя','10–50 мм'],['Температура','+5…+35 °C'],['Фасовка','5 кг']],
+  steps:['Вскрыть место протечки перфоратором или зубилом','Смочить полость водой','Замесить порцию, которую успеешь использовать за минуту','Скатать конус и вдавить острым концом в полость','Прижать и держать 4–5 минут','Через час зачеканить остаток КТ ТРОН-2 или КТ ТРОН-3'],
+  tasks:[
+    {type:'choice', q:'Чем остановить течь под напором?', options:[
+      {t:'КТ ТРОН-1 — проникающая гидроизоляция', why:'КТ ТРОН-1 нельзя наносить, пока через поверхность идёт вода. Сначала течь останавливают КТ ТРОН-8.'},
+      {t:'КТ ТРОН-8 — быстротвердеющий состав', ok:true, why:'Он схватывается за 1–4 минуты и держит воду под напором.'},
+      {t:'КТ ТРОН-101 — клей для плитки', why:'Это клей для облицовки, течь он не остановит.'},
+      {t:'КТгиперфлекс — герметик для швов', why:'Герметик нужен для деформационных швов, а не для мокрой трещины под напором.'}]},
+    {type:'order', q:'Собери технологию: нажимай шаги по порядку', from:'steps'},
+    {type:'hold', q:'Конус вдавлен. Держи кнопку 4–5 минут! (1 секунда = 1 минута)', lo:4, hi:5.5, why:'Состав прижимают и держат 4–5 минут: конец схватывания наступает через 4 минуты.'},
+    {type:'choice', q:'Сколько перемешивать КТ ТРОН-8?', options:[
+      {t:'2–4 минуты и пауза 5 минут', why:'Так замешивают КТ ТРОН-3. КТ ТРОН-8 за это время уже схватится в ведре.'},
+      {t:'Не дольше 30 секунд', ok:true, why:'Раствор используют сразу, а застывшую смесь повторно не перемешивают.'},
+      {t:'Пока не станет жидким, как сметана', why:'Нужна густая масса, похожая на пластилин: воды всего 0,21–0,22 л на 1 кг.'}]},
+  ]},
+{ id:'column', mark:'−3,300', zone:'below', place:'Подземный паркинг', title:'Колонна с ржавой арматурой', product:'КТ ТРОН-3 + праймер', scene:'column', url:SITE+'/materials/kt-tron-3/',
+  talk:[
+    'Паркинг. У колонны отвалился защитный слой, видна ржавая арматура. Колонна держит дом, так что работаем по технологии.',
+    'Сначала защищаем сталь <b>КТ ТРОН-праймером</b>, потом восстанавливаем бетон <b>КТ ТРОН-3</b>. Это конструкционный состав с фиброй, через 28 суток прочность от 30 МПа.',
+    {t:'Цифры для этого объекта:', facts:[['0,11–0,12 л','воды на 1 кг'],['45 мин','на работу с раствором'],['до 25 мм','слой на вертикали'],['7 суток','увлажнять']]},
+    'Вперёд, мастер!'],
+  book:[['Вода на 1 кг','0,11–0,12 л'],['Мешок','25 кг'],['Перемешивание','2–4 мин, пауза 5 мин, ещё 2 мин'],['Жизнеспособность','45 мин'],['Слой на вертикали','5–25 мм за раз'],['Следующий слой','через 1,5–2 ч'],['Праймер → ремсостав','через 2 ч'],['Уход','7 суток влажности']],
+  steps:['Удалить слабый бетон до прочного основания','Очистить арматуру от ржавчины','Нанести КТ ТРОН-праймер на арматуру','Через 2 часа нанести КТ ТРОН-3 с уплотнением','Увлажнять участок 7 суток'],
+  tasks:[
+    {type:'choice', q:'Чем восстановить несущую колонну?', options:[
+      {t:'КТ ТРОН-6 — выравнивающий состав', why:'КТ ТРОН-6 предназначен для выравнивания и отделки, несущую колонну им не восстанавливают.'},
+      {t:'КТ ТРОН-праймер, затем КТ ТРОН-3', ok:true, why:'Праймер защищает сталь от коррозии, КТ ТРОН-3 возвращает колонне прочность.'},
+      {t:'КТ ТРОН-8, чтобы быстрее', why:'КТ ТРОН-8 нужен для протечек, а не для конструкционного ремонта.'}]},
+    {type:'order', q:'Собери технологию ремонта колонны', from:'steps'},
+    {type:'number', q:'Сколько литров воды налить на мешок КТ ТРОН-3 (25 кг)?', unit:'л', min:0.5, max:8, step:0.25, start:5, lo:2.75, hi:3, dec:2,
+      why:'0,11–0,12 л × 25 кг = 2,75–3,0 л. Точное количество подбирают пробным замесом.'},
+    {type:'choice', q:'Раствор загустел через час. Что делать?', options:[
+      {t:'Подлить воды и перемешать', why:'Добавлять воду через 5 минут после второго перемешивания нельзя: раствор потеряет прочность.'},
+      {t:'Не использовать: время жизни раствора 45 минут', ok:true, why:'Замешивай столько раствора, сколько успеешь нанести за 45 минут.'},
+      {t:'Добавить сухой смеси', why:'Подмешивать сухую смесь тоже нельзя. Через 45 минут раствор уже не годится.'}]},
+    {type:'choice', q:'Нужно восстановить 40 мм на вертикали. Как?', options:[
+      {t:'Одним слоем 40 мм', why:'На вертикали за раз наносят не больше 25 мм, иначе раствор сползёт.'},
+      {t:'Два слоя по 20 мм с перерывом 1,5–2 часа', ok:true, why:'Поверхность первого слоя перед вторым делают шероховатой.'},
+      {t:'Восемь слоёв по 5 мм раз в сутки', why:'Это долго, а при перерыве больше 2 суток поверхность придётся зачищать щёткой.'}]},
+  ]},
+{ id:'tank', mark:'−9,000', zone:'below deep', place:'Насосная станция', title:'Резервуар с питьевой водой', product:'КТ ТРОН-1', scene:'tank', url:SITE+'/materials/kt-tron-1/',
+  talk:[
+    'Глубже всех — резервуар с питьевой водой. Нужна гидроизоляция, которая не боится давления и безопасна для воды.',
+    '<b>КТ ТРОН-1</b> работает изнутри бетона: в порах растут кристаллы и закрывают путь воде. Бетон при этом продолжает «дышать».',
+    {t:'Главные правила:', facts:[['сутки','увлажнять бетон до работ'],['2 слоя','по ≈ 0,5 мм'],['2–4 ч','между слоями'],['7 суток','уход'],['≈ 1 кг/м²','расход']]},
+    'Справишься с резервуаром — дальше будет бассейн!'],
+  book:[['Вода на 1 кг','0,33–0,34 л'],['Расход','≈ 1,0 кг/м²'],['Слои','минимум 2 × ≈ 0,5 мм'],['Между слоями','2–4 ч, крест-накрест'],['Уход','7 суток влажности'],['Температура','+5…+35 °C'],['Плитка поверх','не раньше 14 суток']],
+  steps:['Остановить активные протечки КТ ТРОН-8','Очистить бетон от цементного молочка и грязи','Обильно увлажнять основание сутки','Нанести первый слой щёткой','Через 2–4 часа нанести второй слой поперёк','Держать покрытие влажным 7 суток'],
+  tasks:[
+    {type:'sort', q:'Подходит ли сюда КТ ТРОН-1? Сортируй!', items:[
+      {t:'Резервуар с питьевой водой', ok:true, why:'Контакт с питьевой водой разрешён.'},
+      {t:'Стена из гипсокартона', ok:false, why:'Проникающая гидроизоляция работает только в бетоне.'},
+      {t:'Фундамент и подвал', ok:true, why:'Защищает подземные части зданий от воды снаружи.'},
+      {t:'Деревянный пол', ok:false, why:'В дереве нет цементного камня, кристаллам негде расти.'},
+      {t:'Бетонная чаша бассейна', ok:true, why:'Бассейны есть в перечне областей применения.'},
+      {t:'Канализационный коллектор', ok:true, why:'Подходит для коллекторов и очистных сооружений.'}]},
+    {type:'order', q:'Собери технологию гидроизоляции резервуара', from:'steps'},
+    {type:'choice', q:'Жара +33 °C, бетон сухой. Наносим КТ ТРОН-1?', options:[
+      {t:'Да, температура подходит', why:'Температура подходит, но на сухое основание наносить нельзя: кристаллам нужна влага.'},
+      {t:'Сначала сутки увлажнять, потом убрать лишнюю воду', ok:true, why:'Наносят на влажный бетон, но без луж на поверхности.'},
+      {t:'Ждать осени', why:'Работать можно от +5 до +35 °C, главное правильно увлажнить основание.'}]},
+    {type:'choice', q:'Сколько суток держать покрытие влажным?', options:[
+      {t:'1 сутки', why:'Мало: кристаллы не успеют прорасти.'},
+      {t:'7 суток', ok:true, why:'И беречь от прямого солнца, дождя и мороза.'},
+      {t:'Нисколько, пусть сохнет', why:'Пересохшее покрытие не наберёт свойства.'}]},
+  ]},
+{ id:'pool', mark:'±0,000', zone:'above', place:'Частный дом', title:'Бассейн под плитку', product:'КТ ТРОН-10 + КТ ТРОН-101', scene:'pool', url:SITE+'/materials/kt-tron-10-1k/',
+  talk:[
+    'Выходим на поверхность! Заказчик строит бассейн. Дом новый, бетон может дать микротрещины.',
+    '<b>КТ ТРОН-10</b> — эластичная гидроизоляция: перекрывает трещины до 0,5 мм, а с армирующей сеткой до 1 мм. Плитку кладём на эластичный клей <b>КТ ТРОН-101</b>.',
+    {t:'Запоминай:', facts:[['2–4 мм','общий слой'],['0,8–1,5 мм','за один проход'],['7 суток','до наполнения'],['15 мин','открытое время клея'],['2 суток','до затирки швов']]}],
+  book:[['КТ ТРОН-10, общий слой','2–4 мм'],['За один проход','0,8–1,5 мм'],['Трещины','до 0,5 мм (с сеткой до 1 мм)'],['Наполнять водой','через 7 суток'],['КТ ТРОН-101, шпатель','6×6 мм'],['Открытое время клея','15 мин'],['Затирка швов','через 2 суток']],
+  tasks:[
+    {type:'choice', q:'Какую гидроизоляцию взять для бассейна с микротрещинами?', options:[
+      {t:'КТ ТРОН-7 — жёсткая обмазочная', why:'КТ ТРОН-7 подходит для бассейнов, но не растягивается. При микротрещинах нужна эластичная.'},
+      {t:'КТ ТРОН-10 — эластичная', ok:true, why:'Перекрывает трещины до 0,5 мм, с армированием до 1 мм.'},
+      {t:'КТ ТРОН-8', why:'Это состав для протечек, а не для сплошной гидроизоляции.'}]},
+    {type:'choice', q:'Нужна гидроизоляция 3 мм. Как наносить?', options:[
+      {t:'Одним проходом 3 мм', why:'За один проход наносят 0,8–1,5 мм.'},
+      {t:'В 2–3 прохода по 0,8–1,5 мм', ok:true, why:'Общая толщина слоя 2–4 мм.'},
+      {t:'Десять слоёв по 0,3 мм', why:'Слишком тонко: минимум за проход 0,8 мм.'}]},
+    {type:'choice', q:'Клей КТ ТРОН-101 нанесён на 8 м², плитку кладёшь уже 25 минут. Что не так?', options:[
+      {t:'Всё нормально', why:'Открытое время клея 15 минут. Позже плитка схватится хуже.'},
+      {t:'Клей «заветрился»: открытое время 15 минут', ok:true, why:'Наноси клей на такую площадь, которую успеешь облицевать за 15 минут.'},
+      {t:'Нужен шпатель побольше', why:'Шпатель ни при чём: используют зубчатый 6×6 мм.'}]},
+    {type:'choice', q:'Когда затирать швы на КТ ТРОН-101?', options:[
+      {t:'Через 2 часа', why:'Рано: клей ещё не набрал прочность.'},
+      {t:'Через 2 суток', ok:true, why:'Так указано в техописании клея.'},
+      {t:'Через 28 суток', why:'Так долго ждать не нужно, хватит 2 суток.'}]},
+  ]},
+{ id:'estimate', mark:'+3,000', zone:'above', place:'Офис прораба', title:'Смета: босс-уровень', product:'Расход материалов', scene:'office', url:SITE+'/calculator/',
+  talk:[
+    'Финальный уровень! Заказчик ждёт смету. Ошибёшься в расчёте — материала не хватит или деньги уйдут впустую.',
+    {t:'Расход из техкарт:', facts:[['≈ 1,0 кг/м²','КТ ТРОН-1'],['1,55 кг/м²','КТ ТРОН-7 на 1 мм'],['4,5 кг/м²','КТ ТРОН-101'],['25 кг','мешок']]},
+    'Считай внимательно. Для настоящих объектов на сайте есть <b>калькулятор расхода</b>.'],
+  book:[['КТ ТРОН-1','≈ 1,0 кг/м²'],['КТ ТРОН-7','1,55 кг/м² на 1 мм толщины'],['КТ ТРОН-101','4,5 кг/м² (шпатель 6×6)'],['Мешок','25 кг'],['Минеральная отделка по КТ ТРОН-1','через 14 суток'],['Органическая отделка (краски)','через 21 сутки']],
+  tasks:[
+    {type:'number', q:'Подвал 120 м², материал КТ ТРОН-1. Сколько мешков по 25 кг купить?', unit:'мешков', min:1, max:20, step:1, start:3, lo:5, hi:5, dec:0,
+      why:'120 м² × 1,0 кг/м² = 120 кг. 120 ÷ 25 = 4,8, округляем вверх: 5 мешков.'},
+    {type:'number', q:'Резервуар 50 м², КТ ТРОН-7 слоем 2 мм. Сколько кг смеси?', unit:'кг', min:0, max:400, step:5, start:100, lo:150, hi:160, dec:0,
+      why:'1,55 кг/м² × 2 мм × 50 м² = 155 кг.'},
+    {type:'number', q:'Плитка в бассейне на 40 м², клей КТ ТРОН-101. Сколько кг клея?', unit:'кг', min:0, max:400, step:5, start:100, lo:175, hi:185, dec:0,
+      why:'4,5 кг/м² × 40 м² = 180 кг.'},
+    {type:'choice', q:'Подвал обработан КТ ТРОН-1. Когда можно класть плитку?', options:[
+      {t:'На следующий день', why:'Рано: сначала 7 суток ухода, и раньше 14 суток минеральную отделку не наносят.'},
+      {t:'Не раньше чем через 14 суток', ok:true, why:'А органические составы, например краски, — через 21 сутки.'},
+      {t:'Через 3 месяца', why:'Так долго ждать не нужно, хватит 14 суток.'}]},
+  ]}
+];
+const RANKS=[[13,'Технолог КТ ТРОН'],[10,'Мастер-гидроизолировщик'],[6,'Подмастерье'],[0,'Стажёр']];
+
+/* ================= STORAGE ================= */
+const KEY='kttron-game-v2';
+let save={lv:{},sound:true};
+try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.lv) save=s; }catch(e){}
+const persist=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(save)); }catch(e){} };
+
+/* ================= HELPERS ================= */
+const app=document.getElementById('app');
+const h=(html)=>{const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const fmt=(v,d)=>v.toFixed(d).replace('.',',');
+const icon=id=>`<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${id}"/></svg>`;
+const starRow=n=>[0,1,2].map(i=>icon(i<n?'i-star':'i-star-off')).join('');
+const total=()=>Object.values(save.lv).reduce((a,v)=>a+(v.coins||0),0);
+const totalStars=()=>Object.values(save.lv).reduce((a,v)=>a+(v.stars||0),0);
+const done=i=>!!save.lv[LEVELS[i].id];
+const open=i=>i===0||done(i-1);
+const num=m=>parseFloat(m.replace('−','-').replace('±','').replace(',','.'));
+function mount(el){ app.replaceChildren(el); window.scrollTo({top:0,behavior:'instant'}); }
+function refreshTop(){ document.querySelector('#totalCoins span').textContent=total(); }
+
+/* mascot: капля КТ ТРОН в строительной каске */
+function mascot(mood='happy',cls=''){
+  const mouth = mood==='sad' ? '<path d="M41 87 Q50 79 59 87" stroke="#00304d" stroke-width="3.5" fill="none" stroke-linecap="round"/>'
+    : mood==='wow' ? '<ellipse cx="50" cy="85" rx="6" ry="7" fill="#00304d"/><ellipse cx="50" cy="88" rx="3.5" ry="3" fill="#ff6b6b"/>'
+    : '<path d="M39 81 Q50 93 61 81 Z" fill="#00304d"/><path d="M44 86 Q50 90 56 86" fill="#ff6b6b"/>';
+  const brows = mood==='sad' ? '<path d="M32 57 l10 4 M68 57 l-10 4" stroke="#00304d" stroke-width="3" stroke-linecap="round"/>' : '';
+  return `<svg class="mascot ${cls}" viewBox="0 0 100 112" aria-hidden="true">
+    <ellipse cx="50" cy="108" rx="28" ry="4" fill="#00000026"/>
+    <path d="M50 8 C42 26 13 48 13 72 A37 37 0 0 0 87 72 C87 48 58 26 50 8Z" fill="url(#mg)"/>
+    <path d="M25 70 Q25 58 33 52" stroke="#ffffff88" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M22 48 Q50 14 78 48 Z" fill="#ffc83d"/><path d="M47 22 h6 v26 h-6z" fill="#ffdb73"/>
+    <rect x="14" y="45" width="72" height="8" rx="4" fill="#d99a00"/>
+    ${brows}
+    <g class="eyes"><ellipse cx="39" cy="67" rx="8" ry="9" fill="#fff"/><ellipse cx="61" cy="67" rx="8" ry="9" fill="#fff"/>
+    <circle cx="41" cy="69" r="4" fill="#00304d"/><circle cx="63" cy="69" r="4" fill="#00304d"/><circle cx="42.5" cy="67" r="1.4" fill="#fff"/><circle cx="64.5" cy="67" r="1.4" fill="#fff"/></g>
+    ${mouth}
+  </svg>`;
+}
+
+/* scenes */
+const rep=(n,f)=>Array.from({length:n},(_,i)=>f(i)).join('');
+const SCENES={
+leak:()=>`<svg viewBox="0 0 400 150"><rect width="400" height="150" fill="#7d878e"/>
+  ${rep(5,r=>rep(7,c=>`<rect x="${c*70+(r%2?-35:0)}" y="${r*36}" width="68" height="34" fill="#a9b1b7" rx="2"/>`))}
+  <path d="M190 0 L200 30 L192 52 L206 74 L200 92 L210 130" stroke="#3b4247" stroke-width="5" fill="none"/>
+  <circle cx="204" cy="76" r="8" fill="#2c3338"/>
+  <g class="water">${rep(5,i=>`<ellipse class="drip" style="animation-delay:${i*.2}s" cx="210" cy="78" rx="3.5" ry="5" fill="#5cc3f5"/>`)}
+  <path d="M206 78 Q240 90 248 140" stroke="#5cc3f5" stroke-width="4" fill="none" opacity=".7"/>
+  <ellipse cx="250" cy="144" rx="80" ry="8" fill="#5cc3f5" opacity=".75"/></g></svg>`,
+column:()=>`<svg viewBox="0 0 400 150"><rect width="400" height="150" fill="#3a4750"/><rect width="400" height="18" fill="#56636b"/>
+  <rect y="132" width="400" height="18" fill="#2a343b"/><path d="M0 141 h400" stroke="#ffc83d" stroke-width="3" stroke-dasharray="26 18"/>
+  <rect x="160" y="18" width="80" height="114" fill="#a9b1b7"/>
+  <path d="M168 50 L200 44 L232 56 L228 100 L196 108 L170 96 Z" fill="#6f777c"/>
+  <path d="M176 46 v62 M190 44 v66 M210 46 v62 M224 50 v52" stroke="#c8662b" stroke-width="4"/>
+  <path d="M172 70 h56 M172 88 h56" stroke="#a5501f" stroke-width="3"/>
+  <path d="M50 122 h86 l-10 -24 h-60 z" fill="#0093dd"/><path d="M68 100 h46 l6 12 h-58z" fill="#9ad6f5"/><circle cx="68" cy="124" r="8" fill="#1b2125"/><circle cx="118" cy="124" r="8" fill="#1b2125"/>
+  <rect x="290" y="40" width="54" height="54" rx="8" fill="#0093dd"/><text x="317" y="82" fill="#fff" font-family="Russo One,Arial" font-size="38" text-anchor="middle">P</text></svg>`,
+tank:()=>`<svg viewBox="0 0 400 150"><rect width="400" height="150" fill="#6b5f4c"/>
+  ${rep(9,i=>`<circle cx="${i*48+12}" cy="${(i*37)%140+5}" r="5" fill="#5a4f3e"/>`)}
+  <rect x="70" y="22" width="260" height="118" rx="6" fill="#a9b1b7"/><rect x="82" y="30" width="236" height="102" fill="#0b4a73"/>
+  <svg x="82" y="30" width="236" height="102"><g class="wave"><path d="M0 30 ${rep(10,()=>'q15 -8 30 0 ')} V102 H0 Z" fill="#0093dd"/></g></svg>
+  <rect x="82" y="30" width="236" height="102" fill="none" stroke="#9ad6f5" stroke-width="3" stroke-dasharray="6 6"/>
+  <rect x="330" y="44" width="70" height="14" fill="#7d878e"/><rect x="0" y="100" width="70" height="14" fill="#7d878e"/></svg>`,
+pool:()=>`<svg viewBox="0 0 400 150"><rect width="400" height="150" fill="#bfe6fa"/><circle cx="350" cy="28" r="16" fill="#ffc83d"/>
+  <rect y="56" width="400" height="94" fill="#e9eef1"/>
+  <path d="M40 56 h320 v74 h-320z" fill="#a9b1b7"/><path d="M48 56 h304 v66 h-304z" fill="#d6f0fb"/>
+  ${rep(10,i=>`<path d="M${48+i*30.4} 56 v66" stroke="#9ad6f5" stroke-width="1.5"/>`)}
+  ${rep(3,i=>`<path d="M48 ${78+i*22} h304" stroke="#9ad6f5" stroke-width="1.5"/>`)}
+  <svg x="48" y="56" width="304" height="66"><g class="wave"><path d="M0 10 ${rep(15,()=>'q12 -6 24 0 ')} V66 H0Z" fill="#0093dd" opacity=".55"/></g></svg>
+  <path d="M120 98 l6 -6 M250 90 l8 4" stroke="#7d878e" stroke-width="2"/>
+  <path d="M352 56 v-30 M372 56 v-30 M352 34 h20 M352 46 h20" stroke="#7d878e" stroke-width="4"/></svg>`,
+office:()=>`<svg viewBox="0 0 400 150"><rect width="400" height="150" fill="#0b3654"/>
+  ${rep(10,i=>`<path d="M${i*44} 0 v150" stroke="#ffffff12"/>`)}
+  <rect y="112" width="400" height="38" fill="#7a4f2a"/><rect y="108" width="400" height="8" fill="#94653b"/>
+  <g transform="rotate(-4 125 76)"><rect x="70" y="40" width="110" height="72" rx="6" fill="#fff"/><path d="M84 58 h80 M84 72 h66 M84 86 h74" stroke="#9ad6f5" stroke-width="3"/><path d="M84 100 h30" stroke="#0093dd" stroke-width="4"/></g>
+  <rect x="220" y="44" width="70" height="66" rx="8" fill="#1f2a33"/><rect x="228" y="52" width="54" height="16" rx="3" fill="#9be7a4"/>
+  <text x="278" y="65" fill="#1f5a2a" font-family="Russo One,Arial" font-size="12" text-anchor="end">155</text>
+  ${rep(3,r=>rep(3,c=>`<rect x="${229+c*18}" y="${74+r*11}" width="14" height="8" rx="2" fill="${c===2&&r===2?'#ffc83d':'#5f6b75'}"/>`))}
+  <path d="M310 106 l40 -50 l10 8 l-40 50z" fill="#ffc83d"/></svg>`
+};
+const NODE_ICONS={
+  leak:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M12 3s6 6.6 6 11a6 6 0 01-12 0c0-4.4 6-11 6-11z"/></svg>',
+  column:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M6 3h12v3H6zM8 7h8v11H8zM6 19h12v2H6z"/></svg>',
+  tank:'<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2" fill="#fff" opacity=".45"/><path fill="#fff" d="M4 11q4-2.5 8 0t8 0v7a2 2 0 01-2 2H6a2 2 0 01-2-2z"/></svg>',
+  pool:'<svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" d="M3 16q2.25-2 4.5 0t4.5 0 4.5 0 4.5 0M3 20q2.25-2 4.5 0t4.5 0 4.5 0 4.5 0M8 13V5a2 2 0 014 0M15 13V5a2 2 0 014 0M8 9h7"/></svg>',
+  office:'<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="#fff"/><rect x="7.5" y="5.5" width="9" height="4" fill="#0093dd"/><path d="M8 13h2M12 13h2M8 17h2M12 17h2M16 13v4" stroke="#0093dd" stroke-width="2"/></svg>'
+};
+
+/* ================= SOUND ================= */
+let ac=null;
+function tone(f,d=.12,type='sine',v=.18,delay=0){
+  if(!save.sound) return;
+  try{
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==='suspended') ac.resume();
+    const t=ac.currentTime+delay, o=ac.createOscillator(), g=ac.createGain();
+    o.type=type; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.001,t+d);
+    o.connect(g).connect(ac.destination); o.start(t); o.stop(t+d+.02);
+  }catch(e){}
+}
+const sfx={
+  click:()=>tone(660,.06,'triangle',.12),
+  good:()=>{tone(660,.1,'triangle');tone(880,.12,'triangle',.18,.09);tone(1320,.18,'triangle',.14,.18);},
+  bad:()=>{tone(220,.18,'sawtooth',.12);tone(160,.25,'sawtooth',.1,.12);},
+  coin:()=>{tone(988,.07,'square',.08);tone(1319,.12,'square',.08,.06);},
+  win:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.22,'triangle',.16,i*.12)),
+  lose:()=>[392,330,262,196].forEach((f,i)=>tone(f,.3,'sawtooth',.09,i*.18)),
+};
+const soundBtn=document.getElementById('soundBtn');
+function paintSound(){ soundBtn.innerHTML=icon(save.sound?'i-sound':'i-mute'); soundBtn.setAttribute('aria-pressed',String(save.sound)); }
+soundBtn.onclick=()=>{ save.sound=!save.sound; persist(); paintSound(); sfx.click(); };
+paintSound();
+
+/* ================= FX ================= */
+function floatText(txt,anchor,bad){
+  const r=(anchor||app).getBoundingClientRect();
+  const el=h(`<div class="float ${bad?'bad':''}">${txt}</div>`);
+  el.style.left=(r.left+r.width/2)+'px'; el.style.top=(r.top+r.height/2-14)+'px';
+  document.body.appendChild(el); setTimeout(()=>el.remove(),1000);
+}
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=document.getElementById('confetti'), x=c.getContext('2d'); c.hidden=false;
+  const W=c.width=innerWidth, H=c.height=innerHeight, cols=['#0093dd','#9ad6f5','#ffc83d','#22b35e','#ffffff','#ff6b6b'];
+  const P=Array.from({length:140},()=>({x:Math.random()*W,y:-20-Math.random()*H*.5,vx:(Math.random()-.5)*3,vy:2+Math.random()*4,r:Math.random()*6.28,vr:(Math.random()-.5)*.3,s:6+Math.random()*7,c:cols[Math.random()*cols.length|0]}));
+  const t0=performance.now();
+  (function f(t){ x.clearRect(0,0,W,H);
+    P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore();});
+    if(t-t0<3200) requestAnimationFrame(f); else {x.clearRect(0,0,W,H);c.hidden=true;}
+  })(t0);
+}
+
+/* ================= HOME / MAP ================= */
+function home(){
+  run=null; refreshTop();
+  const cur=LEVELS.findIndex((l,i)=>!done(i));
+  const allDone=cur<0;
+  const p=h(`<section class="panel pop">
+    <div class="hero">${mascot('happy','bounce')}
+      <div style="display:grid;gap:8px"><h1>КТ ТРОН<span>Школа мастера</span></h1>
+      <p class="tagline">Ты прораб на объекте. Спаси подвал от потопа, почини колонну, загидроизолируй резервуар и бассейн. Собирай монеты и звёзды и получи звание <b>Технолога КТ&nbsp;ТРОН</b>.</p></div>
+    </div>
+    <div class="map" id="map"></div>
+    <div class="row center">
+      ${allDone?'<button class="btn gold big" id="cert">Моё удостоверение</button>':`<button class="btn big" id="play">${Object.keys(save.lv).length?'Продолжить':'Играть'}</button>`}
+    </div>
+  </section>`);
+  const map=p.querySelector('#map');
+  const order=LEVELS.map((_,i)=>i).sort((a,b)=>num(LEVELS[b].mark)-num(LEVELS[a].mark));
+  let ground=false;
+  order.forEach(i=>{
+    const l=LEVELS[i];
+    if(!ground && num(l.mark)<0){ map.appendChild(h('<div class="ground-line" aria-hidden="true"></div>')); ground=true; }
+    const st=save.lv[l.id];
+    const b=h(`<button class="floor ${l.zone} ${st?'done':''} ${i===cur?'current':''}" ${open(i)?'':'disabled'} aria-label="Уровень ${i+1}: ${esc(l.title)}">
+      <span class="node">${open(i)?NODE_ICONS[l.scene]:icon('i-lock')}</span>
+      <span class="t"><b>${i+1}. ${esc(l.title)}</b><span>${esc(l.place)} · ${esc(l.product)}</span></span>
+      <span class="stars">${st?starRow(st.stars):''}</span><span class="mark">▽ ${l.mark}</span></button>`);
+    b.onclick=()=>{sfx.click(); intro(i);};
+    map.appendChild(b);
+  });
+  const pl=p.querySelector('#play'); if(pl) pl.onclick=()=>{sfx.click(); intro(cur);};
+  const ce=p.querySelector('#cert'); if(ce) ce.onclick=()=>{sfx.click(); certificate();};
+  mount(p);
+}
+
+/* ================= INTRO DIALOG ================= */
+function intro(i){
+  const l=LEVELS[i]; let k=0;
+  const p=h(`<section class="panel pop">
+    <div class="row"><span class="muted" style="font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:12px">Уровень ${i+1} · ${esc(l.place)}</span><span class="grow"></span><button class="smallbtn" id="map">✕ Карта</button></div>
+    <h2 style="font-size:clamp(22px,5vw,30px);color:var(--brand-deep)">${esc(l.title)}</h2>
+    <div class="scene">${SCENES[l.scene]()}<span class="cap">▽ ${l.mark}</span></div>
+    <div class="talk">${mascot('happy')}<div class="bubble" id="bub" aria-live="polite"></div></div>
+    <div class="dots">${l.talk.map(()=>'<i></i>').join('')}</div>
+    <div class="row end"><button class="smallbtn" id="skip">Пропустить</button><button class="btn" id="next">Дальше</button></div>
+  </section>`);
+  const bub=p.querySelector('#bub'), dots=p.querySelectorAll('.dots i'), nx=p.querySelector('#next');
+  function show(){
+    const m=l.talk[k];
+    bub.innerHTML='<span class="who">Капитан Трон</span>'+(typeof m==='string'?m:esc(m.t)+'<div class="facts">'+m.facts.map(f=>`<span class="fact"><b>${esc(f[0])}</b>${esc(f[1])}</span>`).join('')+'</div>');
+    bub.classList.remove('pop'); void bub.offsetWidth; bub.classList.add('pop');
+    dots.forEach((d,j)=>d.classList.toggle('on',j<=k));
+    const last=k===l.talk.length-1;
+    nx.textContent=last?'К заданиям!':'Дальше'; nx.classList.toggle('gold',last);
+  }
+  nx.onclick=()=>{ sfx.click(); if(k<l.talk.length-1){k++;show();} else start(i); };
+  p.querySelector('#skip').onclick=()=>{sfx.click(); start(i);};
+  p.querySelector('#map').onclick=()=>{sfx.click(); home();};
+  mount(p); show();
+}
+
+/* ================= RUN ================= */
+let run=null;
+const mult=()=>run.streak>=5?3:run.streak>=3?2:1;
+function start(i){ run={li:i,ti:0,hearts:3,coins:0,streak:0}; task(); }
+
+function hud(l){
+  return `<div class="hud">
+    <div class="hearts" id="hearts" aria-label="Жизни: ${run.hearts} из 3">${[0,1,2].map(j=>`<svg viewBox="0 0 24 24" class="${j<run.hearts?'':'lost'}" aria-hidden="true"><use href="#i-heart"/></svg>`).join('')}</div>
+    <span class="coins" id="coins">${icon('i-coin')}<span>${run.coins}</span></span>
+    <span class="combo" id="combo" ${run.streak>=3?'':'hidden'}>КОМБО ×${mult()}</span>
+    <span class="grow"></span>
+    <button class="smallbtn" id="book">Справочник</button><button class="smallbtn" id="quit" aria-label="Выйти на карту">✕</button>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${l.tasks.length}" aria-valuenow="${run.ti}"><i style="width:${run.ti/l.tasks.length*100}%"></i></div>
+  </div>`;
+}
+
+function task(){
+  const l=LEVELS[run.li], t=l.tasks[run.ti];
+  const p=h(`<section class="panel pop">
+    ${hud(l)}
+    <p class="q">${esc(t.q)}</p>
+    <div id="body"></div>
+    <div id="fb" aria-live="polite"></div>
+    <div class="row end" id="nav"></div>
+  </section>`);
+  p.querySelector('#book').onclick=()=>{sfx.click(); book(l);};
+  p.querySelector('#quit').onclick=()=>{sfx.click(); confirmQuit(p);};
+  mount(p);
+  const ctx={l,t,p,body:p.querySelector('#body'),fb:p.querySelector('#fb'),nav:p.querySelector('#nav')};
+  ({choice:tChoice,order:tOrder,sort:tSort,number:tNumber,hold:tHold})[t.type](ctx);
+}
+
+function confirmQuit(p){
+  const nav=p.querySelector('#nav'), prev=[...nav.children];
+  const box=h(`<div class="row"><span class="muted">Выйти? Прогресс уровня пропадёт.</span><button class="smallbtn" id="no">Остаться</button><button class="btn" id="yes" style="min-height:40px;padding:8px 14px;font-size:13px">Выйти</button></div>`);
+  box.querySelector('#yes').onclick=home;
+  box.querySelector('#no').onclick=()=>nav.replaceChildren(...prev);
+  nav.replaceChildren(box);
+}
+
+function book(l){
+  const m=h(`<div class="modal" role="dialog" aria-modal="true" aria-label="Справочник"><div class="panel pop">
+    <div class="row"><h3 style="color:var(--brand-deep)">Справочник · ${esc(l.product)}</h3><span class="grow"></span><button class="smallbtn" id="x">✕</button></div>
+    <div class="book">${l.book.map(b=>`<div><span>${esc(b[0])}</span><b>${esc(b[1])}</b></div>`).join('')}</div>
+    ${l.steps?`<div><div class="muted" style="font-weight:800;margin-bottom:6px">Порядок работ</div><ol class="book-steps">${l.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>`:''}
+    <a href="${l.url}" target="_blank" rel="noopener">Полное описание на kttron.kz ↗</a>
+  </div></div>`);
+  const onKey=e=>{if(e.key==='Escape')close();};
+  const close=()=>{m.remove(); document.removeEventListener('keydown',onKey);};
+  m.onclick=e=>{if(e.target===m)close();};
+  m.querySelector('#x').onclick=close;
+  document.addEventListener('keydown',onKey);
+  document.body.appendChild(m); m.querySelector('#x').focus();
+}
+
+/* scoring */
+function reward(ctx,base,anchor){
+  run.streak++;
+  const got=base*mult(); run.coins+=got;
+  ctx.p.querySelector('#coins span').textContent=run.coins;
+  const cb=ctx.p.querySelector('#combo');
+  if(run.streak>=3){cb.hidden=false;cb.textContent='КОМБО ×'+mult();cb.classList.remove('pop');void cb.offsetWidth;cb.classList.add('pop');}
+  sfx.good(); setTimeout(sfx.coin,250);
+  floatText('+'+got,anchor||ctx.p.querySelector('#coins'));
+}
+function penalty(ctx,anchor){
+  run.streak=0; run.hearts=Math.max(0,run.hearts-1);
+  const hh=ctx.p.querySelectorAll('#hearts svg')[run.hearts]; if(hh) hh.classList.add('lost','hit');
+  ctx.p.querySelector('#combo').hidden=true;
+  ctx.p.classList.remove('shake'); void ctx.p.offsetWidth; ctx.p.classList.add('shake');
+  sfx.bad(); floatText('−1 ❤',anchor||ctx.p.querySelector('#hearts'),true);
+  try{ navigator.vibrate&&navigator.vibrate(120); }catch(e){}
+  return run.hearts===0;
+}
+function say(ctx,ok,title,text){
+  ctx.fb.replaceChildren(h(`<div class="fb ${ok?'ok':'no'} pop">${mascot(ok?'happy':'sad')}<div><b>${esc(title)}</b><span>${esc(text)}</span></div></div>`));
+}
+function nextBtn(ctx){
+  if(run.hearts===0){ const b=h('<button class="btn">Что дальше?</button>'); b.onclick=lose; ctx.nav.replaceChildren(b); b.focus({preventScroll:true}); return; }
+  const last=run.ti===ctx.l.tasks.length-1;
+  const b=h(`<button class="btn ${last?'gold':''}">${last?'Сдать объект':'Дальше'}</button>`);
+  b.onclick=()=>{sfx.click(); if(last) win(); else {run.ti++; task();}};
+  ctx.nav.replaceChildren(b); b.focus({preventScroll:true});
+}
+
+/* --- choice --- */
+function tChoice(ctx){
+  const box=h('<div class="opts"></div>'), opts=shuffle(ctx.t.options);
+  opts.forEach((o,k)=>{
+    const b=h(`<button class="opt"><span class="k">${'АБВГ'[k]}</span><span>${esc(o.t)}</span></button>`);
+    b.onclick=()=>{
+      box.querySelectorAll('button').forEach((x,j)=>{x.disabled=true; if(opts[j].ok) x.classList.add('ok');});
+      if(o.ok){ reward(ctx,100,b); say(ctx,true,['Точно!','В яблочко!','Мастерски!'][Math.random()*3|0],o.why); }
+      else { b.classList.add('no'); penalty(ctx,b); say(ctx,false,'Ошибка',o.why); }
+      nextBtn(ctx);
+    };
+    box.appendChild(b);
+  });
+  ctx.body.appendChild(box);
+}
+
+/* --- order --- */
+function tOrder(ctx){
+  const steps=ctx.l[ctx.t.from]; let n=0, miss=0;
+  const slots=h(`<div class="slots">${steps.map((_,i)=>`<div class="slot ${i===0?'next':''}"><span class="n">${i+1}</span><span>?</span></div>`).join('')}</div>`);
+  const cards=h('<div class="cards"></div>');
+  const hint=h('<p class="hint">Нажимай карточки в правильном порядке. Ошибка стоит сердечка.</p>');
+  shuffle(steps.map((t,i)=>({t,i}))).forEach(s=>{
+    const c=h(`<button class="card">${esc(s.t)}</button>`);
+    c.onclick=()=>{
+      if(run.hearts===0) return;
+      if(s.i===n){
+        const sl=slots.children[n]; sl.classList.remove('next'); sl.classList.add('on'); sl.children[1].textContent=s.t;
+        c.remove(); n++; tone(520+n*90,.09,'triangle',.14);
+        if(slots.children[n]) slots.children[n].classList.add('next');
+        if(n===steps.length){
+          hint.remove();
+          if(miss===0){ reward(ctx,150); say(ctx,true,'Идеальная технология!','Ни одной ошибки: бонус +150.'); }
+          else { reward(ctx,50); say(ctx,true,'Технология собрана','Порядок важен: пропущенный шаг на объекте оборачивается переделкой.'); }
+          nextBtn(ctx);
+        }
+      } else {
+        miss++; c.classList.remove('wrong'); void c.offsetWidth; c.classList.add('wrong');
+        const dead=penalty(ctx,c);
+        hint.innerHTML=`Не тот шаг! Подсказка: следующий начинается со слов <b>«${esc(steps[n].split(' ').slice(0,2).join(' '))}…»</b>`;
+        if(dead){ say(ctx,false,'Сердечки закончились','Загляни в «Справочник»: там весь порядок работ.'); nextBtn(ctx); }
+      }
+    };
+    cards.appendChild(c);
+  });
+  ctx.body.append(slots,h('<div style="height:12px"></div>'),cards,hint);
+}
+
+/* --- sort --- */
+function tSort(ctx){
+  const items=shuffle(ctx.t.items); let k=0;
+  const wrap=h('<div style="display:grid;gap:12px"></div>');
+  function show(){
+    ctx.fb.replaceChildren(); ctx.nav.replaceChildren();
+    if(k>=items.length){ say(ctx,true,'Сортировка завершена','КТ ТРОН-1 работает в бетоне: в резервуарах, подвалах, бассейнах и коллекторах.'); wrap.remove(); nextBtn(ctx); return; }
+    const it=items[k];
+    wrap.replaceChildren(h(`<div class="counter">${k+1} / ${items.length}</div>`), h(`<div class="sortcard pop">${esc(it.t)}</div>`));
+    const two=h('<div class="two"><button class="btn no">✕ Не подходит</button><button class="btn yes">✓ Подходит</button></div>');
+    const [bn,by]=two.children, card=wrap.children[1];
+    const pick=ans=>{
+      bn.disabled=by.disabled=true; card.classList.add(ans?'fly-yes':'fly-no');
+      if(ans===it.ok){ reward(ctx,50,ans?by:bn); say(ctx,true,'Верно!',it.why); } else { penalty(ctx,ans?by:bn); say(ctx,false,'Ошибка',it.why); }
+      if(run.hearts===0){ nextBtn(ctx); return; }
+      const nx=h('<button class="btn">Следующая</button>');
+      nx.onclick=()=>{ sfx.click(); k++; show(); };
+      ctx.nav.replaceChildren(nx); nx.focus({preventScroll:true});
+    };
+    bn.onclick=()=>pick(false); by.onclick=()=>pick(true);
+    wrap.append(two);
+  }
+  ctx.body.append(wrap); show();
+}
+
+/* --- number --- */
+function tNumber(ctx){
+  const t=ctx.t; let v=t.start, timer=null;
+  const id=`n-${ctx.l.id}-${run.ti}`;
+  const d=h(`<div class="dial"><button class="round" aria-label="Меньше">−</button><input id="${id}" inputmode="decimal" aria-label="Ответ" value="${fmt(v,t.dec)}"><button class="round" aria-label="Больше">+</button><span class="unit">${esc(t.unit)}</span></div>`);
+  const [mi,inp,pl]=d.children;
+  const set=x=>{v=Math.min(t.max,Math.max(t.min,Math.round(x/t.step)*t.step)); inp.value=fmt(v,t.dec);};
+  const stop=()=>{clearTimeout(timer); timer=null;};
+  const hold=(btn,dir)=>{
+    const go=()=>{set(v+dir*t.step); tone(600,.03,'square',.05);};
+    btn.addEventListener('pointerdown',e=>{ e.preventDefault(); stop(); go(); let delay=380; const loop=()=>{go(); delay=Math.max(45,delay*.8); timer=setTimeout(loop,delay);}; timer=setTimeout(loop,delay); });
+    ['pointerup','pointerleave','pointercancel'].forEach(ev=>btn.addEventListener(ev,stop));
+    btn.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
+  };
+  hold(mi,-1); hold(pl,1);
+  inp.onchange=()=>{const x=parseFloat(inp.value.replace(',','.')); set(isNaN(x)?v:x);};
+  inp.onkeydown=e=>{ if(e.key==='Enter') ch.click(); };
+  const ch=h('<button class="btn gold">Проверить</button>');
+  ch.onclick=()=>{
+    stop(); inp.onchange();
+    [mi,inp,pl].forEach(e=>e.disabled=true); ch.remove();
+    const ok=v>=t.lo-1e-9&&v<=t.hi+1e-9;
+    const ans=t.lo===t.hi?fmt(t.lo,t.dec):fmt(t.lo,t.dec)+'–'+fmt(t.hi,t.dec);
+    if(ok){ reward(ctx,120,inp); say(ctx,true,'Расчёт верный!',t.why); }
+    else { penalty(ctx,inp); say(ctx,false,`Правильно: ${ans} ${t.unit}`,t.why); }
+    nextBtn(ctx);
+  };
+  ctx.body.append(d); ctx.nav.append(ch);
+}
+
+/* --- hold --- */
+function tHold(ctx){
+  const t=ctx.t, MAX=7;
+  const z=h(`<div class="holdzone">
+    <div class="scene" style="width:100%">${SCENES.leak()}<span class="cap">Держи пробку!</span></div>
+    <div class="timer"><span id="tm">0,0</span> <small>мин</small></div>
+    <div class="gauge"><div class="zone" style="left:${t.lo/MAX*100}%;width:${(t.hi-t.lo)/MAX*100}%"></div><div class="fill"></div></div>
+    <div class="ticks">${rep(MAX+1,m=>`<span style="left:${m/MAX*100}%">${m}</span>`)}</div>
+    <button class="holdbtn" id="hb">Прижать<br>и держать</button>
+    <p class="hint" style="text-align:center">Удерживай пальцем, мышью или пробелом. Отпусти в зелёной зоне.</p>
+  </div>`);
+  const tm=z.querySelector('#tm'), fill=z.querySelector('.fill'), btn=z.querySelector('#hb'), water=z.querySelector('.water');
+  let t0=0, raf=0, on=false, fin=false, sec=0;
+  const tick=()=>{ const m=(performance.now()-t0)/1000; tm.textContent=fmt(m,1); fill.style.width=Math.min(100,m/MAX*100)+'%';
+    if(Math.floor(m)>sec){sec=Math.floor(m); tone(m>=t.lo&&m<=t.hi?880:440,.05,'square',.06);}
+    if(m>=MAX){up();return;} raf=requestAnimationFrame(tick); };
+  const down=e=>{ if(fin||on||run.hearts===0) return; e&&e.preventDefault(); on=true; sec=0; btn.classList.add('on'); water.style.visibility='hidden'; t0=performance.now(); raf=requestAnimationFrame(tick); };
+  const up=()=>{
+    if(!on||fin) return; on=false; cancelAnimationFrame(raf); btn.classList.remove('on');
+    const m=(performance.now()-t0)/1000;
+    if(m<t.lo){
+      water.style.visibility='';
+      const dead=penalty(ctx,btn);
+      say(ctx,false,`Рано: ${fmt(m,1)} мин`,'Состав не схватился, и вода выдавила пробку! '+t.why);
+      if(dead){ fin=true; btn.disabled=true; nextBtn(ctx); }
+      return;
+    }
+    fin=true; btn.disabled=true;
+    if(m<=t.hi){ reward(ctx,150,btn); say(ctx,true,`Течь остановлена за ${fmt(m,1)} мин!`,t.why); }
+    else { reward(ctx,60,btn); say(ctx,true,`Течь остановлена, но ты держал ${fmt(m,1)} мин`,'Можно было отпустить раньше. '+t.why); }
+    nextBtn(ctx);
+  };
+  btn.addEventListener('pointerdown',down);
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>btn.addEventListener(ev,up));
+  btn.addEventListener('contextmenu',e=>e.preventDefault());
+  btn.addEventListener('keydown',e=>{if((e.code==='Space'||e.key==='Enter')&&!e.repeat)down(e);});
+  btn.addEventListener('keyup',e=>{if(e.code==='Space'||e.key==='Enter')up();});
+  ctx.body.append(z);
+}
+
+/* ================= END SCREENS ================= */
+function win(){
+  const l=LEVELS[run.li], stars=run.hearts, i=run.li;
+  const prev=save.lv[l.id];
+  save.lv[l.id]={stars:Math.max(stars,prev?.stars||0), coins:Math.max(run.coins,prev?.coins||0)};
+  persist(); refreshTop(); sfx.win(); confetti();
+  const hasNext=i<LEVELS.length-1;
+  const p=h(`<section class="panel pop"><div class="result">
+    ${mascot('wow','bounce')}
+    <h2>Объект сдан!</h2>
+    <p class="muted">${esc(l.title)} · ${esc(l.product)}</p>
+    <div class="bigstars">${[0,1,2].map(j=>icon(j<stars?'i-star':'i-star-off')).join('')}</div>
+    <div class="tally">
+      <div class="tile"><b>${run.coins}</b><span>монет</span></div>
+      <div class="tile"><b>${run.hearts}/3</b><span>сердечек</span></div>
+    </div>
+    <p>${stars===3?'Без единой ошибки! Заказчик в восторге.':stars===2?'Хорошая работа, почти без ошибок.':'Объект сдан на грани. Попробуй пройти на 3 звезды!'}</p>
+    <div class="row center">
+      <button class="btn ghost" id="again">Ещё раз</button>
+      <button class="btn ghost" id="map">Карта</button>
+      <button class="btn gold" id="next">${hasNext?'Следующий объект':'Удостоверение'}</button>
+    </div></div></section>`);
+  p.querySelector('#again').onclick=()=>{sfx.click(); start(i);};
+  p.querySelector('#map').onclick=()=>{sfx.click(); home();};
+  p.querySelector('#next').onclick=()=>{sfx.click(); hasNext?intro(i+1):certificate();};
+  mount(p);
+}
+function lose(){
+  sfx.lose(); const i=run.li;
+  const p=h(`<section class="panel pop"><div class="result">
+    ${mascot('sad')}
+    <h2 style="color:var(--bad-deep)">Объект провален</h2>
+    <p class="muted">Сердечки закончились. Перечитай подсказки Капитана Трона и попробуй снова. Цифры есть в «Справочнике».</p>
+    <div class="row center"><button class="btn ghost" id="map">Карта</button><button class="btn ghost" id="talk">Брифинг</button><button class="btn gold" id="again">Заново</button></div>
+  </div></section>`);
+  p.querySelector('#again').onclick=()=>{sfx.click(); start(i);};
+  p.querySelector('#talk').onclick=()=>{sfx.click(); intro(i);};
+  p.querySelector('#map').onclick=()=>{sfx.click(); home();};
+  mount(p);
+}
+function certificate(){
+  const st=totalStars(), rank=RANKS.find(r=>st>=r[0])[1];
+  confetti(); sfx.win();
+  const p=h(`<section class="panel pop"><div class="result">
+    <div class="cert">
+      <svg viewBox="0 0 89 100" style="width:44px;height:50px;color:#fff" aria-hidden="true"><use href="#kt-drop"/></svg>
+      <small>Удостоверение № ${String(1000+total()).padStart(4,'0')}</small>
+      <h2 style="color:#fff">Школа мастера КТ ТРОН</h2>
+      <p style="color:#ffffffcc">Присвоена квалификация</p>
+      <div class="rank">${esc(rank)}</div>
+      <p style="color:#fff;font-weight:800">${st} из 15 ★ · ${total()} монет</p>
+    </div>
+    ${st<15?`<p class="muted">Собери все 15 звёзд: перепройди уровни без ошибок.</p>`:''}
+    <h3 style="color:var(--brand-deep)">Готов к настоящему объекту?</h3>
+    <p class="muted">Официальный дистрибьютор в Казахстане: ТОО DARHAN, Алматы, ул. Шевченко 118. Подберём материалы и посчитаем расход под ваш объект. В WhatsApp обычно отвечаем в течение часа.</p>
+    <div class="cta">
+      <a class="btn green" href="${WA}" target="_blank" rel="noopener">Написать в WhatsApp</a>
+      <a class="btn" href="${SITE}/calculator/" target="_blank" rel="noopener">Калькулятор расхода</a>
+      <a class="btn ghost" href="${SITE}/#catalog" target="_blank" rel="noopener">Каталог</a>
+    </div>
+    <p style="font-weight:800;user-select:all">+7 775 181-05-95 · info@kttron.kz</p>
+    <div class="row center"><button class="btn ghost" id="map">Карта</button><button class="smallbtn" id="reset">Сбросить прогресс</button></div>
+  </div></section>`);
+  p.querySelector('#map').onclick=()=>{sfx.click(); home();};
+  const r=p.querySelector('#reset');
+  r.onclick=()=>{ if(r.dataset.sure){ save.lv={}; persist(); home(); } else { r.dataset.sure=1; r.textContent='Точно сбросить? Нажми ещё раз'; } };
+  mount(p);
+}
+
+home();
+</script>
+</body>
+</html>
