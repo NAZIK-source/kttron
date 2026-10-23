@@ -3,7 +3,7 @@
 
 Источники (всё уже лежит в репозитории):
   index.html           — карточки каталога: название, описание, фасовка, фото, ссылка на kttron.ru
-  assets/main-B89Pv38-.js — раздел каталога для каждого товара
+  assets/main-B89Pv38-o221.js — раздел каталога для каждого товара
   specs.json           — таблицы характеристик завода
   prices.json          — цены «от … ₸ за 1 кг» (на странице их потом обновляет kt-prices.js)
   calculator/index.html — какие товары есть в калькуляторе
@@ -88,7 +88,7 @@ def price_info(prices, name):
 
 def load_products():
     index = (ROOT / 'index.html').read_text(encoding='utf-8')
-    bundle = (ROOT / 'assets/main-B89Pv38-.js').read_text(encoding='utf-8')
+    bundle = (ROOT / 'assets/main-B89Pv38-o221.js').read_text(encoding='utf-8')
     cats = dict(re.findall(r'\{id:`(p\d+)`,name:`[^`]*`[\s\S]*?category:`([^`]*)`', bundle))
     products = []
     for card in re.findall(r'<article class="product">(.*?)</article>', index, re.S):
@@ -253,7 +253,7 @@ def build_page(template_head, template_tail, p, products, specs, prices, calc_id
 '''
     main += f'''          <p class="muted">Источник: <a href="{p['source']}" target="_blank" rel="noopener">kttron.ru</a></p>
           <h2>{e(name)} в Алматы</h2>
-          <p>{e(name)}{" (" + e(fname) + ")" if alt else ""} — материал завода КТ ТРОН. ТОО DARHAN — официальный дистрибьютор завода в Казахстане: склад и консультации в Алматы, ул. Шевченко 118, доставка по Казахстану. Цену с учётом объёма, наличие и подбор материала под ваш объект подскажем в WhatsApp или по телефону <a href="tel:+77751810595">+7 775 181-05-95</a>.</p>
+          <p>{e(name)}{" (" + e(fname) + ")" if alt else ""} — материал завода КТ ТРОН. ТОО DARHAN — официальный дистрибьютор завода в Казахстане: склад и консультации в Алматы, ул. Шевченко 118, офис 221, доставка по Казахстану. Цену с учётом объёма, наличие и подбор материала под ваш объект подскажем в WhatsApp или по телефону <a href="tel:+77751810595">+7 775 181-05-95</a>.</p>
 '''
     if related:
         main += f'''          <h2>Другие материалы раздела «{e(CATEGORIES.get(p['category'], ''))}»</h2>
@@ -321,7 +321,7 @@ def materials_index(template_head, template_tail, products, prices):
           <nav class="crumbs" aria-label="Хлебные крошки"><a href="/">Главная</a> / Материалы</nav>
           <p class="eyebrow">Официальный дистрибьютор в Казахстане</p>
           <h1>Материалы КТ ТРОН в Алматы</h1>
-          <p class="muted">{len(products)} материалов завода КТ ТРОН (КТтрон): у каждого своя страница с ценой «от», характеристиками и расходом. Склад и консультации — Алматы, ул. Шевченко 118.</p>
+          <p class="muted">{len(products)} материалов завода КТ ТРОН (КТтрон): у каждого своя страница с ценой «от», характеристиками и расходом. Склад и консультации — Алматы, ул. Шевченко 118, офис 221.</p>
           <p class="related">Популярные задачи: <a href="/gidroizolyaciya/fundamenta/">Гидроизоляция фундамента</a><a href="/gidroizolyaciya/podvala/">Гидроизоляция подвала</a><a href="/gidroizolyaciya/basseyna/">Гидроизоляция бассейна</a><a href="/remont-betona/">Ремонт бетона</a></p>
 {"".join(blocks)}        </div>
       </section>
