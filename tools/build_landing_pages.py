@@ -374,6 +374,141 @@ def patch_gidro(prices):
     path.write_text(s, encoding='utf-8')
 
 
+# Калькулятор: под формой — как считать, таблица норм (из списка materials в самой странице), примеры и вопросы
+CALC_START, CALC_END = '      <!-- calc-guide -->\n', '      <!-- /calc-guide -->\n'
+CALC_LD_START, CALC_LD_END = '    <!-- calc-ld -->\n', '    <!-- /calc-ld -->\n'
+CALC_TITLE = 'Калькулятор расхода КТ ТРОН (КТтрон): гидроизоляция и ремонт бетона на 1 м² — Алматы'
+CALC_DESC = ('Расход гидроизоляции и ремонтных составов КТ ТРОН на 1 м² по нормам завода: КТ ТРОН-1, 7, 10, '
+             'КТ ТРОН-3, 4, подливочные, швы. Мешки и ориентировочная цена, склад в Алматы.')
+CALC_EXAMPLES = [
+    Example(what='Проникающая гидроизоляция 100 м² подвала', name='КТ ТРОН-1', norm=(0.8, 1.2), area=100, pack_word='вед.'),
+    Example(what='Обмазочная гидроизоляция 50 м² слоем 2 мм', name='КТ ТРОН-7', norm=(1.55, 1.55), area=50, thick=2),
+    Example(what='Ремонт 10 м² бетона слоем 20 мм', name='КТ ТРОН-3 Т400', norm=(1850, 1850), area=10, thick=20, scale=0.001),
+    Example(what='Зачеканка 20 м шва сечением 30×30 мм', name='КТ ТРОН-2', norm=(1750, 1750), area=20, thick=1, scale=0.03 * 0.03),
+]
+CALC_FAQ = [
+    ('Как посчитать расход гидроизоляции на 1 м²?',
+     'У проникающих составов норма дана на 1 м²: КТ ТРОН-1 и КТ ТРОН-11 — 0,8–1,2 кг/м². У обмазочных и эластичных — на 1 мм слоя: '
+     'КТ ТРОН-7 — 1,55 кг/м², КТ ТРОН-10 1К — 1,5 кг/м² на каждый миллиметр. Умножьте площадь на норму, а для обмазочных ещё и на толщину слоя (обычно 2–4 мм).'),
+    ('Сколько ремонтного состава нужно на 1 м²?',
+     'Норма ремонтных составов указана на 1 м³ раствора, например 1850 кг для КТ ТРОН-3 Т400. На 1 м² при слое 1 мм это 1,85 кг, '
+     'при слое 20 мм — 37 кг. Формула: площадь, м² × толщина, мм × норма ÷ 1000.'),
+    ('Почему калькулятор считает с запасом?',
+     'Материал продают целыми мешками, поэтому результат округляется вверх. Реальный расход зависит от ровности и впитываемости основания, '
+     'поэтому для точного количества пришлите фото объекта в WhatsApp. Цена указана ориентировочно, без доставки.'),
+]
+
+
+def fmt_num2(x):
+    return (f'{x:.2f}'.rstrip('0').rstrip('.')).replace('.', ',')
+
+
+def calc_norm_text(m):
+    lo, hi = m['min'], m['max']
+    val = fmt_num2(lo) if lo == hi else f'{fmt_num2(lo)}–{fmt_num2(hi)}'
+    if m['mode'] == 'area':
+        return f'{val} кг/м²'
+    if m['mode'] == 'mm':
+        return f'{val} кг/м² на 1 мм' + (' сухой смеси' if m.get('kit') else '')
+    t = m.get('thick')
+    t_s = fmt_num2(t)
+    if m['mode'] == 'seam':
+        per_m = lo * (t / 1000) ** 2
+        return f'{fmt_price(lo)} кг/м³; шов {t_s}×{t_s} мм — {fmt_num2(per_m)} кг на 1 м'
+    per_m2 = lo * t / 1000
+    return f'{fmt_price(lo)} кг/м³; слой {t_s} мм — {fmt_num2(per_m2)} кг/м²'
+
+
+def calc_materials(s):
+    js = s[s.index('const materials = ['):s.index('];', s.index('const materials = ['))]
+    out = []
+    for row in re.findall(r'\{[^{}]*\}', js):
+        m = {k: v for k, v in re.findall(r'(\w+): "([^"]*)"', row)}
+        m.update({k: float(v) for k, v in re.findall(r'(\w+): ([\d.]+)', row)})
+        out.append(m)
+    return out
+
+
+def patch_calculator(prices, pack_of):
+    path = ROOT / 'calculator/index.html'
+    s = path.read_text(encoding='utf-8')
+    pages = json.loads((ROOT / 'pages.json').read_text(encoding='utf-8'))
+    rows, group = [], None
+    for m in calc_materials(s):
+        if m['group'] != group:
+            group = m['group']
+            rows.append(f'              <tr class="calc-group"><th colspan="3">{e(group)}</th></tr>')
+        price, unit = price_info(prices, m['name'])
+        p = f'{fmt_price(price)}' if price and unit == 'кг' else 'по запросу'
+        rows.append(f'              <tr><td><a href="{pages[m["name"]]}">{e(m["name"])}</a></td>'
+                    f'<td data-label="Норма">{calc_norm_text(m)}</td><td data-label="Цена от, ₸/кг">{p}</td></tr>')
+    examples = '\n'.join(f'            <li>{example_text(ex, prices, pack_of)}</li>' for ex in CALC_EXAMPLES)
+    faq = '\n'.join(f'          <details class="faq"><summary>{e(q)}</summary><p>{e(a)}</p></details>' for q, a in CALC_FAQ)
+    guide = f'''{CALC_START}      <section class="section" id="kak-schitat">
+        <div class="shell calc-guide">
+          <h2>Как рассчитать расход материалов КТ ТРОН</h2>
+          <p>Нормы расхода взяты из технических описаний завода. Они указаны по-разному, и калькулятор выше учитывает это сам:</p>
+          <ul>
+            <li><strong>На 1 м²</strong> — проникающая гидроизоляция (КТ ТРОН-1, КТ ТРОН-11) и плиточный клей КТ ТРОН-101: килограммы = площадь × норма.</li>
+            <li><strong>На 1 м² на каждый 1 мм слоя</strong> — обмазочная и эластичная гидроизоляция (КТ ТРОН-7, 71, 10, 122 флекс), праймер: килограммы = площадь × толщина × норма.</li>
+            <li><strong>На 1 м³ раствора</strong> — ремонтные, торкрет- и подливочные составы: килограммы = площадь, м² × толщина, мм × норма ÷ 1000.</li>
+            <li><strong>Швы</strong> (КТ ТРОН-2, WX-32T): килограммы = длина шва × ширина × глубина × норма на 1 м³.</li>
+          </ul>
+          <h3>Примеры расчёта</h3>
+          <ul class="calc-examples">
+{examples}
+          </ul>
+          <p class="muted">Цены «от» по прайсу завода для Казахстана, без доставки. Количество округлено до целых мешков.</p>
+          <h3>Нормы расхода материалов КТ ТРОН</h3>
+          <div class="calc-table-wrap">
+            <table class="calc-table">
+              <thead><tr><th>Материал</th><th>Норма расхода</th><th>Цена от, ₸/кг</th></tr></thead>
+              <tbody>
+{chr(10).join(rows)}
+              </tbody>
+            </table>
+          </div>
+          <h3>Частые вопросы</h3>
+{faq}
+          <p class="gidro-links">Подробнее о материалах: <a href="/gidroizolyaciya/">гидроизоляция в Алматы</a> · <a href="/remont-betona/">ремонт бетона</a> · <a href="/materials/">все материалы</a></p>
+        </div>
+      </section>
+{CALC_END}'''
+    if CALC_START in s:
+        s = s[:s.index(CALC_START)] + guide + s[s.index(CALC_END) + len(CALC_END):]
+    else:
+        s = s.replace('    </main>', guide + '    </main>', 1)
+    ld = [
+        {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': SITE + '/'},
+            {'@type': 'ListItem', 'position': 2, 'name': 'Калькулятор расхода', 'item': SITE + '/calculator/'}]},
+        {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': [
+            {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in CALC_FAQ]},
+    ]
+    blocks = CALC_LD_START + '\n'.join(
+        '    <script type="application/ld+json">\n' + json.dumps(d, ensure_ascii=False, indent=2).replace('</', '<\\/') + '\n    </script>'
+        for d in ld) + '\n' + CALC_LD_END
+    css = ('    <style>.calc-guide>p,.calc-guide li{max-width:860px}.calc-guide h3{margin:1.6rem 0 .6rem}'
+           '.calc-table-wrap{overflow-x:auto}.calc-table{width:100%;border-collapse:collapse;font-size:.92rem;background:#fff}'
+           '.calc-table th,.calc-table td{padding:.5rem .7rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}'
+           '.calc-table thead th{background:var(--paper);font-size:.85rem}.calc-table .calc-group th{background:var(--brand-soft,#e5f5fc);color:var(--brand-deep)}'
+           '.calc-table td:last-child{white-space:nowrap;font-weight:700;color:var(--brand-deep)}'
+           '#kak-schitat a{color:var(--brand-deep);text-decoration:underline}'
+           '.faq{border-bottom:1px solid var(--line);padding:.7rem 0;max-width:860px}.faq summary{font-weight:700;cursor:pointer}.faq p{margin:.5rem 0 0;color:var(--muted)}'
+           '@media (max-width:640px){.calc-table thead{display:none}.calc-table tr{display:block;padding:.5rem 0;border-bottom:1px solid var(--line)}'
+           '.calc-table td,.calc-table th{display:flex;justify-content:space-between;gap:12px;border:0;padding:.2rem}'
+           '.calc-table td[data-label]::before{content:attr(data-label);color:var(--muted)}.calc-table td:last-child{white-space:normal}}</style>\n')
+    blocks = blocks[:-len(CALC_LD_END)] + css + CALC_LD_END
+    if CALC_LD_START in s:
+        s = s[:s.index(CALC_LD_START)] + blocks + s[s.index(CALC_LD_END) + len(CALC_LD_END):]
+    else:
+        s = s.replace('  </head>', blocks + '  </head>', 1)
+    s = re.sub(r'<title>.*?</title>', f'<title>{e(CALC_TITLE)}</title>', s, count=1, flags=re.S)
+    s = re.sub(r'<meta name="description" content="[^"]*"', f'<meta name="description" content="{e(CALC_DESC)}"', s, count=1)
+    s = re.sub(r'<meta property="og:title" content="[^"]*"', f'<meta property="og:title" content="{e(CALC_TITLE)}"', s, count=1)
+    path.write_text(s, encoding='utf-8')
+
+
 def main():
     template = (ROOT / 'materials/kt-tron-3/index.html').read_text(encoding='utf-8')
     head = template[:template.index('    <main id="top">')]
@@ -399,7 +534,10 @@ def main():
             sitemap = sitemap.replace('</urlset>', f'  <url><loc>{loc}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>\n</urlset>')
     (ROOT / 'sitemap.xml').write_text(sitemap, encoding='utf-8')
     patch_gidro(prices)
-    print(f'страниц собрано: {len(PAGES)}, таблица цен на /gidroizolyaciya/ обновлена')
+    pack_of = {p['name']: float(re.search(r'[\d,]+', p['pack']).group(0).replace(',', '.')) if re.search(r'\d', p['pack']) else 25
+               for p in products}
+    patch_calculator(prices, pack_of)
+    print(f'страниц собрано: {len(PAGES)}, таблица цен на /gidroizolyaciya/ и справка калькулятора обновлены')
 
 
 if __name__ == '__main__':
