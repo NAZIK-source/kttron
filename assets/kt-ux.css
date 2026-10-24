@@ -1,0 +1,48 @@
+/* Общие правки удобства для всех страниц: контраст, размер кнопок, карточка товара на телефоне,
+   свёрнутый каталог на главной и «Показать ещё» на странице объектов (см. kt-ux.js). */
+
+/* Контраст: фирменный #0093dd на белом даёт 3,4:1, для мелкого текста нужно от 4,5:1.
+   Кнопки и мелкие подписи — более тёмным синим, шапка и логотип остаются фирменного цвета. */
+:root { --kt-ink-blue: #006a9e; --kt-btn-blue: #0077b3; --kt-btn-blue-hover: #005f8f; }
+.btn-solid, .chip.is-active { background: var(--kt-btn-blue); border-color: var(--kt-btn-blue); }
+.btn-solid:hover, .btn-solid:focus-visible { background: var(--kt-btn-blue-hover); border-color: var(--kt-btn-blue-hover); }
+/* Простой селектор: тёмные блоки со своим цветом подписи (.hero .eyebrow и т. п.) его перебивают */
+.eyebrow { color: var(--kt-ink-blue); }
+.product .pack, .product .price, .product-grid a:not(.btn), .material-page a:not(.btn), .crumbs a, .cert-card a.cert-open, .calc-table .calc-group th { color: var(--kt-ink-blue); }
+main p a:not(.btn), main li a:not(.btn), .related a { color: var(--kt-ink-blue); }
+
+/* Видимая рамка фокуса для клавиатуры */
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #9ad6f5; outline-offset: 2px;
+}
+
+/* Размер нажатия на телефоне — не меньше 44 px */
+@media (max-width: 800px) {
+  .lang a { min-width: 44px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; }
+  .chip { min-height: 44px; }
+  .product-actions .btn { min-height: 44px; }
+  .product details > summary { padding: .8rem 0; }
+  .request-close { width: 44px; height: 44px; }
+}
+
+/* Карточка товара на телефоне: название, назначение, цена и кнопка WhatsApp — первым экраном,
+   потом фото, длинный текст и калькулятор */
+@media (max-width: 800px) {
+  .material-page .material-layout { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+  .material-page .material-layout h1 { margin: .3rem 0 .2rem; }
+  .material-page .material-layout .facts { grid-template-columns: 1fr 1fr; margin: 12px 0; }
+  .material-page .material-layout > div { display: contents; }
+  .material-page .material-layout > *, .material-page .material-layout > div > * { order: 9; }
+  .material-page .material-layout > div > .eyebrow { order: 1; }
+  .material-page .material-layout > div > h1 { order: 2; }
+  .material-page .material-layout > div > .aka { order: 3; }
+  .material-page .material-layout > div > p.muted { order: 4; }
+  .material-page .material-layout > div > .facts { order: 5; }
+  .material-page .material-layout > div > .hero-cta { order: 6; margin-bottom: .8rem; }
+  .material-page .material-layout > img { order: 7; max-height: 200px; width: 100%; object-fit: contain; margin-bottom: .8rem; }
+}
+
+/* Главная: пока не выбран раздел и нет поиска — только ходовые материалы */
+#productGrid.kt-collapsed .product:not(.kt-pop) { display: none; }
+.kt-more { display: flex; justify-content: center; margin: 1.2rem 0 0; }
+.kt-more[hidden] { display: none; }

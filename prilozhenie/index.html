@@ -38,10 +38,11 @@
           if (!el) return;
           var href = el.getAttribute('href') || '';
           if (el.id === 'requestSend') goal('request_send');
-          else if (/wa\.me|whatsapp/i.test(href)) goal('whatsapp');
+          else if (el.id === 'send' && document.getElementById('estimator')) goal('calc_send');
+          else if (/wa\.me|whatsapp/i.test(href)) { goal('whatsapp'); if (/^\/materials\/[^\/]+\//.test(location.pathname)) goal('product_whatsapp'); }
           else if (href.indexOf('tel:') === 0) goal('phone');
           else if (href.indexOf('mailto:') === 0) goal('email');
-          else if (el.hasAttribute('data-add')) goal('add_to_request');
+          else if (el.hasAttribute('data-add') || el.id === 'lightboxAdd') goal('add_to_request');
         }, true);
         document.addEventListener('submit', function(e){
           if (e.target && e.target.id === 'leadForm') goal('lead_form');
@@ -50,6 +51,7 @@
     </script>
     <!-- /Yandex.Metrika counter -->
       <style>html:not(.kt-acc) .account-link{display:none!important}@media (min-width:981px){.nav .nav-account{display:none}}</style>
+    <link rel="stylesheet" href="/assets/kt-ux.css?v=1" />
   </head>
   <body>
 <noscript><div><img src="https://mc.yandex.ru/watch/113689719" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -200,5 +202,6 @@
 
     <script src="/assets/kt-prices.js?v=1" defer></script>
     <script src="/assets/account.js?v=2" defer></script>
+    <script src="/assets/kt-ux.js?v=1" defer></script>
   </body>
 </html>
