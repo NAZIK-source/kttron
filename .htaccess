@@ -4,3 +4,10 @@ ErrorDocument 404 /404.html
 <FilesMatch "^(README\.md|\.gitignore|\.gitattributes)$">
     Require all denied
 </FilesMatch>
+
+# www.kttron.kz → kttron.kz (один адрес сайта для поисковиков)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_HOST} ^www\.kttron\.kz$ [NC]
+    RewriteRule ^ https://kttron.kz%{REQUEST_URI} [R=301,L]
+</IfModule>

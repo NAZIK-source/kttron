@@ -91,10 +91,11 @@
           if (!el) return;
           var href = el.getAttribute('href') || '';
           if (el.id === 'requestSend') goal('request_send');
-          else if (/wa\.me|whatsapp/i.test(href)) goal('whatsapp');
+          else if (el.id === 'send' && document.getElementById('estimator')) goal('calc_send');
+          else if (/wa\.me|whatsapp/i.test(href)) { goal('whatsapp'); if (/^\/materials\/[^\/]+\//.test(location.pathname)) goal('product_whatsapp'); }
           else if (href.indexOf('tel:') === 0) goal('phone');
           else if (href.indexOf('mailto:') === 0) goal('email');
-          else if (el.hasAttribute('data-add')) goal('add_to_request');
+          else if (el.hasAttribute('data-add') || el.id === 'lightboxAdd') goal('add_to_request');
         }, true);
         document.addEventListener('submit', function(e){
           if (e.target && e.target.id === 'leadForm') goal('lead_form');
@@ -129,6 +130,7 @@
     </style>
     <style>.toast{width:max-content;justify-content:space-between}@media (max-width:640px){.toast{left:12px;right:12px;width:auto;max-width:none;transform:none;bottom:146px;border-radius:16px}}</style>
     <style>.request-overlay{z-index:240}.request-drawer{z-index:250;width:min(360px,100%);gap:.6rem;padding:1rem 1rem 1.1rem}.request-head h2{font-size:1.2rem}.request-head .eyebrow{margin:0 0 .2rem}.request-close{width:36px;height:36px;flex:none}.request-drawer>.muted{margin:0;font-size:.88rem}.request-item{grid-template-columns:44px 1fr auto;gap:8px;padding:.5rem .6rem}.request-item img{width:44px;height:44px}.request-item .qty{margin-top:3px}.request-note textarea{min-height:64px;height:64px;padding:.6rem .8rem}.request-actions .btn-lg{padding-top:.8rem;padding-bottom:.8rem}body:has(.request-drawer.is-open) .fab-stack,body:has(.request-drawer.is-open) .toast{display:none!important}@media (max-width:480px){.request-drawer{width:100%}}@supports (height:100dvh){.request-drawer{height:100dvh}}</style>
+    <link rel="stylesheet" href="/assets/kt-ux.css?v=1" />
   </head>
   <body>
 <noscript><div><img src="https://mc.yandex.ru/watch/113689719" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -435,5 +437,6 @@
       });
     </script>
     <script src="/assets/account.js?v=2" defer></script>
+    <script src="/assets/kt-ux.js?v=1" defer></script>
   </body>
 </html>
