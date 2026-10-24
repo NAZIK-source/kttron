@@ -76,6 +76,32 @@
     apply();
   }
 
+  // Ссылка «Перейти к содержимому» первой в странице
+  var main = document.querySelector('main');
+  if (main) {
+    if (!main.id) main.id = 'top';
+    var skip = document.createElement('a');
+    skip.className = 'kt-skip';
+    skip.href = '#' + main.id;
+    skip.textContent = { ru: 'Перейти к содержимому', kk: 'Мазмұнға өту', tg: 'Ба мундариҷа гузаштан', uz: 'Asosiy qismga o‘tish' }[lang] || 'Перейти к содержимому';
+    document.body.insertBefore(skip, document.body.firstChild);
+  }
+
+  // Кнопка звонка в шапке на телефоне (номер на узких экранах спрятан в меню)
+  var tel = document.querySelector('.header-contacts a[href^="tel:"]');
+  var langBox = document.querySelector('.header-aside .lang');
+  var aside = document.querySelector('.header-top-in .header-aside');
+  if (tel && aside && !document.querySelector('.kt-call')) {
+    var call = document.createElement('a');
+    call.className = 'kt-call';
+    call.href = tel.getAttribute('href');
+    call.setAttribute('aria-label', tel.textContent.trim());
+    call.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>';
+    // Перед языками, а где их нет — в правую часть шапки
+    if (langBox) langBox.parentNode.insertBefore(call, langBox);
+    else aside.insertBefore(call, aside.firstChild);
+  }
+
   // 3. Окно заявки
   var drawer = document.getElementById('requestDrawer');
   if (drawer) {

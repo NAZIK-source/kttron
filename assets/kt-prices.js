@@ -1,4 +1,4 @@
-// Цены «от … ₸ за 1 кг» из /prices.json.
+// Цены «от … ₸ за 1 кг» и «≈ … ₸ / 25 кг» за упаковку из /prices.json.
 // Подставляет цену в карточки каталога, на страницы материалов и в калькулятор.
 // Нет цены в файле — остаётся «Цена по запросу».
 (function () {
@@ -27,14 +27,32 @@
     return t.from.replace('{p}', fmt(e.price)).replace('{u}', unit);
   }
 
+  // Цена за упаковку: прораб считает мешками. Двухкомпонентные продаются комплектом 33,5 кг
+  function packKg(name, text) {
+    if (/10 2К|122 флекс/.test(name)) return 33.5;
+    var m = String(text || '').match(/(\d+(?:[.,]\d+)?)\s*(кг|kg)/i);
+    return m ? parseFloat(m[1].replace(',', '.')) : 0;
+  }
+
+  function packLine(e, kg) {
+    if (!e || e.unit !== 'кг' || !kg) return null;
+    var el = document.createElement('small');
+    el.className = 'kt-pack-price';
+    el.textContent = '≈ ' + fmt(e.price * kg) + ' ₸ / ' + String(kg).replace('.', ',') + ' ' + t.kg;
+    return el;
+  }
+
   function patchCards(root) {
     var cards = (root || document).querySelectorAll('.product');
     for (var i = 0; i < cards.length; i++) {
       var h = cards[i].querySelector('h3'), box = cards[i].querySelector('.price');
       var e = h && box && entry(h.textContent);
       if (!e || box.getAttribute('data-kt-price') === String(e.price)) continue;
-      var hint = box.querySelector('small');
+      var hint = box.querySelector('small:not(.kt-pack-price)');
+      var pack = cards[i].querySelector('.pack');
       box.textContent = label(e);
+      var line = packLine(e, packKg(h.textContent, pack && pack.textContent));
+      if (line) box.appendChild(line);
       if (hint) box.appendChild(hint);
       box.setAttribute('data-kt-price', String(e.price));
     }
@@ -45,10 +63,18 @@
     var h1 = document.querySelector('.material-page h1');
     var e = h1 && entry(h1.textContent);
     if (!e) return;
-    var facts = document.querySelectorAll('.fact');
+    var facts = document.querySelectorAll('.fact'), packText = '';
+    for (var j = 0; j < facts.length; j++) {
+      var ps = facts[j].querySelector('span'), pb = facts[j].querySelector('b');
+      if (ps && pb && /Фасовка/.test(ps.textContent)) packText = pb.textContent;
+    }
     for (var i = 0; i < facts.length; i++) {
       var s = facts[i].querySelector('span'), b = facts[i].querySelector('b');
-      if (s && b && /Цена/.test(s.textContent)) b.textContent = label(e);
+      if (s && b && /Цена/.test(s.textContent)) {
+        b.textContent = label(e);
+        var line = packLine(e, packKg(h1.textContent, packText));
+        if (line) b.appendChild(line);
+      }
     }
   }
 

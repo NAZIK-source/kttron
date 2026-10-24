@@ -3,7 +3,7 @@
 
 Источники (всё уже лежит в репозитории):
   index.html           — карточки каталога: название, описание, фасовка, фото, ссылка на kttron.ru
-  assets/main-B89Pv38-o221.js — раздел каталога для каждого товара
+  assets/main-B89Pv38-2410.js — раздел каталога для каждого товара
   specs.json           — таблицы характеристик завода
   prices.json          — цены «от … ₸ за 1 кг» (на странице их потом обновляет kt-prices.js)
   calculator/index.html — какие товары есть в калькуляторе
@@ -88,7 +88,7 @@ def price_info(prices, name):
 
 def load_products():
     index = (ROOT / 'index.html').read_text(encoding='utf-8')
-    bundle = (ROOT / 'assets/main-B89Pv38-o221.js').read_text(encoding='utf-8')
+    bundle = (ROOT / 'assets/main-B89Pv38-2410.js').read_text(encoding='utf-8')
     cats = dict(re.findall(r'\{id:`(p\d+)`,name:`[^`]*`[\s\S]*?category:`([^`]*)`', bundle))
     products = []
     for card in re.findall(r'<article class="product">(.*?)</article>', index, re.S):
@@ -198,7 +198,7 @@ def build_page(template_head, template_tail, p, products, specs, prices, calc_id
     alt = fname if fname != name else ''
     title = f'{fname} ({name}) — купить в Алматы, цена, характеристики' if alt else f'{name} — купить в Алматы, цена, характеристики'
     description = (f'{name}{" (" + fname + ")" if alt else ""} в Алматы: {p["desc"].rstrip(".")}. '
-                   f'Фасовка {p["pack"]}. Официальный дистрибьютор КТ ТРОН, склад в Алматы, доставка по Казахстану.')
+                   f'Фасовка {p["pack"]}. Официальный дистрибьютор КТ ТРОН, поставка под заказ по Алматы и Казахстану.')
 
     head = template_head
     head = re.sub(r'<title>.*?</title>', f'<title>{e(title)}</title>', head, flags=re.S)
@@ -237,7 +237,7 @@ def build_page(template_head, template_tail, p, products, specs, prices, calc_id
           <div class="material-layout">
             <img src="{p['image']}" alt="{e(name)} — {e(CATEGORIES.get(p['category'], '').lower())}" width="640" height="480" />
             <div>
-              <p class="eyebrow">{e(CATEGORIES.get(p['category'], ''))} · склад и консультации в Алматы</p>
+              <p class="eyebrow">{e(CATEGORIES.get(p['category'], ''))} · консультации и поставка под заказ в Алматы</p>
               <h1>{e(name)}</h1>
               <p class="aka">Также пишут: {e(aka)}</p>
               <p class="muted">{e(p['desc'])}</p>
@@ -257,7 +257,7 @@ def build_page(template_head, template_tail, p, products, specs, prices, calc_id
 '''
     main += f'''          <p class="muted">Источник: <a href="{p['source']}" target="_blank" rel="noopener">kttron.ru</a></p>
           <h2>{e(name)} в Алматы</h2>
-          <p>{e(name)}{" (" + e(fname) + ")" if alt else ""} — материал завода КТ ТРОН. ТОО DARHAN — официальный дистрибьютор завода в Казахстане: склад и консультации в Алматы, ул. Шевченко 118, офис 221, доставка по Казахстану. Цену с учётом объёма, наличие и подбор материала под ваш объект подскажем в WhatsApp или по телефону <a href="tel:+77751810595">+7 775 181-05-95</a>.</p>
+          <p>{e(name)}{" (" + e(fname) + ")" if alt else ""} — материал завода КТ ТРОН. ТОО DARHAN — официальный дистрибьютор завода в Казахстане: консультации и поставка под заказ в Алматы, ул. Шевченко 118, офис 221, доставка по Казахстану. Цену с учётом объёма, наличие и подбор материала под ваш объект подскажем в WhatsApp или по телефону <a href="tel:+77751810595">+7 775 181-05-95</a>.</p>
 '''
     if related:
         main += f'''          <h2>Другие материалы раздела «{e(CATEGORIES.get(p['category'], ''))}»</h2>
@@ -277,7 +277,7 @@ def patch_own_page(p, prices):
     name, fname = p['name'], factory_name(p['name'])
     title = f'{fname} ({name}) — купить в Алматы, цена, характеристики'
     description = (f'{name} ({fname}) в Алматы: {p["desc"].rstrip(".")}. '
-                   f'Фасовка {p["pack"]}. Официальный дистрибьютор КТ ТРОН, склад в Алматы, доставка по Казахстану.')
+                   f'Фасовка {p["pack"]}. Официальный дистрибьютор КТ ТРОН, поставка под заказ по Алматы и Казахстану.')
     s = re.sub(r'<title>.*?</title>', f'<title>{e(title)}</title>', s, flags=re.S)
     s = re.sub(r'<meta name="description" content="[^"]*"', f'<meta name="description" content="{e(description)}"', s)
     s = re.sub(r'<meta property="og:title" content="[^"]*"', f'<meta property="og:title" content="{e(title)}"', s)
@@ -327,7 +327,7 @@ def materials_index(template_head, template_tail, products, prices):
           <nav class="crumbs" aria-label="Хлебные крошки"><a href="/">Главная</a> / Материалы</nav>
           <p class="eyebrow">Официальный дистрибьютор в Казахстане</p>
           <h1>Материалы КТ ТРОН в Алматы</h1>
-          <p class="muted">{len(products)} материалов завода КТ ТРОН (КТтрон): у каждого своя страница с ценой «от», характеристиками и расходом. Склад и консультации — Алматы, ул. Шевченко 118, офис 221.</p>
+          <p class="muted">{len(products)} материалов завода КТ ТРОН (КТтрон): у каждого своя страница с ценой «от», характеристиками и расходом. Офис и консультации — Алматы, ул. Шевченко 118, офис 221.</p>
           <p class="related">Популярные задачи: <a href="/gidroizolyaciya/fundamenta/">Гидроизоляция фундамента</a><a href="/gidroizolyaciya/podvala/">Гидроизоляция подвала</a><a href="/gidroizolyaciya/basseyna/">Гидроизоляция бассейна</a><a href="/remont-betona/">Ремонт бетона</a></p>
 {"".join(blocks)}        </div>
       </section>

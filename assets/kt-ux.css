@@ -18,7 +18,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 
 /* Размер нажатия на телефоне — не меньше 44 px */
 @media (max-width: 800px) {
-  .lang a { min-width: 44px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; }
+  .lang { gap: 3px; }
+  .lang a { min-width: 34px; min-height: 40px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; }
   .chip { min-height: 44px; }
   .product-actions .btn { min-height: 44px; }
   .product details > summary { padding: .8rem 0; }
@@ -46,3 +47,38 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 #productGrid.kt-collapsed .product:not(.kt-pop) { display: none; }
 .kt-more { display: flex; justify-content: center; margin: 1.2rem 0 0; }
 .kt-more[hidden] { display: none; }
+
+/* Цена за упаковку под ценой за кг */
+.kt-pack-price { display: block; font-size: .8em; font-weight: 600; opacity: .85; margin-top: 2px; }
+
+/* Главный экран: тот же фон, но WebP (на телефоне — уменьшенный), ссылка preload — в <head> главных */
+.hero:not(.gidro-hero) {
+  background-image: linear-gradient(105deg, #00466ef0 0%, #005a8ce0 36%, #005078b8 64%, #0823379e 100%),
+    image-set(url(/images/hero-dam.webp) type("image/webp"), url(/images/hero-dam.jpg) type("image/jpeg"));
+}
+@media (max-width: 800px) {
+  .hero:not(.gidro-hero) {
+    background-image: linear-gradient(105deg, #00466ef0 0%, #005a8ce0 36%, #005078b8 64%, #0823379e 100%),
+      image-set(url(/images/hero-dam-960.webp) type("image/webp"), url(/images/hero-dam.jpg) type("image/jpeg"));
+  }
+}
+
+/* Меню: активный пункт темнее, чтобы белый текст читался (контраст 6:1) */
+.nav a.is-active, .nav a[aria-current="page"], .lang a.is-active { background: #005f8f; border-color: #005f8f; }
+
+/* Ссылка «к содержимому» для клавиатуры и экранного диктора — видна только при фокусе */
+.kt-skip { position: absolute; left: 8px; top: -60px; z-index: 400; background: #fff; color: #00466e; padding: 10px 14px; border-radius: 8px; font-weight: 700; box-shadow: 0 4px 14px #0003; }
+.kt-skip:focus { top: 8px; }
+
+/* Телефон в шапке на телефоне: круглая кнопка рядом с языками */
+.kt-call { display: none; }
+@media (max-width: 800px) {
+  .kt-call { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--kt-btn-blue); color: #fff; flex: none; }
+  .kt-call svg { width: 20px; height: 20px; fill: currentColor; }
+}
+@media (max-width: 380px) {
+  .header-top-in { gap: 6px; }
+  .lang { gap: 2px; }
+  .lang a { min-width: 30px; padding: 0 2px; }
+  .kt-call { width: 38px; height: 38px; }
+}
