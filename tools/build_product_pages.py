@@ -164,7 +164,8 @@ def json_ld(p, price, unit):
         'image': SITE + p['image'],
         'sku': p['id'],
         'brand': {'@type': 'Brand', 'name': 'КТ ТРОН'},
-        'category': CATEGORIES.get(p['category'], ''),
+        # Путь категории через «>»: так его принимает Google в отчёте «Данные о товарах»
+        'category': 'Строительные материалы > ' + CATEGORIES.get(p['category'], 'Ремонт бетона'),
         'url': SITE + p['url'],
     }
     if price:
@@ -179,6 +180,9 @@ def json_ld(p, price, unit):
                 'priceCurrency': 'KZT',
                 'unitCode': 'KGM' if unit == 'кг' else ('MTR' if unit == 'м' else 'H87'),
             },
+            # Все материалы — под заказ
+            'availability': 'https://schema.org/BackOrder',
+            'itemCondition': 'https://schema.org/NewCondition',
             'seller': {'@type': 'Organization', 'name': 'ТОО DARHAN (КТ ТРОН Казахстан)'},
             'areaServed': 'KZ',
         }
@@ -282,6 +286,8 @@ def patch_own_page(p, prices):
         s = s.replace(f'<h1>{e(name)}</h1>', f'<h1>{e(name)}</h1>\n              <p class="aka">Также пишут: {e(fname)}, {e(latin_name(name))}</p>', 1)
         s = s.replace('  </head>', '    <style>.aka{color:var(--muted);font-size:.9rem;margin:-.2rem 0 .6rem}</style>\n  </head>', 1)
     price, unit = price_info(prices, name)
+    # Разметку товара берём ту же, что у собранных страниц: с ценой, наличием и категорией
+    s = re.sub(LD_BLOCKS, lambda m: json_ld(p, price, unit), s, count=1, flags=re.S)
     if price:
         s = re.sub(r'(<div class="fact"><span>Цена</span><b>)[^<]*(</b>)', lambda m: f'{m.group(1)}от {fmt_price(price)} ₸ за 1 {unit}{m.group(2)}', s)
     path.write_text(s, encoding='utf-8')
