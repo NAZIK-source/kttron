@@ -139,15 +139,20 @@
     var card = lastCard;
     if (!title || !card || !card.querySelector('h3') || card.querySelector('h3').textContent.trim() !== title.textContent.trim()) return;
     var name = title.textContent.trim();
-    loadPages().then(function (all) {
-      var url = all[name];
+    var go = function (url) {
       if (!url || box.hidden || title.textContent.trim() !== name || pushed) return;
       history.pushState({ ktCard: url }, '', url);
       pushed = true;
       savedTitle = document.title;
       document.title = name + ' — КТ ТРОН Казахстан';
-    });
+    };
+    // Сразу — из ссылки «Страница материала» в карточке, иначе из pages.json
+    var own = card.querySelector('.product-actions a[href^="/materials/"]');
+    if (own) go(own.getAttribute('href'));
+    else loadPages().then(function (all) { go(all[name]); });
   }
+  // Список адресов подгружаем заранее, чтобы адрес появлялся без задержки
+  if (window.requestIdleCallback) requestIdleCallback(loadPages); else setTimeout(loadPages, 1500);
   function dropUrl() {
     if (!pushed) return;
     pushed = false;
