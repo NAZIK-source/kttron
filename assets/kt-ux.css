@@ -64,7 +64,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 }
 
 /* Меню: активный пункт темнее, чтобы белый текст читался (контраст 6:1) */
-.nav a.is-active, .nav a[aria-current="page"] { background: #005f8f; }
+.nav a.is-active, .nav a[aria-current="page"], .lang a.is-active { background: #005f8f; border-color: #005f8f; }
 
 /* Ссылка «к содержимому» для клавиатуры и экранного диктора — видна только при фокусе */
 .kt-skip { position: absolute; left: 8px; top: -60px; z-index: 400; background: #fff; color: #00466e; padding: 10px 14px; border-radius: 8px; font-weight: 700; box-shadow: 0 4px 14px #0003; }
