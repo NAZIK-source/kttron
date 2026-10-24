@@ -180,7 +180,8 @@ def json_ld(p, price, unit):
                 'priceCurrency': 'KZT',
                 'unitCode': 'KGM' if unit == 'кг' else ('MTR' if unit == 'м' else 'H87'),
             },
-            'availability': 'https://schema.org/InStock',
+            # Все материалы — под заказ
+            'availability': 'https://schema.org/BackOrder',
             'itemCondition': 'https://schema.org/NewCondition',
             'seller': {'@type': 'Organization', 'name': 'ТОО DARHAN (КТ ТРОН Казахстан)'},
             'areaServed': 'KZ',
