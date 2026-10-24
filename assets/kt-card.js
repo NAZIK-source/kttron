@@ -1,6 +1,6 @@
 // Карточка товара в каталоге: открывается по нажатию на любое место товара,
 // показывает фасовку, цену, ссылку на страницу материала и таблицу характеристик
-// из /specs.json; на телефоне — поверх шапки.
+// из /specs.json; на телефоне — поверх шапки. Пока окно открыто, в адресной строке — адрес страницы товара.
 (function () {
   var grid = document.getElementById('productGrid');
   var box = document.getElementById('lightbox');
@@ -131,6 +131,38 @@
     renderSpecs(title.textContent.trim());
   }
 
-  new MutationObserver(function () { if (!box.hidden) fillMeta(); })
-    .observe(box, { attributes: true, attributeFilter: ['hidden'] });
+  // Адрес окна: пока открыта карточка товара, в адресной строке — адрес его страницы
+  // (ссылку можно переслать, у получателя откроется полная страница). «Назад» закрывает окно.
+  var pushed = false, savedTitle = document.title;
+  function pushUrl() {
+    var title = document.getElementById('lightboxTitle');
+    var card = lastCard;
+    if (!title || !card || !card.querySelector('h3') || card.querySelector('h3').textContent.trim() !== title.textContent.trim()) return;
+    var name = title.textContent.trim();
+    loadPages().then(function (all) {
+      var url = all[name];
+      if (!url || box.hidden || title.textContent.trim() !== name || pushed) return;
+      history.pushState({ ktCard: url }, '', url);
+      pushed = true;
+      savedTitle = document.title;
+      document.title = name + ' — КТ ТРОН Казахстан';
+    });
+  }
+  function dropUrl() {
+    if (!pushed) return;
+    pushed = false;
+    document.title = savedTitle;
+    if (history.state && history.state.ktCard) history.back();
+  }
+  window.addEventListener('popstate', function () {
+    if (!pushed) return;
+    pushed = false;
+    document.title = savedTitle;
+    var close = document.getElementById('lightboxClose');
+    if (!box.hidden && close) close.click();
+  });
+
+  new MutationObserver(function () {
+    if (!box.hidden) { fillMeta(); pushUrl(); } else dropUrl();
+  }).observe(box, { attributes: true, attributeFilter: ['hidden'] });
 })();
