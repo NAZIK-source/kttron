@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title data-i18n="obj.pageTitle">Объекты — КТ ТРОН Казахстан</title>
+    <title data-i18n="obj.pageTitle">Нысандар — КТ ТРОН Қазақстан</title>
     <meta
       name="description"
-      content="Реализованные проекты с системами КТ ТРОН — примеры применения на объектах по данным производителя kttron.ru."
+      content="КТ ТРОН жүйелерімен іске асырылған жобалар — өндіруші kttron.ru деректері бойынша."
       data-i18n-content="obj.pageDescription"
     />
     <meta name="theme-color" content="#0093DD" />
@@ -86,11 +86,11 @@
             </svg>
             <span class="brand-text">
               <span class="brand-name">КТ ТРОН</span>
-              <span class="brand-region" data-i18n="region">Казахстан</span>
+              <span class="brand-region" data-i18n="region">Қазақстан</span>
             </span>
           </a>
           <p class="header-slogan" data-i18n="slogan">
-            Эффективный Комплекс Строительных Технологий КТ ТРОН в Казахстане
+            Қазақстандағы КТ ТРОН құрылыс технологияларының тиімді кешені
           </p>
           <div class="header-aside">
             <div class="header-contacts">
@@ -98,14 +98,14 @@
               <a href="https://wa.me/77751810595" target="_blank" rel="noopener">WhatsApp</a>
               <a href="mailto:info@kttron.kz">info@kttron.kz</a>
 </div>
-            <div class="lang" aria-label="Язык" data-i18n-aria="langLabel">
+            <div class="lang" aria-label="Тіл" data-i18n-aria="langLabel">
               <a href="/objects/" title="Русский">RU</a>
               <a class="is-active" href="/kz/objects/" aria-current="page" title="Қазақша">KZ</a>
               <a href="/tg/objects/" title="Тоҷикӣ">TJS</a>
               <a href="/uz/objects/" title="Oʻzbekcha">UZB</a>
             </div>
             <button class="btn btn-ghost-dark header-request" id="openRequestTop" type="button">
-              <span data-i18n="request">Заявка</span> <b id="topCount">0</b>
+              <span data-i18n="request">Өтінім</span> <b id="topCount">0</b>
             </button>
             <a class="btn btn-ghost-dark header-request account-link" href="/account/">Кабинет</a>
           </div>
@@ -114,17 +114,17 @@
       <div class="header-nav">
         <div class="shell header-nav-in">
           <nav class="nav" id="nav">
-            <a href="/kz/" data-i18n="nav.home">Главная</a>
-            <a href="/kz/#why" data-i18n="nav.about">О компании</a>
-            <a href="/kz/#catalog" data-i18n="nav.materials">Материалы</a>
-            <a href="/kz/objects/" aria-current="page" data-i18n="nav.objects">Объекты</a>
-            <a href="/kz/#docs" data-i18n="nav.docs">Документация</a>
-            <a href="/kz/#solutions" data-i18n="nav.solutions">Решения</a>
+            <a href="/kz/" data-i18n="nav.home">Басты бет</a>
+            <a href="/kz/#why" data-i18n="nav.about">Компания туралы</a>
+            <a href="/kz/#catalog" data-i18n="nav.materials">Материалдар</a>
+            <a href="/kz/objects/" aria-current="page" data-i18n="nav.objects">Нысандар</a>
+            <a href="/kz/#docs" data-i18n="nav.docs">Құжаттама</a>
+            <a href="/kz/#solutions" data-i18n="nav.solutions">Шешімдер</a>
             <a href="/kz/#lead" data-i18n="nav.service">Сервис</a>
-            <a href="/kz/#contacts" data-i18n="nav.contacts">Контакты</a>
+            <a href="/kz/#contacts" data-i18n="nav.contacts">Байланыстар</a>
             <a class="account-link nav-account" href="/account/">Личный кабинет</a>
           </nav>
-          <button class="menu-btn" id="menuBtn" type="button" aria-label="Меню" data-i18n-aria="menu" aria-expanded="false">
+          <button class="menu-btn" id="menuBtn" type="button" aria-label="Мәзір" data-i18n-aria="menu" aria-expanded="false">
             <span></span><span></span>
           </button>
         </div>
@@ -136,17 +136,17 @@
         <div class="shell">
           <div class="section-head catalog-head">
             <div>
-              <p class="eyebrow" data-i18n="obj.eyebrow">Объекты</p>
-              <h1 data-i18n="obj.title">Реализованные проекты</h1>
-              <p class="muted" data-i18n="obj.lead">Примеры применения систем КТ ТРОН на объектах — по данным производителя kttron.ru.</p>
+              <p class="eyebrow" data-i18n="obj.eyebrow">Нысандар</p>
+              <h1 data-i18n="obj.title">Іске асырылған жобалар</h1>
+              <p class="muted" data-i18n="obj.lead">КТ ТРОН жүйелерін қолдану мысалдары — өндіруші kttron.ru деректері бойынша.</p>
               <p class="muted" id="objectsMeta"></p>
             </div>
-            <a class="btn btn-ghost-dark" href="https://www.kttron.ru/objects/" target="_blank" rel="noopener" data-i18n="obj.allLink">Все объекты на kttron.ru</a>
+            <a class="btn btn-ghost-dark" href="https://www.kttron.ru/objects/" target="_blank" rel="noopener" data-i18n="obj.allLink">Барлық нысандар kttron.ru-да</a>
           </div>
           <div class="chips" id="objectChips"></div>
           <div class="objects-grid" id="objectsGrid"></div>
           <p class="empty objects-empty" id="objectsEmpty" hidden data-i18n="obj.empty">
-            Скоро опубликуем фото и описания объектов.
+            Жақында нысандардың фотосы мен сипаттамасын жариялаймыз. Міндетті жіберіңіз — ұқсас жүйені іріктейміз.
           </p>
         </div>
       </section>
@@ -154,14 +154,14 @@
 
     <footer class="site-footer">
       <div class="shell foot">
-        <a class="brand" href="/kz/" data-i18n="contacts.title">КТ ТРОН Казахстан</a>
-        <p>© <span id="year"></span> <span data-i18n="footer.copy">Официальный представитель КТ ТРОН в РК</span></p>
+        <a class="brand" href="/kz/" data-i18n="contacts.title">КТ ТРОН Қазақстан</a>
+        <p>© <span id="year"></span> <span data-i18n="footer.copy">ҚР-дағы КТ ТРОН ресми өкілі</span></p>
         <p class="foot-links"><a href="/rekvizity/">Реквизиты и условия</a> · <a href="/politika-konfidencialnosti/">Политика конфиденциальности</a></p>
       </div>
     </footer>
 
     <div class="fab-stack">
-      <button class="fab-request" id="requestFab" type="button" hidden><span data-i18n="request">Заявка</span> <b id="requestFabCount">0</b></button>
+      <button class="fab-request" id="requestFab" type="button" hidden><span data-i18n="request">Өтінім</span> <b id="requestFabCount">0</b></button>
       <a class="fab-wa" id="fabWa" href="https://wa.me/77751810595" target="_blank" rel="noopener" aria-label="WhatsApp">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 17.6L2 22l4.5-1.2A11 11 0 1 0 20.5 3.5zm-8.5 17a9 9 0 0 1-4.6-1.3l-.3-.2-2.7.7.7-2.6-.2-.3A9 9 0 1 1 12 20.5zm5.2-6.7c-.3-.1-1.7-.8-1.9-.9s-.4-.1-.6.1-.7.9-.8 1-.3.2-.6.1a7.4 7.4 0 0 1-2.2-1.4 8.2 8.2 0 0 1-1.5-1.9c-.2-.3 0-.4.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5-.6-1.4-.8-1.9-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3a2.4 2.4 0 0 0-.8 1.8 4.2 4.2 0 0 0 .9 2.2 9.6 9.6 0 0 0 3.7 3.3 12 12 0 0 0 1.4.5 3.4 3.4 0 0 0 1.5.1 2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .1-1.2c-.1-.1-.3-.2-.6-.3z"/></svg>
       </a>
@@ -171,18 +171,18 @@
     <aside class="request-drawer" id="requestDrawer" aria-hidden="true">
       <div class="request-head">
         <div>
-          <p class="eyebrow" data-i18n="drawer.eyebrow">Счёт пришлёт менеджер</p>
-          <h2 id="requestTitle" data-i18n="drawer.title">Заявка на материалы</h2>
+          <p class="eyebrow" data-i18n="drawer.eyebrow">Шотты менеджер жібереді</p>
+          <h2 id="requestTitle" data-i18n="drawer.title">Материалдарға өтінім</h2>
         </div>
-        <button class="request-close" id="requestClose" type="button" aria-label="Закрыть" data-i18n-aria="close">×</button>
+        <button class="request-close" id="requestClose" type="button" aria-label="Жабу" data-i18n-aria="close">×</button>
       </div>
-      <p class="muted" data-i18n="drawer.lead">Соберите список — отправим одним сообщением в WhatsApp.</p>
+      <p class="muted" data-i18n="drawer.lead">Тізімді жинаңыз — бір WhatsApp хабарымен жібереміз.</p>
       <div class="request-list" id="requestList"></div>
-      <p class="request-empty" id="requestEmpty" data-i18n="drawer.empty">Пока пусто. В каталоге нажмите «В заявку».</p>
-      <label class="request-note"><span data-i18n="drawer.note">Комментарий</span><textarea id="requestNote" rows="3" placeholder="Объект, срочность…" data-i18n-placeholder="drawer.notePh"></textarea></label>
+      <p class="request-empty" id="requestEmpty" data-i18n="drawer.empty">Әзірге бос. Каталогта «Өтінімге» басыңыз.</p>
+      <label class="request-note"><span data-i18n="drawer.note">Пікір</span><textarea id="requestNote" rows="3" placeholder="Нысан, жеделдігі…" data-i18n-placeholder="drawer.notePh"></textarea></label>
       <div class="request-actions">
-        <a class="btn btn-solid btn-lg" id="requestSend" href="#" target="_blank" rel="noopener" data-i18n="drawer.send">Отправить в WhatsApp</a>
-        <button class="btn btn-ghost-dark" id="requestClear" type="button" data-i18n="drawer.clear">Очистить</button>
+        <a class="btn btn-solid btn-lg" id="requestSend" href="#" target="_blank" rel="noopener" data-i18n="drawer.send">WhatsApp-қа жіберу</a>
+        <button class="btn btn-ghost-dark" id="requestClear" type="button" data-i18n="drawer.clear">Тазалау</button>
       </div>
     </aside>
 

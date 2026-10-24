@@ -295,6 +295,42 @@ GIDRO_START, GIDRO_END = '      <!-- gidro-prices -->\n', '      <!-- /gidro-pri
 GIDRO_COST_Q = 'Сколько стоит гидроизоляция в Алматы?'
 
 
+def spec_value(rows, pattern):
+    for r in rows:
+        if len(r) == 2 and re.search(pattern, r[0]):
+            return r[1].replace(' - ', '–').replace('-', '–') if re.match(r'^[\d,\s-]+$', r[1]) else r[1]
+    return None
+
+
+def compare_rows(pages):
+    """Сравнение гидроизоляции по характеристикам завода (specs.json) и описаниям (index.html)."""
+    specs = json.loads((ROOT / 'specs.json').read_text(encoding='utf-8'))
+    texts = {p['name']: re.sub(r'<[^>]+>', ' ', str(p.get('detail', ''))) for p in load_products()}
+    out = []
+    for name, kind, (lo, hi), thick in GIDRO_TABLE:
+        rows = specs.get(name, [])
+        w_in, w_out = spec_value(rows, r'водонепроницаемости, на прижим'), spec_value(rows, r'водонепроницаемости, на отрыв')
+        boost = spec_value(rows, r'Повышение марки по водонепроницаемости')
+        water = f'{w_in} / {w_out}' if w_in else (f'повышает марку бетона {boost}' if boost else '—')
+        crack, crack_mesh = spec_value(rows, r'перекрытию трещин, мм(, без армирования)?, не более'), spec_value(rows, r'перекрытию трещин, мм, с армированием')
+        cracks = (f'до {crack} мм' + (f', с сеткой до {crack_mesh} мм' if crack_mesh else '')) if crack else 'нет — работает в порах бетона'
+        layer = spec_value(rows, r'^Толщина гидроизоляционного слоя')
+        rec, low = spec_value(rows, r'^Рекомендуемая толщина'), spec_value(rows, r'^Минимальная толщина')
+        if layer:
+            layer = f'{layer} мм'
+        elif rec:
+            layer = f'{rec} мм' + (f' (не меньше {low} мм)' if low else '')
+        else:
+            layer = f'{fmt_num(lo)}–{fmt_num(hi)} кг/м²'
+        temp = spec_value(rows, r'^Температура применения') or '—'
+        drink = 'да' if 'питьев' in texts.get(name, '') else 'не указано'
+        out.append(f'              <tr><td><a href="{pages[name]}">{e(name)}</a></td><td data-label="Вид">{kind}</td>'
+                   f'<td data-label="Водонепроницаемость">{e(water)}</td><td data-label="Трещины">{e(cracks)}</td>'
+                   f'<td data-label="Слой">{e(layer)}</td><td data-label="Нанесение, °С">{e(temp)}</td>'
+                   f'<td data-label="Питьевая вода">{drink}</td></tr>')
+    return out
+
+
 def gidro_section(prices):
     rows, costs = [], []
     pages = json.loads((ROOT / 'pages.json').read_text(encoding='utf-8'))
@@ -325,6 +361,23 @@ def gidro_section(prices):
             </table>
           </div>
           <p class="gidro-links"><a href="/calculator/">Рассчитать расход на вашу площадь</a> · <a href="https://wa.me/77751810595" target="_blank" rel="noopener">Узнать цену с доставкой в WhatsApp</a></p>
+
+          <h2 id="sravnenie" class="gidro-h2">Чем отличаются материалы для гидроизоляции</h2>
+          <p class="muted gidro-text">По техническим описаниям завода КТ ТРОН. Водонепроницаемость — марка на прижим / на отрыв (чем больше W, тем выше давление воды); у проникающих составов — насколько повышается марка самого бетона.</p>
+          <div class="gidro-table-wrap">
+            <table class="gidro-table gidro-compare">
+              <thead><tr><th>Материал</th><th>Вид</th><th>Водонепроницаемость</th><th>Перекрытие трещин</th><th>Слой / расход</th><th>Нанесение, °С</th><th>Питьевая вода</th></tr></thead>
+              <tbody>
+{chr(10).join(compare_rows(pages))}
+              </tbody>
+            </table>
+          </div>
+          <ul class="gidro-choose">
+            <li><b>Бетон без трещин, вода давит изнутри или снаружи</b> — проникающая КТ ТРОН-1, для старого бетона — КТ ТРОН-11.</li>
+            <li><b>Бассейн, резервуар, подвал без подвижек</b> — жёсткая обмазочная КТ ТРОН-7 или КТ ТРОН-71.</li>
+            <li><b>Есть трещины или конструкция «работает»</b> — эластичная КТ ТРОН-10 1К; при трещинах до 0,7 мм и W16 — КТ ТРОН-10 2К.</li>
+            <li><b>Работы в холод, до −10 °С</b> — КТ ТРОН-122 флекс.</li>
+          </ul>
 
           <div class="gidro-types">
             <h3>Какая бывает гидроизоляция бетона</h3>
@@ -360,6 +413,8 @@ def patch_gidro(prices):
            '      .gidro-table td:last-child{font-weight:700;color:var(--brand-deep);white-space:nowrap}\n'
            '      .gidro-text,.gidro-types p{max-width:860px}.gidro-types{margin-top:2rem}.gidro-types h3{margin:1.4rem 0 .5rem}\n'
            '      #ceny a{color:var(--brand-deep);text-decoration:underline;text-underline-offset:2px}.gidro-table td:first-child a{font-weight:700}\n'
+           '      .gidro-h2{margin:2rem 0 .5rem}.gidro-compare{min-width:820px}.gidro-compare td:last-child{font-weight:400;color:inherit;text-align:center}'
+           '.gidro-choose{max-width:860px;margin:.6rem 0 0;padding-left:1.1rem}.gidro-choose li{margin:.35rem 0}\n'
            '      @media (max-width:640px){.gidro-table{min-width:0}.gidro-table thead{display:none}.gidro-table tr{display:block;padding:.6rem 0;border-bottom:1px solid var(--line)}'
            '.gidro-table td{display:flex;justify-content:space-between;gap:12px;padding:.2rem .2rem;border:0}.gidro-table td[data-label]::before{content:attr(data-label);color:var(--muted);font-weight:400}'
            '.gidro-table td:last-child{white-space:normal}}\n')
