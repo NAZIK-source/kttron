@@ -5,7 +5,7 @@
 калькулятор и подбор материала в нём всегда такие же, как на сайте.
 
 Источники (те же, что у генераторов страниц):
-  index.html, assets/main-B89Pv38-o221.js — карточки каталога (через build_product_pages)
+  index.html, assets/main-B89Pv38-2410.js — карточки каталога (через build_product_pages)
   prices.json, specs.json             — цены и характеристики
   calculator/index.html               — нормы расхода калькулятора
   tools/build_landing_pages.py        — подбор материалов под задачу (PAGES)

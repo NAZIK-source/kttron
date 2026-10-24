@@ -57,7 +57,7 @@ page_start('Регистрация');
     <label>Пароль<input name="password" type="password" minlength="8" required autocomplete="new-password"></label>
     <label>Пароль ещё раз<input name="password2" type="password" minlength="8" required autocomplete="new-password"></label>
     <label class="acc-check"><input type="checkbox" name="consent" value="1" required>
-      <span>Согласен на обработку персональных данных и с <a href="/account/rules.php" target="_blank">правилами кэшбэка</a></span></label>
+      <span>Согласен на обработку персональных данных по <a href="/politika-konfidencialnosti/" target="_blank">политике конфиденциальности</a> и с <a href="/account/rules.php" target="_blank">правилами кэшбэка</a></span></label>
     <button class="btn btn-solid btn-lg" type="submit">Зарегистрироваться</button>
   </form>
   <p class="muted">Уже есть кабинет? <a href="/account/login.php">Войти</a></p>
