@@ -122,6 +122,7 @@
       .gidro-table td:last-child{font-weight:700;color:var(--brand-deep);white-space:nowrap}
       .gidro-text,.gidro-types p{max-width:860px}.gidro-types{margin-top:2rem}.gidro-types h3{margin:1.4rem 0 .5rem}
       #ceny a{color:var(--brand-deep);text-decoration:underline;text-underline-offset:2px}.gidro-table td:first-child a{font-weight:700}
+      .gidro-h2{margin:2rem 0 .5rem}.gidro-compare{min-width:820px}.gidro-compare td:last-child{font-weight:400;color:inherit;text-align:center}.gidro-choose{max-width:860px;margin:.6rem 0 0;padding-left:1.1rem}.gidro-choose li{margin:.35rem 0}
       @media (max-width:640px){.gidro-table{min-width:0}.gidro-table thead{display:none}.gidro-table tr{display:block;padding:.6rem 0;border-bottom:1px solid var(--line)}.gidro-table td{display:flex;justify-content:space-between;gap:12px;padding:.2rem .2rem;border:0}.gidro-table td[data-label]::before{content:attr(data-label);color:var(--muted);font-weight:400}.gidro-table td:last-child{white-space:normal}}
       /* КТ ТРОН-8 (остановка протечек) и КТ ТРОН-101 (клей для плитки) — не гидроизоляция */
       #productGrid .product:has([data-add="p043"]),#productGrid .product:has([data-add="p045"]){display:none}
@@ -290,6 +291,29 @@
             </table>
           </div>
           <p class="gidro-links"><a href="/calculator/">Рассчитать расход на вашу площадь</a> · <a href="https://wa.me/77751810595" target="_blank" rel="noopener">Узнать цену с доставкой в WhatsApp</a></p>
+
+          <h2 id="sravnenie" class="gidro-h2">Чем отличаются материалы для гидроизоляции</h2>
+          <p class="muted gidro-text">По техническим описаниям завода КТ ТРОН. Водонепроницаемость — марка на прижим / на отрыв (чем больше W, тем выше давление воды); у проникающих составов — насколько повышается марка самого бетона.</p>
+          <div class="gidro-table-wrap">
+            <table class="gidro-table gidro-compare">
+              <thead><tr><th>Материал</th><th>Вид</th><th>Водонепроницаемость</th><th>Перекрытие трещин</th><th>Слой / расход</th><th>Нанесение, °С</th><th>Питьевая вода</th></tr></thead>
+              <tbody>
+              <tr><td><a href="/materials/kt-tron-1/">КТ ТРОН-1</a></td><td data-label="Вид">проникающая</td><td data-label="Водонепроницаемость">повышает марку бетона на 2-3 ступени</td><td data-label="Трещины">нет — работает в порах бетона</td><td data-label="Слой">0,8–1,2 кг/м²</td><td data-label="Нанесение, °С">от +5 до +35</td><td data-label="Питьевая вода">да</td></tr>
+              <tr><td><a href="/materials/kt-tron-11/">КТ ТРОН-11</a></td><td data-label="Вид">проникающая, для старого бетона</td><td data-label="Водонепроницаемость">повышает марку бетона на 2 ступени</td><td data-label="Трещины">нет — работает в порах бетона</td><td data-label="Слой">0,8–1,2 кг/м²</td><td data-label="Нанесение, °С">от +5 до +35</td><td data-label="Питьевая вода">не указано</td></tr>
+              <tr><td><a href="/materials/kt-tron-7/">КТ ТРОН-7</a></td><td data-label="Вид">жёсткая обмазочная</td><td data-label="Водонепроницаемость">W10 / W8</td><td data-label="Трещины">до 0,2 мм</td><td data-label="Слой">2–4 мм</td><td data-label="Нанесение, °С">от +5 до +35</td><td data-label="Питьевая вода">да</td></tr>
+              <tr><td><a href="/materials/kt-tron-71/">КТ ТРОН-71</a></td><td data-label="Вид">жёсткая обмазочная</td><td data-label="Водонепроницаемость">W10 / W8</td><td data-label="Трещины">до 0,2 мм</td><td data-label="Слой">4 мм (не меньше 2 мм)</td><td data-label="Нанесение, °С">от +5 до +35</td><td data-label="Питьевая вода">не указано</td></tr>
+              <tr><td><a href="/materials/kt-tron-10-1k/">КТ ТРОН-10 1К</a></td><td data-label="Вид">эластичная</td><td data-label="Водонепроницаемость">W12 / W8</td><td data-label="Трещины">до 0,5 мм, с сеткой до 1,0 мм</td><td data-label="Слой">2–4 мм</td><td data-label="Нанесение, °С">от +5 до +35</td><td data-label="Питьевая вода">да</td></tr>
+              <tr><td><a href="/materials/kt-tron-10-2k/">КТ ТРОН-10 2К</a></td><td data-label="Вид">эластичная двухкомпонентная</td><td data-label="Водонепроницаемость">W16 / W10</td><td data-label="Трещины">до 0,7 мм, с сеткой до 2,0 мм</td><td data-label="Слой">2–4 мм</td><td data-label="Нанесение, °С">от +5 до +35</td><td data-label="Питьевая вода">да</td></tr>
+              <tr><td><a href="/materials/kt-tron-122-fleks/">КТ ТРОН-122 флекс</a></td><td data-label="Вид">эластичная двухкомпонентная</td><td data-label="Водонепроницаемость">W16 / W10</td><td data-label="Трещины">до 0,7 мм, с сеткой до 2,0 мм</td><td data-label="Слой">2–4 мм</td><td data-label="Нанесение, °С">от -10 до +35</td><td data-label="Питьевая вода">не указано</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul class="gidro-choose">
+            <li><b>Бетон без трещин, вода давит изнутри или снаружи</b> — проникающая КТ ТРОН-1, для старого бетона — КТ ТРОН-11.</li>
+            <li><b>Бассейн, резервуар, подвал без подвижек</b> — жёсткая обмазочная КТ ТРОН-7 или КТ ТРОН-71.</li>
+            <li><b>Есть трещины или конструкция «работает»</b> — эластичная КТ ТРОН-10 1К; при трещинах до 0,7 мм и W16 — КТ ТРОН-10 2К.</li>
+            <li><b>Работы в холод, до −10 °С</b> — КТ ТРОН-122 флекс.</li>
+          </ul>
 
           <div class="gidro-types">
             <h3>Какая бывает гидроизоляция бетона</h3>
