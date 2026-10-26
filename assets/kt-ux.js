@@ -131,4 +131,28 @@
     });
     sync();
   }
+
+  // 4. Каталог: у каждого материала — ссылка на его страницу на нашем сайте вместо ТО на kttron.ru
+  if (grid) {
+    var pageLabel = { ru: 'Страница материала', kk: 'Материал беті', tg: 'Саҳифаи мавод', uz: 'Material sahifasi' }[lang] || 'Страница материала';
+    var pagesMap = null;
+    var fixLinks = function () {
+      if (!pagesMap) return;
+      grid.querySelectorAll('.product').forEach(function (card) {
+        var ext = card.querySelector('.product-actions a[href*="kttron.ru"]');
+        if (!ext) return;
+        var h = card.querySelector('h3');
+        var url = h && pagesMap[h.textContent.trim()];
+        if (card.querySelector('.product-actions a[href^="/materials/"]')) ext.remove();
+        else if (url) {
+          ext.href = url;
+          ext.removeAttribute('target');
+          ext.removeAttribute('rel');
+          ext.textContent = pageLabel;
+        }
+      });
+    };
+    fetch('/pages.json').then(function (r) { return r.ok ? r.json() : {}; }).then(function (all) { pagesMap = all; fixLinks(); }).catch(function () {});
+    new MutationObserver(fixLinks).observe(grid, { childList: true });
+  }
 })();
