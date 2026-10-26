@@ -11,6 +11,7 @@
 
 Запуск из корня репозитория:  python3 tools/build_product_pages.py
 Пересоздаёт страницы, materials/index.html, sitemap.xml и pages.json.
+После него запустите tools/build_info_pages.py — он вернёт кнопки «Техническое описание (PDF)».
 """
 import html
 import json
