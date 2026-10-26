@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-"""Собирает страницы «Реквизиты и условия» (/rekvizity/) и «Политика конфиденциальности»
-(/politika-konfidencialnosti/) и ставит ссылки на них в подвал всех страниц сайта.
+"""Собирает страницы «О компании» (/o-kompanii/), «Контакты» (/kontakty/), «Документы» (/dokumenty/),
+«Реквизиты и условия» (/rekvizity/) и «Политика конфиденциальности» (/politika-konfidencialnosti/)
+и ставит ссылки на них в подвал всех страниц сайта.
+
+Документы (сертификаты и технические описания завода) лежат в /dokumenty/, их список — tools/dokumenty.json.
+На страницы товаров, для которых есть техописание, ставится кнопка «Техническое описание (PDF)».
 
 Шапка и подвал — со страницы-образца materials/kt-tron-3/, как у остальных генераторов.
 Реквизиты и условия — в списках ниже; после правки перезапустите.
@@ -37,7 +41,8 @@ TERMS = [
     ('Оплата', 'По счёту, который менеджер присылает после подтверждения заказа. Оплата на сайте не принимается.'),
     ('Доставка', 'Стоимость и сроки доставки по Алматы и в другие города Казахстана рассчитываются под объём заказа.'),
     ('Кэшбэк', 'Баллы за заказы начисляются в личном кабинете по <a href="/account/rules.php">правилам программы</a>.'),
-    ('Документы', 'Сертификаты и технические описания материалов — по запросу в WhatsApp или на e-mail.'),
+    ('Документы', 'Сертификаты и технические описания материалов — на странице <a href="/dokumenty/">«Документы»</a>, '
+                  'протоколы испытаний — по запросу в WhatsApp или на e-mail.'),
     ('Возврат и обмен', 'По согласованию с менеджером в соответствии с законодательством Республики Казахстан.'),
 ]
 
@@ -89,7 +94,109 @@ POLICY = [
      f'Редакция от {POLICY_DATE}.</p>'),
 ]
 
+CERT_CARD = (
+    '          <div class="cert-card">\n'
+    '            <a class="cert-img" href="/images/sertifikat-distributor.jpg" target="_blank" rel="noopener">'
+    '<img src="/images/sertifikat-distributor-640.jpg" width="640" height="453" loading="lazy" '
+    'alt="Сертификат официального дистрибьютора завода КТ ТРОН, выданный ТОО DARHAN, действует до 31 декабря 2026 года" /></a>\n'
+    '            <div><h3>Сертификат официального дистрибьютора</h3>'
+    '<p>ТОО DARHAN является официальным дистрибьютором завода КТ ТРОН и имеет право реализации продукции марки КТ ТРОН в Казахстане.</p>'
+    '<p class="cert-valid">Срок действия: до 31 декабря 2026 года</p>'
+    '<p><a class="cert-open" href="/images/sertifikat-distributor.jpg" target="_blank" rel="noopener">Открыть сертификат полностью</a></p></div>\n'
+    '          </div>\n')
+
+ABOUT = f'''          <p class="lead">ТОО «DARHAN» — официальный дистрибьютор завода КТ ТРОН (КТтрон) в Казахстане. Поставляем материалы
+          для ремонта, гидроизоляции и защиты бетонных и железобетонных конструкций и помогаем подобрать их под конкретный объект.</p>
+{CERT_CARD}          <h2>Что мы поставляем</h2>
+          <ul>
+            <li><a href="/gidroizolyaciya/">Гидроизоляция</a> — проникающая, обмазочная жёсткая и эластичная, остановка активных протечек;</li>
+            <li><a href="/remont-betona/">Ремонт бетона</a> — тиксотропные и литьевые ремонтные составы, торкрет-смеси;</li>
+            <li>подливочные составы для фундаментов под оборудование и анкеровки;</li>
+            <li>материалы для инъектирования трещин и герметизации швов: гидрошнуры, гидроленты, герметики.</li>
+          </ul>
+          <p>Весь ассортимент — в <a href="/materials/">каталоге материалов</a>: более 50 позиций с ценами и характеристиками.</p>
+          <h2>Как мы работаем</h2>
+          <ol>
+            <li><b>Консультация.</b> Пришлите фото дефекта или описание объекта в WhatsApp — подскажем, какая система материалов нужна.</li>
+            <li><b>Расчёт.</b> Посчитаем расход под площадь и толщину слоя — можно и самостоятельно в <a href="/calculator/">калькуляторе</a>.</li>
+            <li><b>Поставка под заказ.</b> Менеджер подтверждает цену и срок и присылает счёт; доставка по Алматы и Казахстану рассчитывается под объём.</li>
+            <li><b>Документы.</b> Сертификаты и технические описания завода — на странице <a href="/dokumenty/">«Документы»</a>.</li>
+          </ol>
+          <h2>Объекты</h2>
+          <p>Примеры объектов, где применялись материалы КТ ТРОН, — в разделе <a href="/objects/">«Объекты»</a>.</p>
+          <h2>Реквизиты</h2>
+          <p>ТОО «DARHAN», БИН 990240010117. Офис: г. Алматы, ул. Шевченко 118, офис 221, БЦ «Алтын Гасыр».
+          Полные реквизиты и условия — на странице <a href="/rekvizity/">«Реквизиты и условия»</a>, телефоны и карта — в <a href="/kontakty/">«Контактах»</a>.</p>
+'''
+
+CONTACTS = [
+    ('Адрес', 'г. Алматы, ул. Шевченко 118, офис 221, БЦ «Алтын Гасыр» — '
+              '<a href="https://2gis.kz/almaty/firm/70000001037895624" target="_blank" rel="noopener">открыть в 2ГИС</a>'),
+    ('Телефон', '<a href="tel:+77751810595">+7 775 181-05-95</a>'),
+    ('WhatsApp', '<a href="https://wa.me/77751810595" target="_blank" rel="noopener">написать в WhatsApp</a> — обычно отвечаем в течение часа'),
+    ('E-mail', '<a href="mailto:info@kttron.kz">info@kttron.kz</a>'),
+    ('Режим работы', 'понедельник — пятница, 10:00–17:00'),
+    ('Компания', 'ТОО «DARHAN», БИН 990240010117 — <a href="/rekvizity/">реквизиты и условия</a>'),
+]
+MAP = ('          <div class="map-wrap"><iframe title="КТ ТРОН Казахстан на карте" loading="lazy" '
+       'referrerpolicy="no-referrer-when-downgrade" '
+       'src="https://www.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B,%20%D1%83%D0%BB.%20%D0%A8%D0%B5%D0%B2%D1%87%D0%B5%D0%BD%D0%BA%D0%BE%20118&output=embed">'
+       '</iframe></div>\n')
+
+DOCS = json.loads((ROOT / 'tools/dokumenty.json').read_text(encoding='utf-8'))
+DOC_ANCHORS = {'Сертификаты и свидетельства': 'sertifikaty', 'Технические описания': 'tekhnicheskie-opisaniya',
+               'Протоколы испытаний': 'protokoly'}
+
+
+def file_label(path):
+    p = ROOT / path.lstrip('/')
+    kind = 'PDF' if path.endswith('.pdf') else 'JPG'
+    return f'{kind}, {p.stat().st_size / 1048576:.1f} МБ'.replace('.', ',') if p.exists() else kind
+
+
+def docs_body():
+    out = ['          <p class="lead">Документы завода КТ ТРОН на материалы, которые мы поставляем: сертификаты соответствия, '
+           'свидетельства о государственной регистрации и технические описания. Файлы открываются прямо на сайте.</p>\n',
+           '          <p class="doc-toc">' + ' · '.join(f'<a href="#{a}">{e(t)}</a>' for t, a in DOC_ANCHORS.items()) + '</p>\n',
+           '          <h2>Сертификат дистрибьютора</h2>\n', CERT_CARD]
+    section = None
+    for g in DOCS:
+        if g['section'] != section:
+            section = g['section']
+            out.append(f'          <h2 id="{DOC_ANCHORS[section]}">{e(section)}</h2>\n')
+            if section == 'Протоколы испытаний':
+                out.append('          <p class="muted">Протоколы испытаний предоставляем по запросу — напишите в '
+                           '<a href="https://wa.me/77751810595" target="_blank" rel="noopener">WhatsApp</a> или на '
+                           '<a href="mailto:info@kttron.kz">info@kttron.kz</a>.</p>\n')
+        items = ''.join(
+            f'<li><a href="{it["file"]}" target="_blank">{e(it["title"])}</a> <span>{file_label(it["file"])}</span></li>'
+            if it.get('file') else f'<li>{e(it["title"])}</li>' for it in g['items'])
+        out.append(f'          <h3>{e(g["group"])}</h3>\n          <ul class="doc-list">{items}</ul>\n')
+    return ''.join(out)
+
+
 PAGES = [
+    {
+        'url': '/o-kompanii/',
+        'h1': 'О компании КТ ТРОН Казахстан',
+        'title': 'О компании — КТ ТРОН Казахстан, официальный дистрибьютор КТтрон (ТОО «DARHAN»)',
+        'description': 'ТОО «DARHAN» — официальный дистрибьютор завода КТ ТРОН (КТтрон) в Казахстане: гидроизоляция, ремонт '
+                       'и защита бетона, подбор материалов под объект, поставка под заказ в Алматы и по Казахстану.',
+    },
+    {
+        'url': '/kontakty/',
+        'h1': 'Контакты КТ ТРОН Казахстан',
+        'title': 'Контакты КТ ТРОН (КТтрон) в Алматы — адрес, телефон, WhatsApp',
+        'description': 'КТ ТРОН Казахстан в Алматы: ул. Шевченко 118, офис 221, БЦ «Алтын Гасыр». Телефон и WhatsApp '
+                       '+7 775 181-05-95, info@kttron.kz. Консультации и поставка материалов КТтрон под заказ.',
+    },
+    {
+        'url': '/dokumenty/',
+        'h1': 'Документы: сертификаты и технические описания',
+        'title': 'Сертификаты и технические описания КТ ТРОН (КТтрон) — скачать PDF',
+        'description': 'Сертификаты соответствия, свидетельства о госрегистрации и технические описания материалов КТ ТРОН '
+                       '(КТтрон) в PDF. Сертификат официального дистрибьютора в Казахстане.',
+    },
     {
         'url': '/rekvizity/',
         'h1': 'Реквизиты и условия работы',
@@ -106,11 +213,21 @@ PAGES = [
     },
 ]
 
-FOOT_LINKS = ('        <p class="foot-links"><a href="/rekvizity/">Реквизиты и условия</a> · '
+FOOT_LINKS = ('        <p class="foot-links"><a href="/o-kompanii/">О компании</a> · <a href="/kontakty/">Контакты</a> · '
+              '<a href="/dokumenty/">Документы</a> · <a href="/rekvizity/">Реквизиты и условия</a> · '
               '<a href="/politika-konfidencialnosti/">Политика конфиденциальности</a></p>\n')
 
 
 def body(page):
+    if page['url'] == '/o-kompanii/':
+        return ABOUT
+    if page['url'] == '/kontakty/':
+        rows = ''.join(f'<tr><th scope="row">{e(k)}</th><td>{v}</td></tr>' for k, v in CONTACTS)
+        return (f'          <table class="info-table">{rows}</table>\n{MAP}'
+                '          <p>Пришлите в WhatsApp фото дефекта или список материалов — подберём систему и рассчитаем расход. '
+                'Работаем по всему Казахстану, поставка под заказ.</p>\n')
+    if page['url'] == '/dokumenty/':
+        return docs_body()
     if page['url'] == '/rekvizity/':
         rows = ''.join(f'<tr><th scope="row">{e(k)}</th><td>{v}</td></tr>' for k, v in REQUISITES)
         terms = ''.join(f'<tr><th scope="row">{e(k)}</th><td>{v}</td></tr>' for k, v in TERMS)
@@ -140,7 +257,17 @@ def build(page, head, tail):
                   '.info-table th,.info-table td{padding:.6rem .7rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}'
                   '.info-table th{width:32%;color:var(--muted);font-weight:600}.info-page h2{margin:1.6rem 0 .6rem}'
                   '@media (max-width:640px){.info-table th,.info-table td{display:block;width:auto;border:0;padding:.15rem 0}'
-                  '.info-table tr{display:block;padding:.5rem 0;border-bottom:1px solid var(--line)}}</style>\n  </head>', 1)
+                  '.info-table tr{display:block;padding:.5rem 0;border-bottom:1px solid var(--line)}}'
+                  '.info-page .lead{font-size:1.08rem}.info-page h3{margin:1.2rem 0 .4rem;font-size:1.05rem}'
+                  '.info-page li{margin:.25rem 0}.doc-toc{font-weight:600}'
+                  '.doc-list{list-style:none;padding:0;margin:0 0 .8rem}.doc-list li{padding:.45rem 0;border-bottom:1px solid var(--line)}'
+                  '.doc-list span{color:var(--muted);font-size:.85rem;white-space:nowrap}'
+                  '.cert-card{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:24px;align-items:center;margin:1rem 0 1.6rem}'
+                  '.cert-card a.cert-img{display:block;line-height:0;border-radius:6px;overflow:hidden;box-shadow:0 2px 14px rgba(0,60,110,.15)}'
+                  '.cert-card img{width:100%;height:auto;display:block}.cert-card h3{margin:0 0 .5rem}.cert-card p{margin:0 0 .5rem}'
+                  '.cert-card .cert-valid{font-weight:600}.cert-card a.cert-open{font-weight:600}'
+                  '.info-page .map-wrap{margin:1rem 0 1.4rem}'
+                  '@media (max-width:640px){.cert-card{grid-template-columns:1fr}}</style>\n  </head>', 1)
     main = f'''    <main id="top">
       <section class="section material-page">
         <div class="shell info-page">
@@ -154,11 +281,44 @@ def build(page, head, tail):
 
 
 def add_footer_links(s):
-    # Ссылки ставим последней строкой подвала; повторный запуск ничего не дублирует
-    if 'class="foot-links"' in s or 'class="site-footer"' not in s:
+    # Ссылки ставим последней строкой подвала; повторный запуск заменяет строку, а не дублирует
+    if 'class="foot-links"' in s:
+        return re.sub(r'[ \t]*<p class="foot-links">.*?</p>\n', FOOT_LINKS, s, count=1)
+    if 'class="site-footer"' not in s:
         return s
     return re.sub(r'(<footer class="site-footer">.*?)(\n\s*</div>\s*\n\s*</footer>)',
                   lambda m: m.group(1) + '\n' + FOOT_LINKS.rstrip('\n') + m.group(2), s, count=1, flags=re.S)
+
+
+TDS_ALIASES = {'Гидрошнур НП': 'КТтрон-гидрошнур НП', 'КТ ТРОН-ТЭД-2': 'Клей эпоксидный КТтрон-ТЭД-2',
+               'Ленты и фланцы для швов': 'КТтрон-гидролента PWP, DSL, DSL-PERFOR'}
+
+
+def norm(name):
+    return re.sub(r'[\s\-–]+', '', re.sub(r'\(ТО[^)]*\)', '', name).lower().replace('кт трон', 'кттрон'))
+
+
+def add_tds_buttons():
+    """Кнопка «Техническое описание (PDF)» на страницах товаров, для которых у завода есть ТО."""
+    tds = {norm(it['title']): it['file'] for g in DOCS if g['section'] == 'Технические описания' for it in g['items']}
+    pages = json.loads((ROOT / 'pages.json').read_text(encoding='utf-8'))
+    done = 0
+    for name, url in pages.items():
+        pdf = tds.get(norm(TDS_ALIASES.get(name, name)))
+        path = ROOT / url.strip('/') / 'index.html'
+        if not pdf or not path.exists():
+            continue
+        s = path.read_text(encoding='utf-8')
+        btn = (f'<!--kt:tds--><a class="btn btn-ghost-dark btn-lg" href="{pdf}" target="_blank">'
+               f'Техническое описание (PDF)</a><!--/kt:tds-->')
+        s2 = re.sub(r'<!--kt:tds-->.*?<!--/kt:tds-->', btn, s, count=1)
+        if s2 == s and '<!--kt:tds-->' not in s:
+            s2 = re.sub(r'(<div class="hero-cta">.*?)(\n\s*</div>)', lambda m: m.group(1) + '\n                ' + btn + m.group(2),
+                        s, count=1, flags=re.S)
+        if s2 != s:
+            path.write_text(s2, encoding='utf-8')
+        done += 1
+    return done
 
 
 def main():
@@ -184,7 +344,7 @@ def main():
         if f'<loc>{loc}</loc>' not in sitemap:
             sitemap = sitemap.replace('</urlset>', f'  <url><loc>{loc}</loc><lastmod>{today}</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>\n</urlset>')
     (ROOT / 'sitemap.xml').write_text(sitemap, encoding='utf-8')
-    print('страницы реквизитов и политики собраны, ссылки в подвале проставлены')
+    print('информационные страницы собраны, ссылки в подвале проставлены; кнопок ТО на товарах:', add_tds_buttons())
 
 
 if __name__ == '__main__':

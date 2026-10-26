@@ -10,6 +10,12 @@ ErrorDocument 404 /404.html
     RewriteEngine On
     RewriteCond %{HTTP_HOST} ^www\.kttron\.kz$ [NC]
     RewriteRule ^ https://kttron.kz%{REQUEST_URI} [R=301,L]
+
+    # Привычные адреса разделов → наши страницы
+    RewriteRule ^contacts?/?$ /kontakty/ [R=301,L,NC]
+    RewriteRule ^(about|about-us|company)/?$ /o-kompanii/ [R=301,L,NC]
+    RewriteRule ^(catalog|katalog|products)/?$ /materials/ [R=301,L,NC]
+    RewriteRule ^(docs|documents|dokumentaciya|sertifikaty|certificates)/?$ /dokumenty/ [R=301,L,NC]
 </IfModule>
 
 # Заголовки безопасности: сайт нельзя встроить в чужую страницу, при переходе на другие сайты
