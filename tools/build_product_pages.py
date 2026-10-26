@@ -89,6 +89,9 @@ def price_info(prices, name):
 def load_products():
     index = (ROOT / 'index.html').read_text(encoding='utf-8')
     bundle = (ROOT / 'assets/main-B89Pv38-2410.js').read_text(encoding='utf-8')
+    # Страницы, сделанные вручную, — те, что прописаны в коде каталога (в index.html ссылка теперь у всех)
+    home_bundle = (ROOT / 'assets/main-kt20261024.js').read_text(encoding='utf-8')
+    handmade = set(re.findall(r'page:`(/materials/[^`]+)`', home_bundle))
     cats = dict(re.findall(r'\{id:`(p\d+)`,name:`[^`]*`[\s\S]*?category:`([^`]*)`', bundle))
     products = []
     for card in re.findall(r'<article class="product">(.*?)</article>', index, re.S):
@@ -105,9 +108,9 @@ def load_products():
             'pack': pick(r'<div class="pack">[^:]*:\s*([^<]+)</div>'),
             'image': re.search(r'<img src="([^"?]+)', card).group(1),
             'source': re.search(r'href="(https://www\.kttron\.ru/[^"]+)"', card).group(1),
-            'own_page': page.group(1) if page else None,
+            'own_page': page.group(1) if page and page.group(1) in handmade else None,
             'category': CATEGORY_FIX.get(pick(r'<h3[^>]*>(.*?)</h3>'), cats.get(pid, 'repair')),
-            'detail': detail.group(1).strip() if detail else '',
+            'detail': re.sub(r'\s*<p class="detail-source">.*?</p>', '', detail.group(1)).strip() if detail else '',
         })
     for p in products:
         p['url'] = p['own_page'] or f'/materials/{slug_of(p["name"])}/'
@@ -255,7 +258,7 @@ def build_page(template_head, template_tail, p, products, specs, prices, calc_id
           <p class="muted">По техническому описанию завода.</p>
           {specs_table(rows)}
 '''
-    main += f'''          <p class="muted">Источник: <a href="{p['source']}" target="_blank" rel="noopener">kttron.ru</a></p>
+    main += f'''          <p class="muted">Источник: описание и характеристики завода КТ ТРОН (kttron.ru).</p>
           <h2>{e(name)} в Алматы</h2>
           <p>{e(name)}{" (" + e(fname) + ")" if alt else ""} — материал завода КТ ТРОН. ТОО DARHAN — официальный дистрибьютор завода в Казахстане: консультации и поставка под заказ в Алматы, ул. Шевченко 118, офис 221, доставка по Казахстану. Цену с учётом объёма, наличие и подбор материала под ваш объект подскажем в WhatsApp или по телефону <a href="tel:+77751810595">+7 775 181-05-95</a>.</p>
 '''
