@@ -94,3 +94,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .kt-req-extra { display: grid; gap: 8px; margin: 0 0 10px; }
 .kt-req-extra label { display: grid; gap: 4px; font-size: .88rem; font-weight: 600; color: var(--ink, #1d2b36); }
 .kt-req-extra input { font: inherit; font-weight: 400; padding: .55rem .7rem; border: 1px solid var(--line, #cfd8de); border-radius: 8px; min-height: 44px; }
+
+/* Страница товара: собственный текст «О материале» */
+.own-text { max-width: 860px; margin: 0 0 1.4rem; }
+.own-text h3 { margin: 1.1rem 0 .4rem; font-size: 1.05rem; }
+.own-text ul { margin: 0; padding-left: 1.2rem; }
+.own-text li { margin: .2rem 0; }

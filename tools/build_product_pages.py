@@ -11,7 +11,7 @@
 
 Запуск из корня репозитория:  python3 tools/build_product_pages.py
 Пересоздаёт страницы, materials/index.html, sitemap.xml и pages.json.
-После него запустите tools/build_info_pages.py — он вернёт кнопки «Техническое описание (PDF)».
+После него запустите tools/build_info_pages.py (кнопки «Техническое описание (PDF)») и tools/build_own_texts.py (текст «О материале»).
 """
 import html
 import json
@@ -251,7 +251,7 @@ def build_page(template_head, template_tail, p, products, specs, prices, calc_id
               </div>
             </div>
           </div>
-          <h2>Описание</h2>
+          <h2>Описание производителя</h2>
           <div class="material-detail">{p['detail']}</div>
 '''
     if rows:
