@@ -82,3 +82,6 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
   .lang a { min-width: 30px; padding: 0 2px; }
   .kt-call { width: 38px; height: 38px; }
 }
+
+/* Окно товара: вместо ТО на kttron.ru — кнопка «Страница материала» (добавляет kt-card.js) */
+#lightboxLink { display: none; }
