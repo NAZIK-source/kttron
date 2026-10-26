@@ -155,4 +155,55 @@
     fetch('/pages.json').then(function (r) { return r.ok ? r.json() : {}; }).then(function (all) { pagesMap = all; fixLinks(); }).catch(function () {});
     new MutationObserver(fixLinks).observe(grid, { childList: true });
   }
+
+  // 5. Заявка: необязательные «Компания / БИН» и «Город доставки» — попадают в сообщение WhatsApp,
+  //    запоминаются в браузере. Ссылка /?zayavka=1 (из калькулятора) сразу открывает заявку.
+  var note = document.querySelector('#requestDrawer .request-note');
+  var sendBtn = document.getElementById('requestSend');
+  if (note && sendBtn) {
+    var L = {
+      company: { ru: 'Компания / БИН (если нужен счёт на компанию)', kk: 'Компания / БСН (шот компанияға керек болса)', tg: 'Ширкат / БИН (агар ҳисоб ба ширкат лозим бошад)', uz: 'Kompaniya / BIN (hisob kompaniyaga kerak bo‘lsa)' },
+      city: { ru: 'Город доставки', kk: 'Жеткізу қаласы', tg: 'Шаҳри расонидан', uz: 'Yetkazib berish shahri' },
+      cityPh: { ru: 'Алматы', kk: 'Алматы', tg: 'Алматы', uz: 'Almati' }
+    };
+    var tr = function (k) { return L[k][lang] || L[k].ru; };
+    var box = document.createElement('div');
+    box.className = 'kt-req-extra';
+    var field = function (key, label, ph) {
+      var lab = document.createElement('label');
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.autocomplete = key === 'city' ? 'address-level2' : 'organization';
+      if (ph) input.placeholder = ph;
+      try { input.value = localStorage.getItem('kttron-req-' + key) || ''; } catch (e) {}
+      input.addEventListener('input', function () {
+        try { localStorage.setItem('kttron-req-' + key, input.value); } catch (e) {}
+      });
+      lab.append(label, input);
+      box.appendChild(lab);
+      return input;
+    };
+    var company = field('company', tr('company'));
+    var city = field('city', tr('city'), tr('cityPh'));
+    note.parentNode.insertBefore(box, note);
+    // Скрипт сайта собирает ссылку WhatsApp раньше нас (его обработчик зарегистрирован первым) — дописываем строки в её текст
+    sendBtn.addEventListener('click', function () {
+      var extra = [];
+      if (company.value.trim()) extra.push('Компания / БИН: ' + company.value.trim());
+      if (city.value.trim()) extra.push('Город доставки: ' + city.value.trim());
+      if (!extra.length || sendBtn.getAttribute('href') === '#') return;
+      try {
+        var url = new URL(sendBtn.href);
+        var text = url.searchParams.get('text') || '';
+        if (text.indexOf('Компания / БИН:') !== -1 || text.indexOf('Город доставки:') !== -1) return;
+        // Пробелы — как %20, а не «+»: так WhatsApp точно покажет текст без плюсов
+        sendBtn.href = url.origin + url.pathname + '?text=' + encodeURIComponent(text + '\n' + extra.join('\n'));
+      } catch (e) {}
+    });
+    if (/[?&]zayavka=1/.test(location.search)) {
+      var fab = document.getElementById('requestFab');
+      if (fab) setTimeout(function () { fab.click(); }, 300);
+      try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+    }
+  }
 })();
