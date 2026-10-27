@@ -134,6 +134,8 @@ CONTACTS = [
               '<a href="https://2gis.kz/almaty/firm/70000001037895624" target="_blank" rel="noopener">открыть в 2ГИС</a>'),
     ('Телефон', '<a href="tel:+77751810595">+7 775 181-05-95</a>'),
     ('WhatsApp', '<a href="https://wa.me/77751810595" target="_blank" rel="noopener">написать в WhatsApp</a> — обычно отвечаем в течение часа'),
+    ('Telegram', '<a href="https://t.me/Kttron_KZ_bot" target="_blank" rel="noopener">@Kttron_KZ_bot</a> — бот: заявка, '
+                 'цены, контакты'),
     ('E-mail', '<a href="mailto:info@kttron.kz">info@kttron.kz</a>'),
     ('Режим работы', 'понедельник — пятница, 09:00–17:00'),
     ('Компания', 'ТОО «DARHAN», БИН 990240010117 — <a href="/rekvizity/">реквизиты и условия</a>'),
@@ -215,7 +217,8 @@ PAGES = [
 
 FOOT_LINKS = ('        <p class="foot-links"><a href="/o-kompanii/">О компании</a> · <a href="/kontakty/">Контакты</a> · '
               '<a href="/dokumenty/">Документы</a> · <a href="/rekvizity/">Реквизиты и условия</a> · '
-              '<a href="/politika-konfidencialnosti/">Политика конфиденциальности</a></p>\n')
+              '<a href="/politika-konfidencialnosti/">Политика конфиденциальности</a> · '
+              '<a href="https://t.me/Kttron_KZ_bot" target="_blank" rel="noopener">Telegram-бот</a></p>\n')
 
 
 def body(page):
