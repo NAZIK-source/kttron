@@ -105,3 +105,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .kt-tg-send { border-color: #229ed9; color: #1b7fb0; }
 .kt-tg-hint { margin: 8px 0 0; padding: .55rem .75rem; border-radius: 8px; background: #e8f4fb; color: #0f5a8a; font-size: .88rem; font-weight: 600; }
 .kt-tg-hint[hidden] { display: none; }
+
+/* Плавающая кнопка Telegram-бота над WhatsApp */
+.fab-tg { color: #fff; background: #229ed9; border-radius: 50%; display: grid; place-items: center; width: 56px; height: 56px; box-shadow: 0 12px 30px #229ed959; }
+.fab-tg svg { fill: currentColor; width: 28px; height: 28px; display: block; margin-left: -2px; }
