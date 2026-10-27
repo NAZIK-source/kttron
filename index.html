@@ -71,7 +71,7 @@
         },
         "areaServed": { "@type": "Country", "name": "Казахстан" },
         "brand": { "@type": "Brand", "name": "КТ ТРОН", "url": "https://www.kttron.ru" },
-        "sameAs": ["https://2gis.kz/almaty/firm/70000001037895624"]
+        "sameAs": ["https://2gis.kz/almaty/firm/70000001037895624", "https://t.me/Kttron_KZ_bot"]
       }
     </script>
     <script>
@@ -118,6 +118,7 @@
           if (el.id === 'requestSend') goal('request_send');
           else if (el.id === 'send' && document.getElementById('estimator')) goal('calc_send');
           else if (/wa\.me|whatsapp/i.test(href)) { goal('whatsapp'); if (/^\/materials\/[^\/]+\//.test(location.pathname)) goal('product_whatsapp'); }
+          else if (/t\.me\//i.test(href)) goal('telegram');
           else if (href.indexOf('tel:') === 0) goal('phone');
           else if (href.indexOf('mailto:') === 0) goal('email');
           else if (el.hasAttribute('data-add') || el.id === 'lightboxAdd') goal('add_to_request');
@@ -133,7 +134,7 @@
     <style>.request-overlay{z-index:240}.request-drawer{z-index:250;width:min(360px,100%);gap:.6rem;padding:1rem 1rem 1.1rem}.request-head h2{font-size:1.2rem}.request-head .eyebrow{margin:0 0 .2rem}.request-close{width:36px;height:36px;flex:none}.request-drawer>.muted{margin:0;font-size:.88rem}.request-item{grid-template-columns:44px 1fr auto;gap:8px;padding:.5rem .6rem}.request-item img{width:44px;height:44px}.request-item .qty{margin-top:3px}.request-note textarea{min-height:64px;height:64px;padding:.6rem .8rem}.request-actions .btn-lg{padding-top:.8rem;padding-bottom:.8rem}body:has(.request-drawer.is-open) .fab-stack,body:has(.request-drawer.is-open) .toast{display:none!important}@media (max-width:480px){.request-drawer{width:100%}}@supports (height:100dvh){.request-drawer{height:100dvh}}</style>
     <link rel="preload" as="image" type="image/webp" href="/images/hero-dam-960.webp" media="(max-width: 800px)" fetchpriority="high" />
     <link rel="preload" as="image" type="image/webp" href="/images/hero-dam.webp" media="(min-width: 801px)" fetchpriority="high" />
-    <link rel="stylesheet" href="/assets/kt-ux.css?v=5" />
+    <link rel="stylesheet" href="/assets/kt-ux.css?v=6" />
   </head>
   <body>
 <noscript><div><img src="https://mc.yandex.ru/watch/113689719" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -1727,6 +1728,7 @@
               <a href="https://2gis.kz/almaty/firm/70000001037895624" target="_blank" rel="noopener">г. Алматы, ул. Шевченко 118, офис 221</a>
               <a href="tel:+77751810595">+7 775 181-05-95</a>
               <a href="https://wa.me/77751810595" target="_blank" rel="noopener">WhatsApp</a>
+              <a href="https://t.me/Kttron_KZ_bot" target="_blank" rel="noopener">Telegram-бот @Kttron_KZ_bot</a>
               <a href="mailto:info@kttron.kz">info@kttron.kz</a>
               <a href="https://www.kttron.ru" target="_blank" rel="noopener" data-i18n="contacts.manufacturer">Сайт официального производителя kttron.ru</a>
             </div>
@@ -1748,7 +1750,7 @@
         <a class="brand" href="#top" data-i18n="contacts.title">КТ ТРОН Казахстан</a>
         <p>© <span id="year">2026</span> Официальный дистрибьютор КТтрон (КТ ТРОН, KTtron) в РК</p>
         <a href="/prilozhenie/">Приложение для Android</a>
-        <p class="foot-links"><a href="/o-kompanii/">О компании</a> · <a href="/kontakty/">Контакты</a> · <a href="/dokumenty/">Документы</a> · <a href="/rekvizity/">Реквизиты и условия</a> · <a href="/politika-konfidencialnosti/">Политика конфиденциальности</a></p>
+        <p class="foot-links"><a href="/o-kompanii/">О компании</a> · <a href="/kontakty/">Контакты</a> · <a href="/dokumenty/">Документы</a> · <a href="/rekvizity/">Реквизиты и условия</a> · <a href="/politika-konfidencialnosti/">Политика конфиденциальности</a> · <a href="https://t.me/Kttron_KZ_bot" target="_blank" rel="noopener">Telegram-бот</a></p>
       </div>
     </footer>
 
@@ -1798,6 +1800,6 @@
     <script src="/assets/kt-prices.js?v=2" defer></script>
     <script src="/assets/kt-card.js?v=5" defer></script>
     <script src="/assets/account.js?v=2" defer></script>
-    <script src="/assets/kt-ux.js?v=5" defer></script>
+    <script src="/assets/kt-ux.js?v=6" defer></script>
   </body>
 </html>

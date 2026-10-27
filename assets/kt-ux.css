@@ -100,3 +100,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .own-text h3 { margin: 1.1rem 0 .4rem; font-size: 1.05rem; }
 .own-text ul { margin: 0; padding-left: 1.2rem; }
 .own-text li { margin: .2rem 0; }
+
+/* Заявка: кнопка «Отправить в Telegram» и подсказка после копирования */
+.kt-tg-send { border-color: #229ed9; color: #1b7fb0; }
+.kt-tg-hint { margin: 8px 0 0; padding: .55rem .75rem; border-radius: 8px; background: #e8f4fb; color: #0f5a8a; font-size: .88rem; font-weight: 600; }
+.kt-tg-hint[hidden] { display: none; }

@@ -200,6 +200,34 @@
         sendBtn.href = url.origin + url.pathname + '?text=' + encodeURIComponent(text + '\n' + extra.join('\n'));
       } catch (e) {}
     });
+    // «Отправить в Telegram»: бот не принимает текст через ссылку, поэтому копируем заявку
+    // в буфер обмена и открываем бота — клиенту остаётся вставить список в чат
+    var TGL = {
+      btn: { ru: 'Отправить в Telegram', kk: 'Telegram-ға жіберу', tg: 'Ба Telegram фиристодан', uz: 'Telegram’ga yuborish' },
+      hint: { ru: 'Список скопирован — вставьте его в чат с ботом', kk: 'Тізім көшірілді — оны бот чатына қойыңыз', tg: 'Рӯйхат нусха шуд — онро ба чат бо бот гузоред', uz: 'Ro‘yxat nusxalandi — uni bot chatiga qo‘ying' }
+    };
+    var tgBtn = document.createElement('a');
+    tgBtn.className = 'btn btn-ghost-dark btn-lg kt-tg-send';
+    tgBtn.href = 'https://t.me/Kttron_KZ_bot?start=site';
+    tgBtn.target = '_blank';
+    tgBtn.rel = 'noopener';
+    tgBtn.textContent = TGL.btn[lang] || TGL.btn.ru;
+    var tgHint = document.createElement('p');
+    tgHint.className = 'kt-tg-hint';
+    tgHint.hidden = true;
+    tgHint.textContent = TGL.hint[lang] || TGL.hint.ru;
+    sendBtn.insertAdjacentElement('afterend', tgBtn);
+    sendBtn.parentNode.insertAdjacentElement('afterend', tgHint);
+    tgBtn.addEventListener('click', function () {
+      var text = '';
+      try { text = new URL(sendBtn.href).searchParams.get('text') || ''; } catch (e) {}
+      var extra = [];
+      if (company.value.trim()) extra.push('Компания / БИН: ' + company.value.trim());
+      if (city.value.trim()) extra.push('Город доставки: ' + city.value.trim());
+      if (extra.length && text.indexOf('Город доставки:') === -1 && text.indexOf('Компания / БИН:') === -1) text += '\n' + extra.join('\n');
+      if (!text || !navigator.clipboard) return;
+      navigator.clipboard.writeText(text).then(function () { tgHint.hidden = false; }).catch(function () {});
+    });
     if (/[?&]zayavka=1/.test(location.search)) {
       var fab = document.getElementById('requestFab');
       if (fab) setTimeout(function () { fab.click(); }, 300);
