@@ -91,7 +91,7 @@ def load_products():
     index = (ROOT / 'index.html').read_text(encoding='utf-8')
     bundle = (ROOT / 'assets/main-B89Pv38-2410.js').read_text(encoding='utf-8')
     # Страницы, сделанные вручную, — те, что прописаны в коде каталога (в index.html ссылка теперь у всех)
-    home_bundle = (ROOT / 'assets/main-kt20261024.js').read_text(encoding='utf-8')
+    home_bundle = (ROOT / 'assets/main-kt20261102.js').read_text(encoding='utf-8')
     handmade = set(re.findall(r'page:`(/materials/[^`]+)`', home_bundle))
     cats = dict(re.findall(r'\{id:`(p\d+)`,name:`[^`]*`[\s\S]*?category:`([^`]*)`', bundle))
     products = []
@@ -195,12 +195,17 @@ def json_ld(p, price, unit):
             f'<script type="application/ld+json">\n{dump(product)}\n</script>')
 
 
+# Названия без бренда: добавляем КТ ТРОН в заголовок, по запросу «микролит» Google показывал страницу без кликов
+TITLE_OVERRIDES = {'Микролит': 'Микролит КТ ТРОН — купить в Алматы, цена, характеристики'}
+
+
 def build_page(template_head, template_tail, p, products, specs, prices, calc_ids):
     name, fname = p['name'], factory_name(p['name'])
     price, unit = price_info(prices, name)
     rows = specs.get(name, [])
     alt = fname if fname != name else ''
     title = f'{fname} ({name}) — купить в Алматы, цена, характеристики' if alt else f'{name} — купить в Алматы, цена, характеристики'
+    title = TITLE_OVERRIDES.get(name, title)
     description = (f'{name}{" (" + fname + ")" if alt else ""} в Алматы: {p["desc"].rstrip(".")}. '
                    f'Фасовка {p["pack"]}. Официальный дистрибьютор КТ ТРОН, поставка под заказ по Алматы и Казахстану.')
 
@@ -299,7 +304,7 @@ def patch_own_page(p, prices):
 
 def materials_index(template_head, template_tail, products, prices):
     head = template_head
-    title = 'Материалы КТ ТРОН (КТтрон) в Алматы — каталог, цены, характеристики'
+    title = 'Материалы КТ ТРОН (КТтрон) — купить в Алматы, цены, характеристики'
     description = 'Все материалы завода КТ ТРОН у официального дистрибьютора в Алматы: гидроизоляция, ремонт бетона, подливка, швы, защита, добавки. Цены от, характеристики, расход.'
     head = re.sub(r'<title>.*?</title>', f'<title>{e(title)}</title>', head, flags=re.S)
     head = re.sub(r'<meta name="description" content="[^"]*"', f'<meta name="description" content="{e(description)}"', head)
