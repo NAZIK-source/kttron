@@ -78,7 +78,7 @@
       "name": "Как посчитать расход гидроизоляции на 1 м²?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "У проникающих составов норма дана на 1 м²: КТ ТРОН-1 и КТ ТРОН-11 — 0,8–1,2 кг/м². У обмазочных и эластичных — на 1 мм слоя: КТ ТРОН-7 — 1,55 кг/м², КТ ТРОН-10 1К — 1,5 кг/м² на каждый миллиметр. Умножьте площадь на норму, а для обмазочных ещё и на толщину слоя (обычно 2–4 мм)."
+        "text": "У проникающих составов норма дана на 1 м²: КТ ТРОН-1 — 1,1 кг/м², КТ ТРОН-11 — 1,0 кг/м². У обмазочных и эластичных — на 1 мм слоя: КТ ТРОН-7 — 1,55 кг/м², КТ ТРОН-10 1К — 1,5 кг/м² на каждый миллиметр. Умножьте площадь на норму, а для обмазочных ещё и на толщину слоя (обычно 2–4 мм). Для закупки добавьте потери по СТО КТ: при ручном нанесении КТ ТРОН-1 — 1,2 кг/м², КТ ТРОН-7 — 1,69 кг/м² на 1 мм, КТ ТРОН-10 — 1,63 кг/м² на 1 мм."
       }
     },
     {
@@ -86,15 +86,15 @@
       "name": "Сколько ремонтного состава нужно на 1 м²?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Норма ремонтных составов указана на 1 м³ раствора, например 1850 кг для КТ ТРОН-3 Т400. На 1 м² при слое 1 мм это 1,85 кг, при слое 20 мм — 37 кг. Формула: площадь, м² × толщина, мм × норма ÷ 1000."
+        "text": "Норма ремонтных составов указана на 1 м³ раствора, например 1850 кг для КТ ТРОН-3 Т400. На 1 м² при слое 1 мм это 1,85 кг, при слое 20 мм — 37 кг. Формула: площадь, м² × толщина, мм × норма ÷ 1000. С потерями при ручном нанесении по СТО КТ норма КТ ТРОН-3 Т400 — 1930 кг на 1 м³, при слое 20 мм — 38,6 кг на 1 м²."
       }
     },
     {
       "@type": "Question",
-      "name": "Почему калькулятор считает с запасом?",
+      "name": "Почему к закупке больше, чем по норме завода?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Материал продают целыми мешками, поэтому результат округляется вверх. Реальный расход зависит от ровности и впитываемости основания, поэтому для точного количества пришлите фото объекта в WhatsApp. Цена указана ориентировочно, без доставки."
+        "text": "Норма в техописании — чистый расход. Часть материала неизбежно теряется при хранении, замесе и нанесении, особенно на стенах, потолке и шероховатом основании. Завод учитывает это в стандарте СТО КТ 62035492.008-2024 (п. 4.4): при ручном нанесении к закупке примерно на 4 % больше для ремонтных составов и на 9 % больше для гидроизоляции, машиной — ещё больше. Калькулятор считает по этим нормам и округляет до целых мешков. Точный расход завод рекомендует подтвердить пробным нанесением — пришлите фото объекта в WhatsApp. Цена указана ориентировочно, без доставки."
       }
     }
   ]
@@ -155,7 +155,7 @@
           <nav class="crumbs" aria-label="Хлебные крошки"><a href="/">Главная</a> / Калькулятор</nav>
           <p class="eyebrow">Нормы завода kttron.ru</p>
           <h1>Калькулятор расхода</h1>
-          <p class="muted">Площадь и толщина дают килограммы и число мешков. Если для материала указана цена «от», покажем ориентировочную сумму; точную цену назовут в WhatsApp.</p>
+          <p class="muted">Площадь и толщина дают килограммы и число мешков. Количество к закупке считаем с учётом потерь при приготовлении и нанесении по стандарту завода СТО КТ 62035492.008-2024 (п. 4.4). Если для материала указана цена «от», покажем ориентировочную сумму; точную цену назовут в WhatsApp.</p>
           <form class="calc" id="estimator">
             <div class="calc-fields">
               <label>Материал
@@ -167,9 +167,16 @@
               <label id="thickLabel"><span id="thickText">Толщина, мм</span>
                 <input name="thick" type="number" min="0.5" step="0.5" value="2" />
               </label>
+              <label id="methodLabel">Нанесение
+                <select name="method" id="method">
+                  <option value="hand">Вручную</option>
+                  <option value="mech">Машиной</option>
+                </select>
+              </label>
             </div>
             <p class="muted" id="norm"></p>
             <p class="calc-result" id="result" aria-live="polite"></p>
+            <p class="muted" id="net" hidden></p>
             <p class="calc-cost" id="cost" hidden></p>
             <div class="hero-cta">
               <a class="btn btn-solid btn-lg" id="send" href="https://wa.me/77751810595">Отправить расчёт в WhatsApp</a>
@@ -184,7 +191,7 @@
       <section class="section" id="kak-schitat">
         <div class="shell calc-guide">
           <h2>Как рассчитать расход материалов КТ ТРОН</h2>
-          <p>Нормы расхода взяты из технических описаний завода. Они указаны по-разному, и калькулятор выше учитывает это сам:</p>
+          <p>Нормы расхода взяты из технических описаний завода. Это чистый расход без потерь. Для закупки завод требует добавить потери при складировании, приготовлении и нанесении — по стандарту СТО КТ 62035492.008-2024 (п. 4.4, таблицы 4.36 и 4.37). Калькулятор считает количество к закупке по этим нормам, отдельно для ручного и машинного нанесения. Нормы указаны по-разному, и калькулятор учитывает это сам:</p>
           <ul>
             <li><strong>На 1 м²</strong> — проникающая гидроизоляция (КТ ТРОН-1, КТ ТРОН-11) и плиточный клей КТ ТРОН-101: килограммы = площадь × норма.</li>
             <li><strong>На 1 м² на каждый 1 мм слоя</strong> — обмазочная и эластичная гидроизоляция (КТ ТРОН-7, 71, 10, 122 флекс), праймер: килограммы = площадь × толщина × норма.</li>
@@ -193,67 +200,68 @@
           </ul>
           <h3>Примеры расчёта</h3>
           <ul class="calc-examples">
-            <li>Проникающая гидроизоляция 100 м² подвала: 80–120 кг КТ ТРОН-1 — 4–5 вед. по 25 кг, ориентировочно от 272 250–340 313 ₸.</li>
-            <li>Обмазочная гидроизоляция 50 м² слоем 2 мм: 155 кг КТ ТРОН-7 — 7 меш. по 25 кг, ориентировочно от 154 000 ₸.</li>
-            <li>Ремонт 10 м² бетона слоем 20 мм: 370 кг КТ ТРОН-3 Т400 — 15 меш. по 25 кг, ориентировочно от 111 375 ₸.</li>
+            <li>Проникающая гидроизоляция 100 м² подвала: 120 кг КТ ТРОН-1 с учётом потерь — 5 вед. по 25 кг, ориентировочно от 340 313 ₸.</li>
+            <li>Обмазочная гидроизоляция 50 м² слоем 2 мм: 169 кг КТ ТРОН-7 с учётом потерь — 7 меш. по 25 кг, ориентировочно от 154 000 ₸.</li>
+            <li>Ремонт 10 м² бетона слоем 20 мм: 386 кг КТ ТРОН-3 Т400 с учётом потерь — 16 меш. по 25 кг, ориентировочно от 118 800 ₸.</li>
             <li>Зачеканка 20 м шва сечением 30×30 мм: 31,5 кг КТ ТРОН-2 — 2 меш. по 25 кг, ориентировочно от 73 425 ₸.</li>
           </ul>
-          <p class="muted">Цены «от» по прайсу завода для Казахстана, без доставки. Количество округлено до целых мешков.</p>
+          <p class="muted">С учётом потерь при ручном нанесении по СТО КТ (для КТ ТРОН-2 — по норме завода: норма потерь в СТО не указана). Цены «от» по прайсу завода для Казахстана, без доставки. Количество округлено до целых мешков.</p>
           <h3>Нормы расхода материалов КТ ТРОН</h3>
           <div class="calc-table-wrap">
             <table class="calc-table">
-              <thead><tr><th>Материал</th><th>Норма расхода</th><th>Цена от, ₸/кг</th></tr></thead>
+              <thead><tr><th>Материал</th><th>Норма завода</th><th>С потерями: вручную / машиной</th><th>Цена от, ₸/кг</th></tr></thead>
               <tbody>
-              <tr class="calc-group"><th colspan="3">Гидроизоляция</th></tr>
-              <tr><td><a href="/materials/kt-tron-1/">КТ ТРОН-1</a></td><td data-label="Норма">0,8–1,2 кг/м²</td><td data-label="Цена от, ₸/кг">2 723</td></tr>
-              <tr><td><a href="/materials/kt-tron-11/">КТ ТРОН-11</a></td><td data-label="Норма">0,8–1,2 кг/м²</td><td data-label="Цена от, ₸/кг">2 998</td></tr>
-              <tr><td><a href="/materials/kt-tron-7/">КТ ТРОН-7</a></td><td data-label="Норма">1,55 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">880</td></tr>
-              <tr><td><a href="/materials/kt-tron-71/">КТ ТРОН-71</a></td><td data-label="Норма">1,55 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">1 018</td></tr>
-              <tr><td><a href="/materials/kt-tron-10-1k/">КТ ТРОН-10 1К</a></td><td data-label="Норма">1,5 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">1 843</td></tr>
-              <tr><td><a href="/materials/kt-tron-10-2k/">КТ ТРОН-10 2К</a></td><td data-label="Норма">1,5 кг/м² на 1 мм сухой смеси</td><td data-label="Цена от, ₸/кг">2 603</td></tr>
-              <tr><td><a href="/materials/kt-tron-122-fleks/">КТ ТРОН-122 флекс</a></td><td data-label="Норма">1,5 кг/м² на 1 мм сухой смеси</td><td data-label="Цена от, ₸/кг">3 397</td></tr>
-              <tr class="calc-group"><th colspan="3">Ремонт бетона: тиксотропные</th></tr>
-              <tr><td><a href="/materials/kt-tron-3/">КТ ТРОН-3</a></td><td data-label="Норма">1 800 кг/м³; слой 10 мм — 18 кг/м²</td><td data-label="Цена от, ₸/кг">396</td></tr>
-              <tr><td><a href="/materials/kt-tron-3-t400/">КТ ТРОН-3 Т400</a></td><td data-label="Норма">1 850 кг/м³; слой 10 мм — 18,5 кг/м²</td><td data-label="Цена от, ₸/кг">297</td></tr>
-              <tr><td><a href="/materials/kt-tron-3-t500/">КТ ТРОН-3 Т500</a></td><td data-label="Норма">1 950 кг/м³; слой 10 мм — 19,5 кг/м²</td><td data-label="Цена от, ₸/кг">429</td></tr>
-              <tr><td><a href="/materials/kt-tron-3-t505/">КТ ТРОН-3 Т505</a></td><td data-label="Норма">1 950 кг/м³; слой 10 мм — 19,5 кг/м²</td><td data-label="Цена от, ₸/кг">501</td></tr>
-              <tr><td><a href="/materials/kt-tron-4-t600/">КТ ТРОН-4 Т600</a></td><td data-label="Норма">1 950 кг/м³; слой 10 мм — 19,5 кг/м²</td><td data-label="Цена от, ₸/кг">583</td></tr>
-              <tr><td><a href="/materials/kt-tron-th60/">КТ ТРОН-ТХ60</a></td><td data-label="Норма">1 950 кг/м³; слой 10 мм — 19,5 кг/м²</td><td data-label="Цена от, ₸/кг">858</td></tr>
-              <tr><td><a href="/materials/kt-tron-wx-30t/">КТ ТРОН-WX-30T</a></td><td data-label="Норма">1 950 кг/м³; слой 20 мм — 39 кг/м²</td><td data-label="Цена от, ₸/кг">963</td></tr>
-              <tr class="calc-group"><th colspan="3">Ремонт бетона: литьевые</th></tr>
-              <tr><td><a href="/materials/kt-tron-3-l400/">КТ ТРОН-3 Л400</a></td><td data-label="Норма">1 850 кг/м³; слой 20 мм — 37 кг/м²</td><td data-label="Цена от, ₸/кг">396</td></tr>
-              <tr><td><a href="/materials/kt-tron-3-l505/">КТ ТРОН-3 Л505</a></td><td data-label="Норма">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="Цена от, ₸/кг">501</td></tr>
-              <tr><td><a href="/materials/kt-tron-3-l600/">КТ ТРОН-3 Л600</a></td><td data-label="Норма">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="Цена от, ₸/кг">429</td></tr>
-              <tr><td><a href="/materials/kt-tron-4-l600/">КТ ТРОН-4 Л600</a></td><td data-label="Норма">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="Цена от, ₸/кг">605</td></tr>
-              <tr><td><a href="/materials/kt-tron-4-mf/">КТ ТРОН-4 МФ</a></td><td data-label="Норма">2 100 кг/м³; слой 20 мм — 42 кг/м²</td><td data-label="Цена от, ₸/кг">710</td></tr>
-              <tr><td><a href="/materials/kt-tron-nh60/">КТ ТРОН-НХ60</a></td><td data-label="Норма">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="Цена от, ₸/кг">858</td></tr>
-              <tr><td><a href="/materials/kt-tron-nh60-m/">КТ ТРОН-НХ60 М</a></td><td data-label="Норма">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="Цена от, ₸/кг">908</td></tr>
-              <tr><td><a href="/materials/kt-tron-mh80/">КТ ТРОН-МХ80</a></td><td data-label="Норма">2 100 кг/м³; слой 20 мм — 42 кг/м²</td><td data-label="Цена от, ₸/кг">1 040</td></tr>
-              <tr><td><a href="/materials/kt-tron-wx-30n/">КТ ТРОН-WX-30N</a></td><td data-label="Норма">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="Цена от, ₸/кг">908</td></tr>
-              <tr class="calc-group"><th colspan="3">Торкретирование</th></tr>
-              <tr><td><a href="/materials/kt-tron-torkret-s/">КТ ТРОН-торкрет С</a></td><td data-label="Норма">1 900 кг/м³; слой 30 мм — 57 кг/м²</td><td data-label="Цена от, ₸/кг">357</td></tr>
-              <tr><td><a href="/materials/kt-tron-torkret-m/">КТ ТРОН-торкрет М</a></td><td data-label="Норма">2 000 кг/м³; слой 30 мм — 60 кг/м²</td><td data-label="Цена от, ₸/кг">369</td></tr>
-              <tr class="calc-group"><th colspan="3">Неконструкционный ремонт</th></tr>
-              <tr><td><a href="/materials/kt-tron-6/">КТ ТРОН-6</a></td><td data-label="Норма">1 750 кг/м³; слой 10 мм — 17,5 кг/м²</td><td data-label="Цена от, ₸/кг">506</td></tr>
-              <tr><td><a href="/materials/kt-tron-6-finishnyy/">КТ ТРОН-6 финишный</a></td><td data-label="Норма">1 500 кг/м³; слой 3 мм — 4,5 кг/м²</td><td data-label="Цена от, ₸/кг">550</td></tr>
-              <tr><td><a href="/materials/kt-tron-rh61/">КТ ТРОН-РХ61</a></td><td data-label="Норма">1 500 кг/м³; слой 3 мм — 4,5 кг/м²</td><td data-label="Цена от, ₸/кг">941</td></tr>
-              <tr class="calc-group"><th colspan="3">Подливочные составы</th></tr>
-              <tr><td><a href="/materials/kt-tron-9-l800-podlivochnyy/">КТ ТРОН-9 Л800 подливочный</a></td><td data-label="Норма">2 000 кг/м³; слой 50 мм — 100 кг/м²</td><td data-label="Цена от, ₸/кг">589</td></tr>
-              <tr><td><a href="/materials/kt-tron-9-zr5-0/">КТ ТРОН-9 ЗР5,0</a></td><td data-label="Норма">2 000 кг/м³; слой 50 мм — 100 кг/м²</td><td data-label="Цена от, ₸/кг">743</td></tr>
-              <tr><td><a href="/materials/kt-tron-nh75/">КТ ТРОН-НХ75</a></td><td data-label="Норма">2 100 кг/м³; слой 50 мм — 105 кг/м²</td><td data-label="Цена от, ₸/кг">2 525</td></tr>
-              <tr class="calc-group"><th colspan="3">Швы, протечки, арматура, плитка</th></tr>
-              <tr><td><a href="/materials/kt-tron-2/">КТ ТРОН-2</a></td><td data-label="Норма">1 750 кг/м³; шов 30×30 мм — 1,57 кг на 1 м</td><td data-label="Цена от, ₸/кг">1 469</td></tr>
-              <tr><td><a href="/materials/kt-tron-wx-32t/">КТ ТРОН-WX-32T</a></td><td data-label="Норма">1 750 кг/м³; шов 30×30 мм — 1,57 кг на 1 м</td><td data-label="Цена от, ₸/кг">1 073</td></tr>
-              <tr><td><a href="/materials/kt-tron-8/">КТ ТРОН-8</a></td><td data-label="Норма">1 850 кг/м³; слой 10 мм — 18,5 кг/м²</td><td data-label="Цена от, ₸/кг">2 420</td></tr>
-              <tr><td><a href="/materials/kt-tron-praymer/">КТ ТРОН-праймер</a></td><td data-label="Норма">1,5 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">2 393</td></tr>
-              <tr><td><a href="/materials/kt-tron-101/">КТ ТРОН-101</a></td><td data-label="Норма">4,5 кг/м²</td><td data-label="Цена от, ₸/кг">941</td></tr>
+              <tr class="calc-group"><th colspan="4">Гидроизоляция</th></tr>
+              <tr><td><a href="/materials/kt-tron-1/">КТ ТРОН-1</a></td><td data-label="Норма завода">1,1 кг/м²</td><td data-label="С потерями: вручную / машиной">1,2 / 1,26 кг/м²</td><td data-label="Цена от, ₸/кг">2 723</td></tr>
+              <tr><td><a href="/materials/kt-tron-11/">КТ ТРОН-11</a></td><td data-label="Норма завода">1 кг/м²</td><td data-label="С потерями: вручную / машиной">1,1 / 1,15 кг/м²</td><td data-label="Цена от, ₸/кг">2 998</td></tr>
+              <tr><td><a href="/materials/kt-tron-7/">КТ ТРОН-7</a></td><td data-label="Норма завода">1,55 кг/м² на 1 мм</td><td data-label="С потерями: вручную / машиной">1,69 / 1,78 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">880</td></tr>
+              <tr><td><a href="/materials/kt-tron-71/">КТ ТРОН-71</a></td><td data-label="Норма завода">1,55 кг/м² на 1 мм</td><td data-label="С потерями: вручную / машиной">1,69 / 1,78 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">1 018</td></tr>
+              <tr><td><a href="/materials/kt-tron-10-1k/">КТ ТРОН-10 1К</a></td><td data-label="Норма завода">1,5 кг/м² на 1 мм</td><td data-label="С потерями: вручную / машиной">1,63 / 1,72 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">1 843</td></tr>
+              <tr><td><a href="/materials/kt-tron-10-2k/">КТ ТРОН-10 2К</a></td><td data-label="Норма завода">1,5 кг/м² на 1 мм сухой смеси</td><td data-label="С потерями: вручную / машиной">1,63 / 1,72 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">2 603</td></tr>
+              <tr><td><a href="/materials/kt-tron-122-fleks/">КТ ТРОН-122 флекс</a></td><td data-label="Норма завода">1,5 кг/м² на 1 мм сухой смеси</td><td data-label="С потерями: вручную / машиной">1,63 / 1,72 кг/м² на 1 мм</td><td data-label="Цена от, ₸/кг">3 397</td></tr>
+              <tr class="calc-group"><th colspan="4">Ремонт бетона: тиксотропные</th></tr>
+              <tr><td><a href="/materials/kt-tron-3/">КТ ТРОН-3</a></td><td data-label="Норма завода">1 800 кг/м³; слой 10 мм — 18 кг/м²</td><td data-label="С потерями: вручную / машиной">1 877 / 1 983 кг/м³</td><td data-label="Цена от, ₸/кг">396</td></tr>
+              <tr><td><a href="/materials/kt-tron-3-t400/">КТ ТРОН-3 Т400</a></td><td data-label="Норма завода">1 850 кг/м³; слой 10 мм — 18,5 кг/м²</td><td data-label="С потерями: вручную / машиной">1 930 / 2 038 кг/м³</td><td data-label="Цена от, ₸/кг">297</td></tr>
+              <tr><td><a href="/materials/kt-tron-3-t500/">КТ ТРОН-3 Т500</a></td><td data-label="Норма завода">1 950 кг/м³; слой 10 мм — 19,5 кг/м²</td><td data-label="С потерями: вручную / машиной">2 034 / 2 148 кг/м³</td><td data-label="Цена от, ₸/кг">429</td></tr>
+              <tr><td><a href="/materials/kt-tron-3-t505/">КТ ТРОН-3 Т505</a></td><td data-label="Норма завода">1 950 кг/м³; слой 10 мм — 19,5 кг/м²</td><td data-label="С потерями: вручную / машиной">2 034 / 2 148 кг/м³</td><td data-label="Цена от, ₸/кг">501</td></tr>
+              <tr><td><a href="/materials/kt-tron-4-t600/">КТ ТРОН-4 Т600</a></td><td data-label="Норма завода">1 950 кг/м³; слой 10 мм — 19,5 кг/м²</td><td data-label="С потерями: вручную / машиной">2 034 / 2 148 кг/м³</td><td data-label="Цена от, ₸/кг">583</td></tr>
+              <tr><td><a href="/materials/kt-tron-th60/">КТ ТРОН-ТХ60</a></td><td data-label="Норма завода">1 950 кг/м³; слой 10 мм — 19,5 кг/м²</td><td data-label="С потерями: вручную / машиной">2 034 / — кг/м³</td><td data-label="Цена от, ₸/кг">858</td></tr>
+              <tr><td><a href="/materials/kt-tron-wx-30t/">КТ ТРОН-WX-30T</a></td><td data-label="Норма завода">1 950 кг/м³; слой 20 мм — 39 кг/м²</td><td data-label="С потерями: вручную / машиной">2 034 / — кг/м³</td><td data-label="Цена от, ₸/кг">963</td></tr>
+              <tr class="calc-group"><th colspan="4">Ремонт бетона: литьевые</th></tr>
+              <tr><td><a href="/materials/kt-tron-3-l400/">КТ ТРОН-3 Л400</a></td><td data-label="Норма завода">1 850 кг/м³; слой 20 мм — 37 кг/м²</td><td data-label="С потерями: вручную / машиной">1 925 / 2 038 кг/м³</td><td data-label="Цена от, ₸/кг">396</td></tr>
+              <tr><td><a href="/materials/kt-tron-3-l505/">КТ ТРОН-3 Л505</a></td><td data-label="Норма завода">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="С потерями: вручную / машиной">2 081 / 2 203 кг/м³</td><td data-label="Цена от, ₸/кг">501</td></tr>
+              <tr><td><a href="/materials/kt-tron-3-l600/">КТ ТРОН-3 Л600</a></td><td data-label="Норма завода">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="С потерями: вручную / машиной">2 081 / 2 203 кг/м³</td><td data-label="Цена от, ₸/кг">429</td></tr>
+              <tr><td><a href="/materials/kt-tron-4-l600/">КТ ТРОН-4 Л600</a></td><td data-label="Норма завода">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="С потерями: вручную / машиной">2 081 / 2 203 кг/м³</td><td data-label="Цена от, ₸/кг">605</td></tr>
+              <tr><td><a href="/materials/kt-tron-4-mf/">КТ ТРОН-4 МФ</a></td><td data-label="Норма завода">2 100 кг/м³; слой 20 мм — 42 кг/м²</td><td data-label="С потерями: вручную / машиной">2 185 / 2 313 кг/м³</td><td data-label="Цена от, ₸/кг">710</td></tr>
+              <tr><td><a href="/materials/kt-tron-nh60/">КТ ТРОН-НХ60</a></td><td data-label="Норма завода">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="С потерями: вручную / машиной">2 081 / — кг/м³</td><td data-label="Цена от, ₸/кг">858</td></tr>
+              <tr><td><a href="/materials/kt-tron-nh60-m/">КТ ТРОН-НХ60 М</a></td><td data-label="Норма завода">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="С потерями: вручную / машиной">2 081 / — кг/м³</td><td data-label="Цена от, ₸/кг">908</td></tr>
+              <tr><td><a href="/materials/kt-tron-mh80/">КТ ТРОН-МХ80</a></td><td data-label="Норма завода">2 100 кг/м³; слой 20 мм — 42 кг/м²</td><td data-label="С потерями: вручную / машиной">2 185 / 2 313 кг/м³</td><td data-label="Цена от, ₸/кг">1 040</td></tr>
+              <tr><td><a href="/materials/kt-tron-wx-30n/">КТ ТРОН-WX-30N</a></td><td data-label="Норма завода">2 000 кг/м³; слой 20 мм — 40 кг/м²</td><td data-label="С потерями: вручную / машиной">— / 2 203 кг/м³</td><td data-label="Цена от, ₸/кг">908</td></tr>
+              <tr class="calc-group"><th colspan="4">Торкретирование</th></tr>
+              <tr><td><a href="/materials/kt-tron-torkret-s/">КТ ТРОН-торкрет С</a></td><td data-label="Норма завода">1 900 кг/м³; слой 30 мм — 57 кг/м²</td><td data-label="С потерями: вручную / машиной">— / 2 093 кг/м³</td><td data-label="Цена от, ₸/кг">357</td></tr>
+              <tr><td><a href="/materials/kt-tron-torkret-m/">КТ ТРОН-торкрет М</a></td><td data-label="Норма завода">2 000 кг/м³; слой 30 мм — 60 кг/м²</td><td data-label="С потерями: вручную / машиной">— / 2 203 кг/м³</td><td data-label="Цена от, ₸/кг">369</td></tr>
+              <tr class="calc-group"><th colspan="4">Неконструкционный ремонт</th></tr>
+              <tr><td><a href="/materials/kt-tron-6/">КТ ТРОН-6</a></td><td data-label="Норма завода">1 750 кг/м³; слой 10 мм — 17,5 кг/м²</td><td data-label="С потерями: вручную / машиной">1 825 / 1 928 кг/м³</td><td data-label="Цена от, ₸/кг">506</td></tr>
+              <tr><td><a href="/materials/kt-tron-6-finishnyy/">КТ ТРОН-6 финишный</a></td><td data-label="Норма завода">1 500 кг/м³; слой 3 мм — 4,5 кг/м²</td><td data-label="С потерями: вручную / машиной">1 565 / 1 652 кг/м³</td><td data-label="Цена от, ₸/кг">550</td></tr>
+              <tr><td><a href="/materials/kt-tron-rh61/">КТ ТРОН-РХ61</a></td><td data-label="Норма завода">1 500 кг/м³; слой 3 мм — 4,5 кг/м²</td><td data-label="С потерями: вручную / машиной">1 565 / 1 652 кг/м³</td><td data-label="Цена от, ₸/кг">941</td></tr>
+              <tr><td><a href="/materials/mikrolit/">Микролит</a></td><td data-label="Норма завода">1 800 кг/м³; слой 10 мм — 18 кг/м²</td><td data-label="С потерями: вручную / машиной">1 873 / 1 983 кг/м³</td><td data-label="Цена от, ₸/кг">649</td></tr>
+              <tr class="calc-group"><th colspan="4">Подливочные составы</th></tr>
+              <tr><td><a href="/materials/kt-tron-9-l800-podlivochnyy/">КТ ТРОН-9 Л800 подливочный</a></td><td data-label="Норма завода">2 000 кг/м³; слой 50 мм — 100 кг/м²</td><td data-label="С потерями: вручную / машиной">2 081 / 2 203 кг/м³</td><td data-label="Цена от, ₸/кг">589</td></tr>
+              <tr><td><a href="/materials/kt-tron-9-zr5-0/">КТ ТРОН-9 ЗР5,0</a></td><td data-label="Норма завода">2 000 кг/м³; слой 50 мм — 100 кг/м²</td><td data-label="С потерями: вручную / машиной">2 081 / 2 203 кг/м³</td><td data-label="Цена от, ₸/кг">743</td></tr>
+              <tr><td><a href="/materials/kt-tron-nh75/">КТ ТРОН-НХ75</a></td><td data-label="Норма завода">2 100 кг/м³; слой 50 мм — 105 кг/м²</td><td data-label="С потерями: вручную / машиной">2 185 / 2 313 кг/м³</td><td data-label="Цена от, ₸/кг">2 525</td></tr>
+              <tr class="calc-group"><th colspan="4">Швы, протечки, арматура, плитка</th></tr>
+              <tr><td><a href="/materials/kt-tron-2/">КТ ТРОН-2</a></td><td data-label="Норма завода">1 750 кг/м³; шов 30×30 мм — 1,57 кг на 1 м</td><td data-label="С потерями: вручную / машиной">не указаны в СТО</td><td data-label="Цена от, ₸/кг">1 469</td></tr>
+              <tr><td><a href="/materials/kt-tron-wx-32t/">КТ ТРОН-WX-32T</a></td><td data-label="Норма завода">1 750 кг/м³; шов 30×30 мм — 1,57 кг на 1 м</td><td data-label="С потерями: вручную / машиной">1 825 / — кг/м³</td><td data-label="Цена от, ₸/кг">1 073</td></tr>
+              <tr><td><a href="/materials/kt-tron-8/">КТ ТРОН-8</a></td><td data-label="Норма завода">1 850 кг/м³; слой 10 мм — 18,5 кг/м²</td><td data-label="С потерями: вручную / машиной">не указаны в СТО</td><td data-label="Цена от, ₸/кг">2 420</td></tr>
+              <tr><td><a href="/materials/kt-tron-praymer/">КТ ТРОН-праймер</a></td><td data-label="Норма завода">1,5 кг/м² на 1 мм</td><td data-label="С потерями: вручную / машиной">не указаны в СТО</td><td data-label="Цена от, ₸/кг">2 393</td></tr>
+              <tr><td><a href="/materials/kt-tron-101/">КТ ТРОН-101</a></td><td data-label="Норма завода">4,5 кг/м²</td><td data-label="С потерями: вручную / машиной">не указаны в СТО</td><td data-label="Цена от, ₸/кг">941</td></tr>
               </tbody>
             </table>
           </div>
           <h3>Частые вопросы</h3>
-          <details class="faq"><summary>Как посчитать расход гидроизоляции на 1 м²?</summary><p>У проникающих составов норма дана на 1 м²: КТ ТРОН-1 и КТ ТРОН-11 — 0,8–1,2 кг/м². У обмазочных и эластичных — на 1 мм слоя: КТ ТРОН-7 — 1,55 кг/м², КТ ТРОН-10 1К — 1,5 кг/м² на каждый миллиметр. Умножьте площадь на норму, а для обмазочных ещё и на толщину слоя (обычно 2–4 мм).</p></details>
-          <details class="faq"><summary>Сколько ремонтного состава нужно на 1 м²?</summary><p>Норма ремонтных составов указана на 1 м³ раствора, например 1850 кг для КТ ТРОН-3 Т400. На 1 м² при слое 1 мм это 1,85 кг, при слое 20 мм — 37 кг. Формула: площадь, м² × толщина, мм × норма ÷ 1000.</p></details>
-          <details class="faq"><summary>Почему калькулятор считает с запасом?</summary><p>Материал продают целыми мешками, поэтому результат округляется вверх. Реальный расход зависит от ровности и впитываемости основания, поэтому для точного количества пришлите фото объекта в WhatsApp. Цена указана ориентировочно, без доставки.</p></details>
+          <details class="faq"><summary>Как посчитать расход гидроизоляции на 1 м²?</summary><p>У проникающих составов норма дана на 1 м²: КТ ТРОН-1 — 1,1 кг/м², КТ ТРОН-11 — 1,0 кг/м². У обмазочных и эластичных — на 1 мм слоя: КТ ТРОН-7 — 1,55 кг/м², КТ ТРОН-10 1К — 1,5 кг/м² на каждый миллиметр. Умножьте площадь на норму, а для обмазочных ещё и на толщину слоя (обычно 2–4 мм). Для закупки добавьте потери по СТО КТ: при ручном нанесении КТ ТРОН-1 — 1,2 кг/м², КТ ТРОН-7 — 1,69 кг/м² на 1 мм, КТ ТРОН-10 — 1,63 кг/м² на 1 мм.</p></details>
+          <details class="faq"><summary>Сколько ремонтного состава нужно на 1 м²?</summary><p>Норма ремонтных составов указана на 1 м³ раствора, например 1850 кг для КТ ТРОН-3 Т400. На 1 м² при слое 1 мм это 1,85 кг, при слое 20 мм — 37 кг. Формула: площадь, м² × толщина, мм × норма ÷ 1000. С потерями при ручном нанесении по СТО КТ норма КТ ТРОН-3 Т400 — 1930 кг на 1 м³, при слое 20 мм — 38,6 кг на 1 м².</p></details>
+          <details class="faq"><summary>Почему к закупке больше, чем по норме завода?</summary><p>Норма в техописании — чистый расход. Часть материала неизбежно теряется при хранении, замесе и нанесении, особенно на стенах, потолке и шероховатом основании. Завод учитывает это в стандарте СТО КТ 62035492.008-2024 (п. 4.4): при ручном нанесении к закупке примерно на 4 % больше для ремонтных составов и на 9 % больше для гидроизоляции, машиной — ещё больше. Калькулятор считает по этим нормам и округляет до целых мешков. Точный расход завод рекомендует подтвердить пробным нанесением — пришлите фото объекта в WhatsApp. Цена указана ориентировочно, без доставки.</p></details>
           <p class="gidro-links">Подробнее о материалах: <a href="/gidroizolyaciya/">гидроизоляция в Алматы</a> · <a href="/remont-betona/">ремонт бетона</a> · <a href="/materials/">все материалы</a></p>
         </div>
       </section>
@@ -279,39 +287,40 @@
 
     <script>
       const materials = [
-        { id: "kt-tron-1", name: "КТ ТРОН-1", rid: "p030", page: "/materials/kt-tron-1/", group: "Гидроизоляция", pack: 25, mode: "area", min: 0.8, max: 1.2, note: "Проникающая гидроизоляция: 0,8–1,2 кг/м²." },
-        { id: "kt-tron-11", name: "КТ ТРОН-11", rid: "p031", page: "/materials/kt-tron-11/", group: "Гидроизоляция", pack: 25, mode: "area", min: 0.8, max: 1.2, url: "https://www.kttron.ru/goods/pronikayushchaya_gidroizolyatsiya/kttron_11_pronikayushchaya_gidroizolyatsiya_dlya_betonov_prosluzhivshikh_dlitelnyy_srok/", note: "Проникающая гидроизоляция для старого бетона: 0,8–1,2 кг/м²." },
-        { id: "kt-tron-7", name: "КТ ТРОН-7", rid: "p032", page: "/materials/kt-tron-7/", group: "Гидроизоляция", pack: 25, mode: "mm", min: 1.55, max: 1.55, thick: 2, minThick: 0.8, maxThick: 4, note: "Обмазочная гидроизоляция: 1,55 кг/м² на каждый 1 мм. Рабочий слой 2–4 мм." },
-        { id: "kt-tron-71", name: "КТ ТРОН-71", rid: "p033", page: "/materials/kt-tron-71/", group: "Гидроизоляция", pack: 25, mode: "mm", min: 1.55, max: 1.55, thick: 4, minThick: 0.8, maxThick: 4, url: "https://www.kttron.ru/goods/obmazochnaya_gidroizolyatsiya/kttron_71/", note: "Обмазочная гидроизоляция с проникающим эффектом: 1,55 кг/м² на 1 мм. Рекомендуемая толщина 4 мм, за проход 0,8–1,5 мм." },
-        { id: "kt-tron-10-1k", name: "КТ ТРОН-10 1К", rid: "p034", page: "/materials/kt-tron-10-1k/", group: "Гидроизоляция", pack: 20, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, note: "Эластичная гидроизоляция: 1,5 кг/м² на 1 мм. Слой 2–4 мм. Мешок 20 кг." },
-        { id: "kt-tron-10-2k", name: "КТ ТРОН-10 2К", rid: "p035", page: "/materials/kt-tron-10-2k/", group: "Гидроизоляция", pack: 25, kit: 33.5, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, note: "Двухкомпонентная эластичная гидроизоляция: 1,5 кг/м² на 1 мм. Слой 2–4 мм." },
-        { id: "kt-tron-122", name: "КТ ТРОН-122 флекс", rid: "p036", page: "/materials/kt-tron-122-fleks/", group: "Гидроизоляция", pack: 25, kit: 33.5, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, url: "https://www.kttron.ru/goods/elastichnaya_gidroizolyatsiya/kttron_122_fleks/", note: "Двухкомпонентная эластичная гидроизоляция: 1,5 кг/м² сухой смеси на 1 мм, плюс 0,5 кг/м² эластификатора на 1 мм." },
-        { id: "kt-tron-3", name: "КТ ТРОН-3", rid: "p001", page: "/materials/kt-tron-3/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1800, max: 1800, thick: 10, minThick: 5, maxThick: 30, note: "Ремонт бетона: 1800 кг сухой смеси на 1 м³ раствора. Слой за проход 5–30 мм." },
-        { id: "kt-tron-3-t400", name: "КТ ТРОН-3 Т400", rid: "p002", page: "/materials/kt-tron-3-t400/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1850, max: 1850, thick: 10, minThick: 3, maxThick: 30, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_t400/", note: "Безусадочный быстротвердеющий тиксотропный состав: 1850 кг на 1 м³ раствора. Слой за проход 3–30 мм." },
-        { id: "kt-tron-3-t500", name: "КТ ТРОН-3 Т500", rid: "p003", page: "/materials/kt-tron-3-t500/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_t500/", note: "Тиксотропный ремонтный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–50 мм." },
-        { id: "kt-tron-3-t505", name: "КТ ТРОН-3 Т505", rid: "p004", page: "/materials/kt-tron-3-t505/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_t505/", note: "Сульфатостойкий тиксотропный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–50 мм." },
-        { id: "kt-tron-4-t600", name: "КТ ТРОН-4 Т600", rid: "p008", page: "/materials/kt-tron-4-t600/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_4_t600/", note: "Быстротвердеющий тиксотропный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–50 мм." },
-        { id: "kt-tron-tx60", name: "КТ ТРОН-ТХ60", rid: "p016", page: "/materials/kt-tron-th60/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 60, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_tkh60/", note: "Быстротвердеющий тиксотропный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–60 мм." },
-        { id: "kt-tron-wx-30t", name: "КТ ТРОН-WX-30T", rid: "p017", page: "/materials/kt-tron-wx-30t/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 2000, thick: 20, minThick: 10, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_wx_30t/", note: "Тиксотропный состав для подводного ремонта: 1950–2000 кг на 1 м³ раствора. Слой за проход 10–50 мм." },
-        { id: "kt-tron-3-l400", name: "КТ ТРОН-3 Л400", rid: "p005", page: "/materials/kt-tron-3-l400/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 1850, max: 1850, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_l400/", note: "Литьевой безусадочный состав: 1850 кг на 1 м³ раствора. Толщина заливки — по проекту." },
-        { id: "kt-tron-3-l505", name: "КТ ТРОН-3 Л505", rid: "p006", page: "/materials/kt-tron-3-l505/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_l505/", note: "Сульфатостойкий литьевой состав: 2000 кг на 1 м³ раствора. Толщина заливки — по проекту." },
-        { id: "kt-tron-3-l600", name: "КТ ТРОН-3 Л600", rid: "p007", page: "/materials/kt-tron-3-l600/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_l600/", note: "Высокопрочный литьевой состав: 2000 кг на 1 м³ раствора. Толщина заливки — по проекту." },
-        { id: "kt-tron-4-l600", name: "КТ ТРОН-4 Л600", rid: "p009", page: "/materials/kt-tron-4-l600/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_4_l600/", note: "Быстротвердеющий литьевой состав: 2000 кг на 1 м³ раствора. Толщина заливки — по проекту." },
-        { id: "kt-tron-4-mf", name: "КТ ТРОН-4 МФ", rid: "p010", page: "/materials/kt-tron-4-mf/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2100, max: 2100, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_4_mf/", note: "Фиброармированный литьевой состав: 2100 кг сухой смеси на 1 м³. Комплект 25 кг. Толщина заливки — по проекту." },
-        { id: "kt-tron-nx60", name: "КТ ТРОН-НХ60", rid: "p013", page: "/materials/kt-tron-nh60/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_nkh60/", note: "Быстротвердеющий безусадочный литьевой состав: 2000 кг на 1 м³. Толщина заливки — по проекту." },
-        { id: "kt-tron-nx60-m", name: "КТ ТРОН-НХ60 М", rid: "p014", page: "/materials/kt-tron-nh60-m/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_nkh60_m/", note: "Модифицированный литьевой состав: 2000 кг на 1 м³. Толщина заливки — по проекту." },
-        { id: "kt-tron-mx80", name: "КТ ТРОН-МХ80", rid: "p015", page: "/materials/kt-tron-mh80/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2100, max: 2100, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_mkh80/", note: "Литьевой состав с металлической фиброй: 2100 кг сухой смеси (компоненты А и Б) на 1 м³. Толщина заливки — по проекту." },
-        { id: "kt-tron-wx-30n", name: "КТ ТРОН-WX-30N", rid: "p018", page: "/materials/kt-tron-wx-30n/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_wx_30n/", note: "Литьевой состав с высокой устойчивостью к размыванию: 2000 кг на 1 м³. Толщина заливки — по проекту." },
-        { id: "kt-tron-torkret-s", name: "КТ ТРОН-торкрет С", rid: "p011", page: "/materials/kt-tron-torkret-s/", group: "Торкретирование", pack: 25, mode: "m3", min: 1900, max: 1900, thick: 30, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_torkret_s/", note: "Сухое торкретирование: 1900 кг на 1 м³ раствора." },
-        { id: "kt-tron-torkret-m", name: "КТ ТРОН-торкрет М", rid: "p012", page: "/materials/kt-tron-torkret-m/", group: "Торкретирование", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 30, minThick: 25, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_torkret_m/", note: "Мокрое торкретирование: 2000 кг на 1 м³ раствора. Слой за проход на вертикали — не менее 25 мм." },
-        { id: "kt-tron-6", name: "КТ ТРОН-6", rid: "p019", page: "/materials/kt-tron-6/", group: "Неконструкционный ремонт", pack: 25, mode: "m3", min: 1750, max: 1750, thick: 10, minThick: 5, maxThick: 20, url: "https://www.kttron.ru/goods/nekonstruktsionnyy_remont/kttron_6/", note: "Штукатурный ремонтный состав: 1,75 кг/м² на 1 мм (1750 кг на 1 м³). Слой за проход 5–20 мм." },
-        { id: "kt-tron-6-finish", name: "КТ ТРОН-6 финишный", rid: "p020", page: "/materials/kt-tron-6-finishnyy/", group: "Неконструкционный ремонт", pack: 25, mode: "m3", min: 1500, max: 1500, thick: 3, url: "https://www.kttron.ru/goods/nekonstruktsionnyy_remont/kttron_6_finishnyy/", note: "Финишный состав: 1,5 кг/м² на 1 мм (1500 кг на 1 м³)." },
-        { id: "kt-tron-px61", name: "КТ ТРОН-РХ61", rid: "p021", page: "/materials/kt-tron-rh61/", group: "Неконструкционный ремонт", pack: 25, mode: "m3", min: 1500, max: 1500, thick: 3, url: "https://www.kttron.ru/goods/nekonstruktsionnyy_remont/kttron_rkh61/", note: "Тонкодисперсный тиксотропный состав: 1,5 кг/м² на 1 мм (1500 кг на 1 м³)." },
-        { id: "kt-tron-9-l800", name: "КТ ТРОН-9 Л800 подливочный", rid: "p026", page: "/materials/kt-tron-9-l800-podlivochnyy/", group: "Подливочные составы", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 50, url: "https://www.kttron.ru/goods/podlivochnye_sostavy/kttron_9_l800_podlivochnyy/", note: "Подливочный состав: 2000 кг на 1 м³ раствора. Толщина подливки — по проекту." },
-        { id: "kt-tron-9-zr5", name: "КТ ТРОН-9 ЗР5,0", rid: "p027", page: "/materials/kt-tron-9-zr5-0/", group: "Подливочные составы", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 50, url: "https://www.kttron.ru/goods/podlivochnye_sostavy/kttron_9_zr5_0/", note: "Бетонная смесь наливного типа: 2000 кг на 1 м³. Толщина — по проекту." },
-        { id: "kt-tron-nx75", name: "КТ ТРОН-НХ75", rid: "p028", page: "/materials/kt-tron-nh75/", group: "Подливочные составы", pack: 25, mode: "m3", min: 2100, max: 2100, thick: 50, url: "https://www.kttron.ru/goods/podlivochnye_sostavy/kttron_nkh75/", note: "Быстротвердеющий подливочный состав: 2100 кг сухой смеси (компоненты А и Б) на 1 м³. Комплект 25 кг." },
+        { id: "kt-tron-1", name: "КТ ТРОН-1", rid: "p030", page: "/materials/kt-tron-1/", group: "Гидроизоляция", pack: 25, mode: "area", min: 1.1, max: 1.1, hand: 1.2, mech: 1.26, note: "Проникающая гидроизоляция: характерная норма 1,1 кг/м² на 2 слоя (по техописанию 0,8–1,2 кг/м² в зависимости от поверхности)." },
+        { id: "kt-tron-11", name: "КТ ТРОН-11", rid: "p031", page: "/materials/kt-tron-11/", group: "Гидроизоляция", pack: 25, mode: "area", min: 1, max: 1, url: "https://www.kttron.ru/goods/pronikayushchaya_gidroizolyatsiya/kttron_11_pronikayushchaya_gidroizolyatsiya_dlya_betonov_prosluzhivshikh_dlitelnyy_srok/", hand: 1.1, mech: 1.15, note: "Проникающая гидроизоляция для старого бетона: характерная норма 1,0 кг/м²." },
+        { id: "kt-tron-7", name: "КТ ТРОН-7", rid: "p032", page: "/materials/kt-tron-7/", group: "Гидроизоляция", pack: 25, mode: "mm", min: 1.55, max: 1.55, thick: 2, minThick: 0.8, maxThick: 4, hand: 1.69, mech: 1.78, note: "Обмазочная гидроизоляция: 1,55 кг/м² на каждый 1 мм. Рабочий слой 2–4 мм." },
+        { id: "kt-tron-71", name: "КТ ТРОН-71", rid: "p033", page: "/materials/kt-tron-71/", group: "Гидроизоляция", pack: 25, mode: "mm", min: 1.55, max: 1.55, thick: 4, minThick: 0.8, maxThick: 4, url: "https://www.kttron.ru/goods/obmazochnaya_gidroizolyatsiya/kttron_71/", hand: 1.69, mech: 1.78, note: "Обмазочная гидроизоляция с проникающим эффектом: 1,55 кг/м² на 1 мм. Рекомендуемая толщина 4 мм, за проход 0,8–1,5 мм." },
+        { id: "kt-tron-10-1k", name: "КТ ТРОН-10 1К", rid: "p034", page: "/materials/kt-tron-10-1k/", group: "Гидроизоляция", pack: 20, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, hand: 1.63, mech: 1.72, note: "Эластичная гидроизоляция: 1,5 кг/м² на 1 мм. Слой 2–4 мм. Мешок 20 кг." },
+        { id: "kt-tron-10-2k", name: "КТ ТРОН-10 2К", rid: "p035", page: "/materials/kt-tron-10-2k/", group: "Гидроизоляция", pack: 25, kit: 33.5, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, hand: 1.63, mech: 1.72, note: "Двухкомпонентная эластичная гидроизоляция: 1,5 кг/м² на 1 мм. Слой 2–4 мм." },
+        { id: "kt-tron-122", name: "КТ ТРОН-122 флекс", rid: "p036", page: "/materials/kt-tron-122-fleks/", group: "Гидроизоляция", pack: 25, kit: 33.5, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 0.8, maxThick: 4, url: "https://www.kttron.ru/goods/elastichnaya_gidroizolyatsiya/kttron_122_fleks/", hand: 1.63, mech: 1.72, note: "Двухкомпонентная эластичная гидроизоляция: 1,5 кг/м² сухой смеси на 1 мм, плюс 0,5 кг/м² эластификатора на 1 мм." },
+        { id: "kt-tron-3", name: "КТ ТРОН-3", rid: "p001", page: "/materials/kt-tron-3/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1800, max: 1800, thick: 10, minThick: 5, maxThick: 30, hand: 1877, mech: 1983, note: "Ремонт бетона: 1800 кг сухой смеси на 1 м³ раствора. Слой за проход 5–30 мм." },
+        { id: "kt-tron-3-t400", name: "КТ ТРОН-3 Т400", rid: "p002", page: "/materials/kt-tron-3-t400/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1850, max: 1850, thick: 10, minThick: 3, maxThick: 30, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_t400/", hand: 1930, mech: 2038, note: "Безусадочный быстротвердеющий тиксотропный состав: 1850 кг на 1 м³ раствора. Слой за проход 3–30 мм." },
+        { id: "kt-tron-3-t500", name: "КТ ТРОН-3 Т500", rid: "p003", page: "/materials/kt-tron-3-t500/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_t500/", hand: 2034, mech: 2148, note: "Тиксотропный ремонтный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–50 мм." },
+        { id: "kt-tron-3-t505", name: "КТ ТРОН-3 Т505", rid: "p004", page: "/materials/kt-tron-3-t505/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_t505/", hand: 2034, mech: 2148, note: "Сульфатостойкий тиксотропный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–50 мм." },
+        { id: "kt-tron-4-t600", name: "КТ ТРОН-4 Т600", rid: "p008", page: "/materials/kt-tron-4-t600/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_4_t600/", hand: 2034, mech: 2148, note: "Быстротвердеющий тиксотропный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–50 мм." },
+        { id: "kt-tron-tx60", name: "КТ ТРОН-ТХ60", rid: "p016", page: "/materials/kt-tron-th60/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 10, minThick: 5, maxThick: 60, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_tkh60/", hand: 2034, note: "Быстротвердеющий тиксотропный состав: 1950 кг на 1 м³ раствора. Слой за проход 5–60 мм." },
+        { id: "kt-tron-wx-30t", name: "КТ ТРОН-WX-30T", rid: "p017", page: "/materials/kt-tron-wx-30t/", group: "Ремонт бетона: тиксотропные", pack: 25, mode: "m3", min: 1950, max: 1950, thick: 20, minThick: 10, maxThick: 50, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_wx_30t/", hand: 2034, note: "Тиксотропный состав для подводного ремонта: 1950 кг на 1 м³ раствора. Слой за проход 10–50 мм." },
+        { id: "kt-tron-3-l400", name: "КТ ТРОН-3 Л400", rid: "p005", page: "/materials/kt-tron-3-l400/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 1850, max: 1850, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_l400/", hand: 1925, mech: 2038, note: "Литьевой безусадочный состав: 1850 кг на 1 м³ раствора. Толщина заливки — по проекту." },
+        { id: "kt-tron-3-l505", name: "КТ ТРОН-3 Л505", rid: "p006", page: "/materials/kt-tron-3-l505/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_l505/", hand: 2081, mech: 2203, note: "Сульфатостойкий литьевой состав: 2000 кг на 1 м³ раствора. Толщина заливки — по проекту." },
+        { id: "kt-tron-3-l600", name: "КТ ТРОН-3 Л600", rid: "p007", page: "/materials/kt-tron-3-l600/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_3_l600/", hand: 2081, mech: 2203, note: "Высокопрочный литьевой состав: 2000 кг на 1 м³ раствора. Толщина заливки — по проекту." },
+        { id: "kt-tron-4-l600", name: "КТ ТРОН-4 Л600", rid: "p009", page: "/materials/kt-tron-4-l600/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_4_l600/", hand: 2081, mech: 2203, note: "Быстротвердеющий литьевой состав: 2000 кг на 1 м³ раствора. Толщина заливки — по проекту." },
+        { id: "kt-tron-4-mf", name: "КТ ТРОН-4 МФ", rid: "p010", page: "/materials/kt-tron-4-mf/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2100, max: 2100, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_4_mf/", hand: 2185, mech: 2313, note: "Фиброармированный литьевой состав: 2100 кг сухой смеси на 1 м³. Комплект 25 кг. Толщина заливки — по проекту." },
+        { id: "kt-tron-nx60", name: "КТ ТРОН-НХ60", rid: "p013", page: "/materials/kt-tron-nh60/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_nkh60/", hand: 2081, note: "Быстротвердеющий безусадочный литьевой состав: 2000 кг на 1 м³. Толщина заливки — по проекту." },
+        { id: "kt-tron-nx60-m", name: "КТ ТРОН-НХ60 М", rid: "p014", page: "/materials/kt-tron-nh60-m/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_nkh60_m/", hand: 2081, note: "Модифицированный литьевой состав: 2000 кг на 1 м³. Толщина заливки — по проекту." },
+        { id: "kt-tron-mx80", name: "КТ ТРОН-МХ80", rid: "p015", page: "/materials/kt-tron-mh80/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2100, max: 2100, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_mkh80/", hand: 2185, mech: 2313, note: "Литьевой состав с металлической фиброй: 2100 кг сухой смеси (компоненты А и Б) на 1 м³. Толщина заливки — по проекту." },
+        { id: "kt-tron-wx-30n", name: "КТ ТРОН-WX-30N", rid: "p018", page: "/materials/kt-tron-wx-30n/", group: "Ремонт бетона: литьевые", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 20, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_wx_30n/", mech: 2203, note: "Литьевой состав с высокой устойчивостью к размыванию: 2000 кг на 1 м³. Толщина заливки — по проекту." },
+        { id: "kt-tron-torkret-s", name: "КТ ТРОН-торкрет С", rid: "p011", page: "/materials/kt-tron-torkret-s/", group: "Торкретирование", pack: 25, mode: "m3", min: 1900, max: 1900, thick: 30, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_torkret_s/", mech: 2093, note: "Сухое торкретирование: 1900 кг на 1 м³ раствора." },
+        { id: "kt-tron-torkret-m", name: "КТ ТРОН-торкрет М", rid: "p012", page: "/materials/kt-tron-torkret-m/", group: "Торкретирование", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 30, minThick: 25, url: "https://www.kttron.ru/goods/konstruktsionnyy_remont/kttron_torkret_m/", mech: 2203, note: "Мокрое торкретирование: 2000 кг на 1 м³ раствора. Слой за проход на вертикали — не менее 25 мм." },
+        { id: "kt-tron-6", name: "КТ ТРОН-6", rid: "p019", page: "/materials/kt-tron-6/", group: "Неконструкционный ремонт", pack: 25, mode: "m3", min: 1750, max: 1750, thick: 10, minThick: 5, maxThick: 20, url: "https://www.kttron.ru/goods/nekonstruktsionnyy_remont/kttron_6/", hand: 1825, mech: 1928, note: "Штукатурный ремонтный состав: 1,75 кг/м² на 1 мм (1750 кг на 1 м³). Слой за проход 5–20 мм." },
+        { id: "kt-tron-6-finish", name: "КТ ТРОН-6 финишный", rid: "p020", page: "/materials/kt-tron-6-finishnyy/", group: "Неконструкционный ремонт", pack: 25, mode: "m3", min: 1500, max: 1500, thick: 3, url: "https://www.kttron.ru/goods/nekonstruktsionnyy_remont/kttron_6_finishnyy/", hand: 1565, mech: 1652, note: "Финишный состав: 1,5 кг/м² на 1 мм (1500 кг на 1 м³)." },
+        { id: "kt-tron-px61", name: "КТ ТРОН-РХ61", rid: "p021", page: "/materials/kt-tron-rh61/", group: "Неконструкционный ремонт", pack: 25, mode: "m3", min: 1500, max: 1500, thick: 3, url: "https://www.kttron.ru/goods/nekonstruktsionnyy_remont/kttron_rkh61/", hand: 1565, mech: 1652, note: "Тонкодисперсный тиксотропный состав: 1,5 кг/м² на 1 мм (1500 кг на 1 м³)." },
+        { id: "mikrolit", name: "Микролит", rid: "p023", page: "/materials/mikrolit/", group: "Неконструкционный ремонт", pack: 20, mode: "m3", min: 1800, max: 1800, thick: 10, hand: 1873, mech: 1983, note: "Инъекционный минеральный состав: 1800 кг на 1 м³ (1,8 кг/м² на 1 мм). Мешок 20 кг." },
+        { id: "kt-tron-9-l800", name: "КТ ТРОН-9 Л800 подливочный", rid: "p026", page: "/materials/kt-tron-9-l800-podlivochnyy/", group: "Подливочные составы", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 50, url: "https://www.kttron.ru/goods/podlivochnye_sostavy/kttron_9_l800_podlivochnyy/", hand: 2081, mech: 2203, note: "Подливочный состав: 2000 кг на 1 м³ раствора. Толщина подливки — по проекту." },
+        { id: "kt-tron-9-zr5", name: "КТ ТРОН-9 ЗР5,0", rid: "p027", page: "/materials/kt-tron-9-zr5-0/", group: "Подливочные составы", pack: 25, mode: "m3", min: 2000, max: 2000, thick: 50, url: "https://www.kttron.ru/goods/podlivochnye_sostavy/kttron_9_zr5_0/", hand: 2081, mech: 2203, note: "Бетонная смесь наливного типа: 2000 кг на 1 м³. Толщина — по проекту." },
+        { id: "kt-tron-nx75", name: "КТ ТРОН-НХ75", rid: "p028", page: "/materials/kt-tron-nh75/", group: "Подливочные составы", pack: 25, mode: "m3", min: 2100, max: 2100, thick: 50, url: "https://www.kttron.ru/goods/podlivochnye_sostavy/kttron_nkh75/", hand: 2185, mech: 2313, note: "Быстротвердеющий подливочный состав: 2100 кг сухой смеси (компоненты А и Б) на 1 м³. Комплект 25 кг." },
         { id: "kt-tron-2", name: "КТ ТРОН-2", rid: "p039", page: "/materials/kt-tron-2/", group: "Швы, протечки, арматура, плитка", pack: 25, mode: "seam", min: 1750, max: 1750, thick: 30, minThick: 20, maxThick: 50, url: "https://www.kttron.ru/goods/germetizatsiya_shvov/kttron_2/", note: "Герметизация статичных швов: 1750 кг на 1 м³. На 1 м шва 20×20 мм — 0,7 кг, 30×30 — 1,6 кг, 50×50 — 4,4 кг." },
-        { id: "kt-tron-wx-32t", name: "КТ ТРОН-WX-32T", rid: "p029", page: "/materials/kt-tron-wx-32t/", group: "Швы, протечки, арматура, плитка", pack: 25, mode: "seam", min: 1750, max: 1750, thick: 30, minThick: 10, maxThick: 50, url: "https://www.kttron.ru/goods/germetizatsiya_shvov/kttron_wx_32t/", note: "Подводная герметизация швов: 1750 кг на 1 м³. На 1 м шва 30×30 мм — 1,6 кг." },
+        { id: "kt-tron-wx-32t", name: "КТ ТРОН-WX-32T", rid: "p029", page: "/materials/kt-tron-wx-32t/", group: "Швы, протечки, арматура, плитка", pack: 25, mode: "seam", min: 1750, max: 1750, thick: 30, minThick: 10, maxThick: 50, url: "https://www.kttron.ru/goods/germetizatsiya_shvov/kttron_wx_32t/", hand: 1825, note: "Подводная герметизация швов: 1750 кг на 1 м³. На 1 м шва 30×30 мм — 1,6 кг." },
         { id: "kt-tron-8", name: "КТ ТРОН-8", rid: "p043", page: "/materials/kt-tron-8/", group: "Швы, протечки, арматура, плитка", pack: 5, mode: "m3", min: 1850, max: 1850, thick: 10, minThick: 10, maxThick: 50, note: "Остановка протечки: 1,85 кг на 1 дм³ раствора. Слой 10–50 мм. Ведро 5 кг." },
         { id: "kt-tron-praymer", name: "КТ ТРОН-праймер", rid: "p044", page: "/materials/kt-tron-praymer/", group: "Швы, протечки, арматура, плитка", pack: 5, mode: "mm", min: 1.5, max: 1.5, thick: 2, minThick: 1, maxThick: 2, note: "Защита арматуры и грунтование: 1,5 кг/м² на 1 мм. На арматуру Ø12 мм отдельно 0,1 кг на погонный метр." },
         { id: "kt-tron-101", name: "КТ ТРОН-101", rid: "p045", page: "/materials/kt-tron-101/", group: "Швы, протечки, арматура, плитка", pack: 25, mode: "area", min: 4.5, max: 4.5, note: "Клей для плитки: 4,5 кг/м² при зубчатом шпателе 6×6 мм." }
@@ -324,6 +333,9 @@
       const send = document.getElementById("send");
       const card = document.getElementById("card");
       const cost = document.getElementById("cost");
+      const net = document.getElementById("net");
+      const method = document.getElementById("method");
+      const methodLabel = document.getElementById("methodLabel");
       const groups = {};
       materials.forEach((item) => {
         if (!groups[item.group]) {
@@ -351,6 +363,7 @@
         const area = Number(form.area.value);
         const seam = item.mode === "seam";
         thickLabel.hidden = item.mode === "area";
+        methodLabel.hidden = !(item.hand || item.mech);
         areaLabel.firstChild.textContent = seam ? "Длина шва, м" : "Площадь, м²";
         thickText.textContent = seam ? "Сечение шва, мм (ширина = глубина)" : "Толщина, мм";
         const thickInput = form.thick;
@@ -361,6 +374,7 @@
         const perKg = price && price.unit === "кг" ? price.price : 0;
         norm.textContent = item.note + (perKg ? " Цена от " + fmt(perKg) + " ₸ за 1 кг." : " Цена по запросу.");
         cost.hidden = true;
+        net.hidden = true;
         card.href = item.page;
         bags = 0;
         if (!area || area <= 0) { result.textContent = seam ? "Укажите длину шва." : "Укажите площадь."; return; }
@@ -368,15 +382,29 @@
         const factor = item.mode === "m3" ? area * thick / 1000
           : seam ? area * (thick / 1000) * (thick / 1000)
           : area * thick;
-        const kgMin = factor * item.min;
-        const kgMax = factor * item.max;
-        let text = item.min === item.max ? fmt(kgMin) + " кг" : fmt(kgMin) + "–" + fmt(kgMax) + " кг";
+        // Потери при приготовлении и нанесении — по СТО КТ 62035492.008-2024, табл. 4.36 и 4.37
+        // (усреднённая элементная норма). Если машиной материал не наносят — только вручную, и наоборот
+        const sto = item.hand || item.mech;
+        if (sto) {
+          method.options[0].disabled = !item.hand;
+          method.options[1].disabled = !item.mech;
+          if (!item[method.value]) method.value = item.hand ? "hand" : "mech";
+        }
+        const normKg = sto ? item[method.value] : 0;
+        const kgNet = factor * item.min;
+        const kgMin = sto ? factor * normKg : kgNet;
+        const kgMax = sto ? kgMin : factor * item.max;
+        let text = (sto ? "К закупке с учётом потерь: " : "") + (kgMin === kgMax ? fmt(kgMin) + " кг" : fmt(kgMin) + "–" + fmt(kgMax) + " кг");
         const bagsMin = Math.ceil(kgMin / item.pack);
         const bagsMax = Math.ceil(kgMax / item.pack);
         text += bagsMin === bagsMax
           ? ", " + bagsMin + " меш. по " + item.pack + " кг"
           : ", " + bagsMin + "–" + bagsMax + " меш. по " + item.pack + " кг";
         result.textContent = text;
+        net.textContent = sto
+          ? "Чистый расход по норме завода — " + fmt(kgNet) + " кг. Потери при нанесении " + (method.value === "hand" ? "вручную" : "машиной") + " — по СТО КТ 62035492.008-2024, п. 4.4. Точный расход подтверждают пробным нанесением."
+          : "По норме завода, без учёта потерь: в СТО КТ для этого материала норма потерь не указана. Заложите небольшой запас.";
+        net.hidden = false;
         bags = bagsMax;
         let costText = "";
         if (perKg) {
@@ -392,7 +420,7 @@
         const detail = item.mode === "area" ? area + " м²"
           : seam ? "шов " + area + " м, сечение " + thick + "×" + thick + " мм"
           : area + " м², толщина " + thick + " мм";
-        const msg = "Здравствуйте! Нужен " + item.name + ". " + detail + ". Ориентир: " + text + (costText ? ". Цена ориентировочно " + costText + " без доставки." : ". Цена по запросу.");
+        const msg = "Здравствуйте! Нужен " + item.name + ". " + detail + (sto ? ", нанесение " + (method.value === "hand" ? "вручную" : "машиной") : "") + ". Ориентир: " + text + (costText ? ". Цена ориентировочно " + costText + " без доставки." : ". Цена по запросу.");
         send.href = "https://wa.me/77751810595?text=" + encodeURIComponent(msg);
       };
       form.addEventListener("input", run);
