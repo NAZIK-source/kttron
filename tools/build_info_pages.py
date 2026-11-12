@@ -131,7 +131,7 @@ ABOUT = f'''          <p class="lead">ТОО «DARHAN» — официальны
 
 CONTACTS = [
     ('Адрес', 'г. Алматы, ул. Шевченко 118, офис 221, БЦ «Алтын Гасыр» — '
-              '<a href="https://2gis.kz/almaty/firm/70000001037895624" target="_blank" rel="noopener">открыть в 2ГИС</a>'),
+              '<a href="https://2gis.kz/almaty/search/%D0%A8%D0%B5%D0%B2%D1%87%D0%B5%D0%BD%D0%BA%D0%BE%20118" target="_blank" rel="noopener">открыть в 2ГИС</a>'),
     ('Телефон', '<a href="tel:+77751810595">+7 775 181-05-95</a>'),
     ('WhatsApp', '<a href="https://wa.me/77751810595" target="_blank" rel="noopener">написать в WhatsApp</a> — обычно отвечаем в течение часа'),
     ('Telegram', '<a href="https://t.me/Kttron_KZ_bot" target="_blank" rel="noopener">@Kttron_KZ_bot</a> — бот: заявка, '
