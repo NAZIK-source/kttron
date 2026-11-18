@@ -5,9 +5,15 @@ ErrorDocument 404 /404.html
     Require all denied
 </FilesMatch>
 
-# www.kttron.kz → kttron.kz (один адрес сайта для поисковиков)
 <IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Программы для скачивания сайта целиком (HTTrack, Teleport, Offline Explorer, wget и т. п.) — доступ запрещён.
+    # Поисковых роботов, браузеры и мессенджеры правило не трогает: в их User-Agent этих слов нет
+    RewriteCond %{HTTP_USER_AGENT} (HTTrack|WebCopier|WebCopy|Cyotek|Teleport|Offline\ ?Explorer|Offline\ ?Navigator|WebZIP|SiteSnagger|SiteSucker|WebStripper|WebReaper|WebWhacker|Website\ ?Quester|Website\ ?Downloader|Website\ ?eXtractor|Web\ ?Downloader|Getleft|BlackWidow|NetZip|PageGrabber|WebSauger|Mass\ ?Downloader|Wget|WebLeacher|Xaldon|SuperBot|WebAuto) [NC]
+    RewriteRule ^ - [F,L]
+
+    # www.kttron.kz → kttron.kz (один адрес сайта для поисковиков)
     RewriteCond %{HTTP_HOST} ^www\.kttron\.kz$ [NC]
     RewriteRule ^ https://kttron.kz%{REQUEST_URI} [R=301,L]
 

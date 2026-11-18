@@ -218,7 +218,9 @@ PAGES = [
 FOOT_LINKS = ('        <p class="foot-links"><a href="/o-kompanii/">О компании</a> · <a href="/kontakty/">Контакты</a> · '
               '<a href="/dokumenty/">Документы</a> · <a href="/rekvizity/">Реквизиты и условия</a> · '
               '<a href="/politika-konfidencialnosti/">Политика конфиденциальности</a> · '
-              '<a href="https://t.me/Kttron_KZ_bot" target="_blank" rel="noopener">Telegram-бот</a></p>\n')
+              '<a href="https://t.me/Kttron_KZ_bot" target="_blank" rel="noopener">Telegram-бот</a>'
+              '<br>© ТОО «DARHAN». Тексты и фотографии сайта защищены авторским правом, '
+              'копирование без письменного разрешения запрещено.</p>\n')
 
 
 def body(page):
