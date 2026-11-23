@@ -186,12 +186,14 @@
               
         <form class="calc" data-min="1.2" data-max="1.2" data-pack="25.0" data-permm="0" data-name="КТ ТРОН-1">
           <p><strong>Сколько материала на объект</strong></p>
-          <p class="muted">Считаем к закупке: 1,2 кг на 1 м² с учётом потерь при ручном нанесении по СТО КТ 62035492.008-2024, п. 4.4 (характерная норма — 1,1 кг/м²). Сумму не считаем: цена по запросу.</p>
+          <p class="muted">Считаем к закупке: 1,2 кг на 1 м² с учётом потерь при ручном нанесении по СТО КТ 62035492.008-2024, п. 4.4 (характерная норма — 1,1 кг/м²). Сумму считаем по цене «от» за целые упаковки, без доставки.</p>
           <div class="calc-fields">
             <label>Площадь, м² <input name="area" type="number" min="0" step="0.1" value="10" /></label>
             
           </div>
           <p class="calc-out" aria-live="polite"></p>
+          <p class="muted calc-cost" hidden></p>
+          <p class="calc-warn" style="color:#b45309;font-weight:600" hidden></p>
           <a class="btn btn-solid calc-wa" href="https://wa.me/77751810595?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9D%D1%83%D0%B6%D0%B5%D0%BD%20%D0%9A%D0%A2%20%D0%A2%D0%A0%D0%9E%D0%9D-1.%20%D0%A6%D0%B5%D0%BD%D0%B0%20%D0%BF%D0%BE%20%D0%B7%D0%B0%D0%BF%D1%80%D0%BE%D1%81%D1%83.">Отправить расчёт в WhatsApp</a>
         </form>
         
@@ -220,35 +222,60 @@
         </div>
       </section>
       <script>
+        // Мини-калькулятор: сколько мешков и ориентир по цене «от» из /prices.json (window.ktPrice из kt-prices.js)
         document.querySelectorAll(".calc").forEach((form) => {
           const out = form.querySelector(".calc-out");
+          const cost = form.querySelector(".calc-cost");
+          const warn = form.querySelector(".calc-warn");
           const wa = form.querySelector(".calc-wa");
           const min = Number(form.dataset.min);
           const max = Number(form.dataset.max);
           const pack = Number(form.dataset.pack);
+          const kit = Number(form.dataset.kit || 0);
+          const minT = Number(form.dataset.minthick || 0);
+          const maxT = Number(form.dataset.maxthick || 0);
           const mode = form.dataset.mode || (form.dataset.permm === "1" ? "mm" : "area");
           const name = form.dataset.name;
           const fmt = (n) => n.toLocaleString("ru-RU", { maximumFractionDigits: 1 });
+          const money = (n) => Math.round(n).toLocaleString("ru-RU");
           const run = () => {
             const area = Number(form.area.value);
             const thick = mode === "area" ? 1 : Number(form.thick?.value || form.dataset.thick || 1);
-            if (!area || area <= 0) { out.textContent = "Укажите площадь."; return; }
+            if (warn) {
+              const bad = mode !== "area" && maxT && (thick > maxT || thick < minT);
+              warn.hidden = !bad;
+              warn.textContent = bad ? "Внимание: по техописанию толщина слоя — от " + fmt(minT) + " до " + fmt(maxT) + " мм. "
+                + (thick > maxT ? "Толще за один раз не наносят: делите на несколько слоёв, технологию уточните у менеджера." : "Тоньше материал не наносят.") : "";
+            }
+            if (!area || area <= 0) { out.textContent = "Укажите площадь."; if (cost) cost.hidden = true; return; }
             const factor = mode === "m3" ? area * thick / 1000 : area * thick;
             const kgMin = factor * min;
             const kgMax = factor * max;
             let text = min === max ? fmt(kgMin) + " кг" : fmt(kgMin) + "–" + fmt(kgMax) + " кг";
+            const bagsMin = pack ? Math.ceil(kgMin / pack) : 0;
+            const bagsMax = pack ? Math.ceil(kgMax / pack) : 0;
             if (pack) {
-              const bagsMin = Math.ceil(kgMin / pack);
-              const bagsMax = Math.ceil(kgMax / pack);
-              text += bagsMin === bagsMax
-                ? ", " + bagsMin + " меш. по " + pack + " кг"
-                : ", " + bagsMin + "–" + bagsMax + " меш. по " + pack + " кг";
+              const unit = kit ? " компл. по " + fmt(kit) + " кг" : " меш. по " + fmt(pack) + " кг";
+              text += ", " + (bagsMin === bagsMax ? bagsMin : bagsMin + "–" + bagsMax) + unit;
             }
             out.textContent = text;
-            const msg = "Здравствуйте! Нужен " + name + ". Площадь " + area + (mode === "area" ? " м²" : " м², толщина " + thick + " мм") + ". Ориентир: " + text + ". Цена по запросу.";
+            // Считаем по целым упаковкам: покупают их, а не килограммы. 2К — комплект (мешок + канистра)
+            const price = window.ktPrice ? window.ktPrice(name) : null;
+            const perKg = price && price.unit === "кг" ? price.price : 0;
+            let costText = "";
+            if (perKg && pack) {
+              const unitKg = kit || pack;
+              const sumMin = bagsMin * unitKg * perKg;
+              const sumMax = bagsMax * unitKg * perKg;
+              costText = "от " + money(sumMin) + (sumMax > sumMin ? "–" + money(sumMax) : "") + " ₸";
+              if (cost) { cost.textContent = "Ориентировочно " + costText + " без учёта доставки. Точную цену назовёт менеджер."; cost.hidden = false; }
+            } else if (cost) cost.hidden = true;
+            const msg = "Здравствуйте! Нужен " + name + ". Площадь " + area + (mode === "area" ? " м²" : " м², толщина " + thick + " мм") + ". Ориентир: " + text
+              + (costText ? ". Цена ориентировочно " + costText + " без доставки." : ". Цена по запросу.");
             wa.href = "https://wa.me/77751810595?text=" + encodeURIComponent(msg);
           };
           form.addEventListener("input", run);
+          document.addEventListener("kt-prices", run);
           run();
         });
       </script>
@@ -273,7 +300,7 @@
     </script>
 
     <script src="/assets/kt-prices.js?v=2" defer></script>
-    <script src="/assets/account.js?v=2" defer></script>
+    <script src="/assets/account.js?v=3" defer></script>
     <script src="/assets/kt-ux.js?v=7" defer></script>
   </body>
 </html>
