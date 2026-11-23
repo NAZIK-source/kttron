@@ -177,6 +177,7 @@
             <p class="muted" id="norm"></p>
             <p class="calc-result" id="result" aria-live="polite"></p>
             <p class="muted" id="net" hidden></p>
+            <p id="thickWarn" style="color:#b45309;font-weight:600" hidden></p>
             <p class="calc-cost" id="cost" hidden></p>
             <div class="hero-cta">
               <a class="btn btn-solid btn-lg" id="send" href="https://wa.me/77751810595">Отправить расчёт в WhatsApp</a>
@@ -334,6 +335,7 @@
       const card = document.getElementById("card");
       const cost = document.getElementById("cost");
       const net = document.getElementById("net");
+      const thickWarn = document.getElementById("thickWarn");
       const method = document.getElementById("method");
       const methodLabel = document.getElementById("methodLabel");
       const groups = {};
@@ -375,10 +377,19 @@
         norm.textContent = item.note + (perKg ? " Цена от " + fmt(perKg) + " ₸ за 1 кг." : " Цена по запросу.");
         cost.hidden = true;
         net.hidden = true;
+        thickWarn.hidden = true;
         card.href = item.page;
         bags = 0;
         if (!area || area <= 0) { result.textContent = seam ? "Укажите длину шва." : "Укажите площадь."; return; }
         const thick = item.mode === "area" ? 1 : Number(thickInput.value || item.thick || 1);
+        // Толщина вне диапазона техописания — предупреждаем, но считаем
+        const lo = item.minThick || 0, hi = item.maxThick || 0;
+        const badThick = item.mode !== "area" && hi && (thick > hi || thick < lo);
+        thickWarn.hidden = !badThick;
+        thickWarn.textContent = !badThick ? ""
+          : seam ? "Внимание: по техописанию сечение шва — от " + fmt(lo) + " до " + fmt(hi) + " мм. Уточните технологию у менеджера."
+          : "Внимание: по техописанию толщина слоя — от " + fmt(lo) + " до " + fmt(hi) + " мм. "
+            + (thick > hi ? "Толще за один раз не наносят: делите на несколько слоёв, технологию уточните у менеджера." : "Тоньше материал не наносят.");
         const factor = item.mode === "m3" ? area * thick / 1000
           : seam ? area * (thick / 1000) * (thick / 1000)
           : area * thick;
@@ -454,7 +465,7 @@
       run();
     </script>
     <script src="/assets/kt-prices.js?v=2" defer></script>
-    <script src="/assets/account.js?v=2" defer></script>
+    <script src="/assets/account.js?v=3" defer></script>
     <script src="/assets/kt-ux.js?v=7" defer></script>
   </body>
 </html>

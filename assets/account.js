@@ -2,12 +2,16 @@
 // показывает баланс в шапке и сохраняет отправленные в WhatsApp заявки в кабинет.
 (function () {
   var logged = false;
+  // Подпись кнопки по языку страницы (kz, tg, uz — свои слова)
+  var lang = (document.documentElement.lang || 'ru').slice(0, 2);
+  var word = { kk: { cab: 'Кабинет', pts: 'ұп.' }, tg: { cab: 'Кабинет', pts: 'хол' }, uz: { cab: 'Kabinet', pts: 'ball' } }[lang]
+    || { cab: 'Кабинет', pts: 'б.' };
 
   function updateLinks(data) {
     if (!data.logged) return;
     var links = document.querySelectorAll('.account-link');
     for (var i = 0; i < links.length; i++) {
-      links[i].textContent = 'Кабинет · ' + data.balance.toLocaleString('ru-RU') + ' б.';
+      links[i].textContent = word.cab + ' · ' + data.balance.toLocaleString('ru-RU') + ' ' + word.pts;
     }
   }
 
