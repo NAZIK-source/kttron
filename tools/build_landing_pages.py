@@ -16,6 +16,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from spec_block import spec_block  # noqa: E402
 from build_product_pages import (LD_BLOCKS, ROOT, SITE, WA, e, fmt_price,  # noqa: E402
                                  load_products, price_info, round_half_up)
 
@@ -253,6 +254,7 @@ def build(page, head, tail, products, prices):
     wa = quote(f'Здравствуйте! Нужна консультация: {page["h1"].lower()}. Пришлю фото объекта.')
     crumbs_html = '<a href="/">Главная</a> / ' + ('<a href="/gidroizolyaciya/">Гидроизоляция</a> / ' if url.startswith('/gidroizolyaciya/') else '') + e(page['h1'])
 
+    SPEC = spec_block()
     main = f'''    <main id="top">
       <section class="section material-page">
         <div class="shell">
@@ -279,7 +281,7 @@ def build(page, head, tail, products, prices):
           <p class="muted">Работы выполняйте по техническому описанию завода к каждому материалу — оно есть на странице материала.</p>
           <h2>Вопросы и ответы</h2>
           {faq}
-          <h2>Консультации и поставка под заказ в Алматы</h2>
+{SPEC}          <h2>Консультации и поставка под заказ в Алматы</h2>
           <p>ТОО DARHAN — официальный дистрибьютор завода КТ ТРОН (КТтрон) в Казахстане. Офис и консультации: Алматы, ул. Шевченко 118, офис 221, доставка по Казахстану. Телефон и WhatsApp: <a href="tel:+77751810595">+7 775 181-05-95</a>.</p>
           <h2>Смотрите также</h2>
           <div class="related">{related}<a href="/materials/">Все материалы КТ ТРОН</a></div>

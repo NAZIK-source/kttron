@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_product_pages import LD_BLOCKS, ROOT, SITE, e  # noqa: E402
+from spec_block import spec_block  # noqa: E402
 
 REQUISITES = [
     ('Полное наименование', 'Товарищество с ограниченной ответственностью «DARHAN» (ТОО «DARHAN»)'),
@@ -156,26 +157,98 @@ def file_label(path):
     return f'{kind}, {p.stat().st_size / 1048576:.1f} МБ'.replace('.', ',') if p.exists() else kind
 
 
+DOC_SEARCH = '''          <style>.doc-sec[hidden], .doc-sec [hidden] { display: none !important; }</style>
+          <div class="doc-search" role="search" style="margin:20px 0">
+            <label for="docQ" style="display:block;font-weight:600;margin-bottom:6px">Найти документ</label>
+            <input type="search" id="docQ" placeholder="Например: КТтрон-1, сертификат, гидролента" autocomplete="off" style="width:100%;max-width:560px;padding:10px 12px;font:inherit;border:1px solid #b8c4d6;border-radius:8px" />
+            <div class="doc-kinds" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+              <button type="button" class="btn btn-solid" data-kind="">Все</button>
+              <button type="button" class="btn btn-ghost-dark" data-kind="sertifikaty">Сертификаты</button>
+              <button type="button" class="btn btn-ghost-dark" data-kind="tekhnicheskie-opisaniya">Технические описания</button>
+              <button type="button" class="btn btn-ghost-dark" data-kind="protokoly">Протоколы</button>
+            </div>
+            <p class="muted" id="docCount" aria-live="polite"></p>
+          </div>
+'''
+
+# Поиск без перезагрузки: слова запроса ищем в названии, группе и разделе; «КТ ТРОН-1», «кттрон 1» и «КТтрон-1» совпадают
+DOC_SCRIPT = '''          <script>
+            (function () {
+              var q = document.getElementById("docQ"), count = document.getElementById("docCount");
+              var btns = document.querySelectorAll(".doc-kinds button"), kind = "";
+              // Конец числа помечаем «|»: запрос «КТтрон-1» не находит КТтрон-10 и КТтрон-11
+              var norm = function (t) { return String(t).toLowerCase().replace(/ё/g, "е").replace(/(\\d)(?!\\d)/g, "$1|").replace(/[\\s\\-–—«»"().,]+/g, ""); };
+              var secs = document.querySelectorAll(".doc-sec");
+              secs.forEach(function (sec) {
+                var title = sec.querySelector("h2").textContent;
+                sec.querySelectorAll(".doc-group").forEach(function (g) {
+                  var group = g.querySelector("h3").textContent;
+                  g.querySelectorAll("li").forEach(function (li) { li.dataset.hay = norm(li.textContent + " " + group + " " + title); });
+                });
+              });
+              // Сначала ищем запрос целиком («кт трон 1» = «КТтрон-1»), не нашли — по отдельным словам
+              function run() {
+                var whole = norm(q.value), words = whole ? [whole] : [];
+                if (whole && !document.querySelector('.doc-list li[data-hay*="' + whole.replace(/["\\\\]/g, "") + '"]'))
+                  words = q.value.split(/\\s+/).map(norm).filter(Boolean);
+                var shown = 0;
+                secs.forEach(function (sec) {
+                  var secHits = 0, kindOk = !kind || sec.dataset.kind === kind;
+                  sec.querySelectorAll(".doc-group").forEach(function (g) {
+                    var hits = 0;
+                    g.querySelectorAll("li").forEach(function (li) {
+                      var ok = kindOk && words.every(function (w) { return li.dataset.hay.indexOf(w) >= 0; });
+                      li.hidden = !ok; if (ok) hits++;
+                    });
+                    g.hidden = !hits; secHits += hits;
+                  });
+                  var note = sec.querySelector(".doc-note");
+                  sec.hidden = !secHits && !(kindOk && !words.length);
+                  if (note) note.hidden = sec.hidden;
+                  shown += secHits;
+                });
+                count.textContent = (words.length || kind) ? (shown ? "Найдено документов: " + shown : "Ничего не нашлось. Напишите нам в WhatsApp — пришлём нужный документ.") : "";
+              }
+              q.addEventListener("input", run);
+              btns.forEach(function (b) {
+                b.addEventListener("click", function () {
+                  kind = b.dataset.kind;
+                  btns.forEach(function (x) { x.className = "btn " + (x === b ? "btn-solid" : "btn-ghost-dark"); });
+                  run();
+                });
+              });
+              var start = new URLSearchParams(location.search).get("q");
+              if (start) { q.value = start; run(); }
+            })();
+          </script>
+'''
+
+
 def docs_body():
     out = ['          <p class="lead">Документы завода КТ ТРОН на материалы, которые мы поставляем: сертификаты соответствия, '
            'свидетельства о государственной регистрации и технические описания. Файлы открываются прямо на сайте.</p>\n',
            '          <p class="doc-toc">' + ' · '.join(f'<a href="#{a}">{e(t)}</a>' for t, a in DOC_ANCHORS.items()) + '</p>\n',
-           '          <h2>Сертификат дистрибьютора</h2>\n', CERT_CARD]
+           '          <h2>Сертификат дистрибьютора</h2>\n', CERT_CARD, DOC_SEARCH]
     section = None
     for g in DOCS:
         if g['section'] != section:
+            if section:
+                out.append('          </section>\n')
             section = g['section']
-            out.append(f'          <h2 id="{DOC_ANCHORS[section]}">{e(section)}</h2>\n')
+            out.append(f'          <section class="doc-sec" data-kind="{DOC_ANCHORS[section]}">\n'
+                       f'          <h2 id="{DOC_ANCHORS[section]}">{e(section)}</h2>\n')
             if section == 'Протоколы испытаний':
-                out.append('          <p class="muted">Протоколы испытаний предоставляем по запросу — напишите в '
+                out.append('          <p class="muted doc-note">Протоколы испытаний предоставляем по запросу — напишите в '
                            '<a href="https://wa.me/77751810595" target="_blank" rel="noopener">WhatsApp</a> или на '
                            '<a href="mailto:info@kttron.kz">info@kttron.kz</a>.</p>\n')
         items = ''.join(
             f'<li><a href="{it["file"]}" target="_blank">{e(it["title"])}</a> <span>{file_label(it["file"])}</span></li>'
             if it.get('file') else f'<li>{e(it["title"])}</li>' for it in g['items'])
-        out.append(f'          <h3>{e(g["group"])}</h3>\n          <ul class="doc-list">{items}</ul>\n')
+        out.append(f'          <div class="doc-group"><h3>{e(g["group"])}</h3>\n          <ul class="doc-list">{items}</ul></div>\n')
+    out.append('          </section>\n')
+    out.append(DOC_SCRIPT)
+    out.append(spec_block())
     return ''.join(out)
-
 
 PAGES = [
     {
@@ -230,7 +303,7 @@ def body(page):
         rows = ''.join(f'<tr><th scope="row">{e(k)}</th><td>{v}</td></tr>' for k, v in CONTACTS)
         return (f'          <table class="info-table">{rows}</table>\n{MAP}'
                 '          <p>Пришлите в WhatsApp фото дефекта или список материалов — подберём систему и рассчитаем расход. '
-                'Работаем по всему Казахстану, поставка под заказ.</p>\n')
+                'Работаем по всему Казахстану, поставка под заказ.</p>\n' + spec_block())
     if page['url'] == '/dokumenty/':
         return docs_body()
     if page['url'] == '/rekvizity/':
