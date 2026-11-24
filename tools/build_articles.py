@@ -104,7 +104,9 @@ def build_article(art, head, tail):
     h = head_for(head, url, title, art['description'], ld, og_type='article')
     body = re.sub(r'(<table class="info-table">.*?</table>)', r'<div class="table-wrap">\1</div>', art['body'], flags=re.S)
     body = '\n'.join(('          ' + ln) if ln.strip() else '' for ln in body.strip('\n').split('\n'))
-    others = [a for a in ARTICLES if a['slug'] != art['slug']][:3]
+    # «Ещё статьи» — три следующие по списку (по кругу), чтобы у разных статей были разные подборки
+    i = ARTICLES.index(art)
+    others = [ARTICLES[(i + k) % len(ARTICLES)] for k in range(1, 4)]
     inner = (f'          <h1>{e(art["title"])}</h1>\n'
              f'          <p class="art-date">{ru_date(art.get("modified", art["date"]))}</p>\n'
              f'{body}\n' + spec_block() +

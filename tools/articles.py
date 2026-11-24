@@ -324,3 +324,8 @@ ARTICLES = [
 ''',
     },
 ]
+
+# Вторая партия (ноябрь 2026) — новые статьи первыми, на главной показываются четыре самые свежие
+from articles_2 import ARTICLES_2  # noqa: E402
+
+ARTICLES = ARTICLES_2 + ARTICLES
