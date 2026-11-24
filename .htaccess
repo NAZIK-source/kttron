@@ -33,3 +33,11 @@ ErrorDocument 404 /404.html
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
 </IfModule>
+
+# Страницы браузер каждый раз сверяет с сервером (по ETag — если не менялась, ответ «304 без изменений»),
+# поэтому правки видны сразу после деплоя. Картинки, стили и скрипты кешируются как раньше.
+<IfModule mod_headers.c>
+    <FilesMatch "\.html?$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>
