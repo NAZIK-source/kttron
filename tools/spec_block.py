@@ -1,5 +1,5 @@
 """Блок «Пришлите спецификацию или проект» — для снабженцев и подрядчиков.
-Файл на сайт не загружаем: клиент прикладывает его в WhatsApp или к письму.
+Кнопки: WhatsApp, «Оставить заявку» (окно assets/kt-lead.js → zayavka.php → письмо с файлами) и почта.
 Используют build_landing_pages.py и build_info_pages.py; в calculator/index.html блок вставлен вручную (такой же текст).
 """
 from urllib.parse import quote
@@ -19,7 +19,9 @@ def spec_block(indent='          '):
         'рассчитаем количество и подготовим коммерческое предложение.</p>\n'
         f'{indent}  <div class="hero-cta">'
         f'<a class="btn btn-solid btn-lg" href="{wa}" target="_blank" rel="noopener">Отправить в WhatsApp</a> '
+        f'<button type="button" class="btn btn-ghost-dark btn-lg" data-lead="tech">Оставить заявку</button> '
         f'<a class="btn btn-ghost-dark btn-lg" href="{mail}">Отправить на почту</a></div>\n'
-        f'{indent}  <p class="muted">Файл приложите к сообщению или письму: PDF, Excel, Word, фото. Укажите город доставки и сроки — '
+        f'{indent}  <p class="muted">Файлы приложите к заявке, сообщению или письму: PDF, Excel, Word, фото. Укажите город доставки и сроки — '
         'остальное менеджер уточнит сам.</p>\n'
-        f'{indent}</div>\n')
+        f'{indent}</div>\n'
+        f'{indent}<script src="/assets/kt-lead.js?v=2" defer></script>\n')
