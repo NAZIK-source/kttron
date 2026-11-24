@@ -27,6 +27,7 @@
 - Рабочая ветка: main
 
 ## Недавние изменения
+- Карта в контактах (главная ru/kz/tg/uz, /kontakty/): вкладки 2ГИС / Google / Яндекс — tools/map_block.py + assets/kt-map.js
 - 2ГИС: «открыть в 2ГИС» ведёт на карточку https://2gis.kz/almaty/geo/70000001119747145 (она же в sameAs)
 - /dokumenty/: поиск и фильтр «Сертификаты / Техописания / Протоколы»; блок «Пришлите спецификацию» (tools/spec_block.py)
   на /kontakty/, /dokumenty/, /calculator/ и посадочных страницах

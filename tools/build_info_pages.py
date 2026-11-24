@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_product_pages import LD_BLOCKS, ROOT, SITE, e  # noqa: E402
 from spec_block import spec_block  # noqa: E402
+from map_block import map_block  # noqa: E402
 
 REQUISITES = [
     ('Полное наименование', 'Товарищество с ограниченной ответственностью «DARHAN» (ТОО «DARHAN»)'),
@@ -141,10 +142,7 @@ CONTACTS = [
     ('Режим работы', 'понедельник — пятница, 09:00–17:00'),
     ('Компания', 'ТОО «DARHAN», БИН 990240010117 — <a href="/rekvizity/">реквизиты и условия</a>'),
 ]
-MAP = ('          <div class="map-wrap"><iframe title="КТ ТРОН Казахстан на карте" loading="lazy" '
-       'referrerpolicy="no-referrer-when-downgrade" '
-       'src="https://www.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B,%20%D1%83%D0%BB.%20%D0%A8%D0%B5%D0%B2%D1%87%D0%B5%D0%BD%D0%BA%D0%BE%20118&output=embed">'
-       '</iframe></div>\n')
+MAP = map_block('КТ ТРОН Казахстан на карте')
 
 DOCS = json.loads((ROOT / 'tools/dokumenty.json').read_text(encoding='utf-8'))
 DOC_ANCHORS = {'Сертификаты и свидетельства': 'sertifikaty', 'Технические описания': 'tekhnicheskie-opisaniya',
