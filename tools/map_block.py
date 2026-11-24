@@ -8,18 +8,27 @@ FIRM_2GIS = '70000001119747145'
 _opt = {"pos": {"lat": LAT, "lon": LON, "zoom": 16}, "opt": {"city": "almaty"}, "org": FIRM_2GIS}
 # Запрос по названию: Google показывает метку профиля компании «КТ ТРОН Казахстан»
 _GQ = urllib.parse.quote('КТ ТРОН Казахстан, Шевченко 118, Алматы')
-MAPS = [
-    ('2gis', '2ГИС',
-     'https://widgets.2gis.com/widget?type=firmsonmap&amp;options='
-     + urllib.parse.quote(json.dumps(_opt, separators=(',', ':'))),
-     f'https://2gis.kz/almaty/geo/{FIRM_2GIS}'),
-    ('google', 'Google',
-     'https://www.google.com/maps?q=' + _GQ + '&amp;z=17&amp;output=embed',
-     'https://www.google.com/maps/search/?api=1&amp;query=' + _GQ),
-    ('yandex', 'Яндекс',
-     f'https://yandex.kz/map-widget/v1/?ll={LON}%2C{LAT}&amp;z=17&amp;pt={LON}%2C{LAT}%2Cpm2rdm',
-     f'https://yandex.kz/maps/?pt={LON}%2C{LAT}&amp;z=17&amp;l=map'),
-]
+# Язык интерфейса карт по версии сайта. Яндекс не умеет казахский параметром, но yandex.kz
+# сам показывает его по умолчанию; таджикского нет ни там, ни в Google (Google откатится на русский).
+YA_LANG = {'ru': '&amp;lang=ru_RU', 'kk': '', 'tg': '&amp;lang=ru_RU', 'uz': '&amp;lang=uz_UZ'}
+G_HL = {'ru': 'ru', 'kk': 'kk', 'tg': 'tg', 'uz': 'uz'}
+
+
+def maps(lang):
+    return [
+        ('2gis', '2ГИС',
+         'https://widgets.2gis.com/widget?type=firmsonmap&amp;options='
+         + urllib.parse.quote(json.dumps(_opt, separators=(',', ':'))),
+         f'https://2gis.kz/almaty/geo/{FIRM_2GIS}'),
+        ('google', 'Google',
+         'https://www.google.com/maps?q=' + _GQ + f'&amp;z=17&amp;hl={G_HL[lang]}&amp;output=embed',
+         'https://www.google.com/maps/search/?api=1&amp;query=' + _GQ + f'&amp;hl={G_HL[lang]}'),
+        ('yandex', 'Яндекс',
+         f'https://yandex.kz/map-widget/v1/?ll={LON}%2C{LAT}&amp;z=17&amp;pt={LON}%2C{LAT}%2Cpm2rdm' + YA_LANG[lang],
+         f'https://yandex.kz/maps/?pt={LON}%2C{LAT}&amp;z=17&amp;l=map' + YA_LANG[lang]),
+    ]
+
+
 OPEN = {'ru': 'Открыть карту', 'kk': 'Картаны ашу', 'tg': 'Харитаро кушодан', 'uz': 'Xaritani ochish'}
 NAMES = {'uz': {'Яндекс': 'Yandex', '2ГИС': '2GIS'}}
 
@@ -35,11 +44,12 @@ STYLE = ('<style>.map-tabs{display:flex;flex-direction:column}.map-tabbar{displa
 
 def map_block(title, lang='ru', indent='          ', title_attr=''):
     names = NAMES.get(lang, {})
+    m = maps(lang)
     btns = ''.join(
         f'<button type="button" data-src="{src}" data-href="{href}" aria-pressed="{"true" if i == 0 else "false"}"'
         f'{" class=\"is-active\"" if i == 0 else ""}>{names.get(label, label)}</button>'
-        for i, (_, label, src, href) in enumerate(MAPS))
-    first = MAPS[0]
+        for i, (_, label, src, href) in enumerate(m))
+    first = m[0]
     return (f'{indent}<div class="map-wrap map-tabs">{STYLE}<div class="map-tabbar">{btns}</div>'
             f'<iframe title="{title}"{title_attr} loading="lazy" referrerpolicy="no-referrer-when-downgrade" '
             f'src="{first[2]}"></iframe>'
