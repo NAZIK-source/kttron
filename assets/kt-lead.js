@@ -1,6 +1,8 @@
 /* Окно «Заявка на техническое решение»: открывается кнопками с data-lead, отправляет форму на /zayavka.php
    (письмо на info@kttron.kz с файлами). Язык подписей — по <html lang>. */
 (function () {
+  if (window.ktLeadReady) return;
+  window.ktLeadReady = true;
   var T = {
     ru: {
       title: 'Заявка на техническое решение',
